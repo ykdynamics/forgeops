@@ -3,7 +3,12 @@
 If something in the demo matched a real problem you have, this is the useful
 conversation — more useful to us than any amount of interest in the demo itself.
 
-Email **khaya.youssef@gmail.com** with the subject `ForgeOps — operation`.
+Email **<CONTACT-ADDRESS>** with the subject `ForgeOps — operation`.
+
+> **Unresolved.** This needs a real address before the surface goes anywhere.
+> A personal mailbox is the wrong thing to put on a page intended to become
+> public, and a role address that nobody watches is worse than none. Decide who
+> answers and how fast before this line is filled in.
 
 Four questions. Rough answers are fine; we would rather have four imprecise
 answers than one polished paragraph.
