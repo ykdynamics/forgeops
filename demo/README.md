@@ -1,7 +1,26 @@
 # Getting the demo bundle
 
-The demo is a local bundle, not a source checkout. You get a tarball, you can
-inspect it, and you run one command.
+The demo is a local bundle, not a source checkout: you get a tarball, you can
+inspect it before running anything, and then it is one command.
+
+## First, ask for it
+
+**Delivery is direct and guided.** There is no download link, and that is
+deliberate rather than unfinished.
+
+Email **forgeops@ykdynamics.com**, and tell us the operation you actually have
+— see [CONTACT.md](../CONTACT.md) for the four questions worth answering. We
+reply with the bundle.
+
+ForgeOps is in private evaluation. An anonymous download would cost us the only
+thing this stage is for: knowing who is evaluating it and what problem they
+brought. It would also mean shipping to people we cannot help when something
+breaks, which at this stage is a real possibility.
+
+Whether this later becomes an authenticated download and then a public one is a
+decision that has not been made.
+
+## Then run it
 
 ```bash
 tar -xzf forgeops-first-touch-*.tar.gz
@@ -42,31 +61,3 @@ SHA256SUMS    checksums for everything above
 
 Nothing in the bundle phones home, and nothing needs network access except
 pulling the Postgres image the first time.
-
-## Getting a copy
-
-**Delivery is direct and guided.** There is no download link, and that is
-deliberate rather than unfinished.
-
-```text
-you run the demo, or read about it
-        |
-        v
-CONTACT.md — tell us the operation you actually have
-        |
-        v
-we send the bundle directly
-        |
-        v
-local evaluation, with someone available if it misbehaves
-```
-
-ForgeOps is in private evaluation. Handing out an anonymous download would cost
-us the only thing this stage is for: knowing who is evaluating it and what
-problem they brought. It would also mean shipping to people we cannot help when
-something breaks, which at this stage is a real possibility.
-
-Whether this later becomes an authenticated download and then a public one is a
-decision that has not been made. It is not a gap in this page.
-
-Ask via [CONTACT.md](../CONTACT.md).

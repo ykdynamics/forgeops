@@ -28,7 +28,11 @@ arbitrary ones.
 
 ## Try it
 
-Fifteen commands is fourteen too many, so there is one:
+ForgeOps is in private evaluation, so the first step is a message rather than a
+download — [ask for the bundle](demo/), and tell us the operation you actually
+have. We send it directly.
+
+Once you have it, there is one command:
 
 ```bash
 ./try-forgeops
@@ -40,9 +44,7 @@ simulated: the restart really restarts the service, and the denial really
 leaves it alone.
 
 Prerequisites are Docker, `curl`, `python3`, `lsof` and `bash`. No account, no
-email, no sign-up, no source checkout.
-
-See [demo/](demo/) for how to get the bundle.
+sign-up, no source checkout — and no ForgeOps knowledge before you run it.
 
 ## Then
 
