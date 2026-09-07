@@ -15,18 +15,45 @@ implement  the one thing it does
 authorize  bind it to a revision, and to the artifact that may deliver it
 ```
 
-## Start from the closest thing
+## What you cannot do yet, stated plainly
 
-The demo's own capabilities are the worked examples — `acme.service.status` for
-a read and `acme.service.restart` for a mutation with an effect. Adapting one is
-a better first step than writing from scratch, because the declaration is the
-part that carries the guarantees.
+You cannot build one of these today without us.
 
-> **Unresolved.** Which repository an evaluator is pointed at, and how much of it
-> they need, is not settled. Today the capability runtime and harness live in an
-> internal repository, and sending someone there means sending them into
-> engineering material this surface exists to avoid. That needs a real answer
-> before this page is useful.
+The capability SDK is not independently distributable. It exists, it is small,
+and it has no third-party dependencies — but it lives inside a private
+repository with no published module, so the ordinary thing a developer would
+do fails:
+
+```text
+$ go get github.com/ykdynamics/forgeops-capabilities/sdk
+404 Not Found — not found: invalid version
+```
+
+We could have papered over this by pasting the SDK into this page. We would
+rather tell you it is a real gap, because a copied SDK is one you cannot
+update and we cannot support.
+
+Until it is fixed, adapting an operation happens with us in the loop: ask via
+[CONTACT.md](../CONTACT.md) and we will get you a working starting point. That
+is a worse answer than a `go get`, and it is the true one.
+
+## What the contract looks like
+
+Worth knowing even before you can build it, because this is the part that
+carries the guarantees rather than the code:
+
+```text
+a manifest    names the operation, its input and output, the target it may
+              reach, the secrets it requires, and whether its effect needs
+              verification
+an executable implements exactly that, reads its secret from the edge, and
+              never chooses its own target
+a revision    binds both to an authorized artifact, so what runs is what was
+              approved
+```
+
+An operation that accepts an arbitrary command is not a capability, whatever
+the manifest says.
 
 ## State your guarantee honestly
 
