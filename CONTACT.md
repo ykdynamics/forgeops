@@ -3,12 +3,7 @@
 If something in the demo matched a real problem you have, this is the useful
 conversation — more useful to us than any amount of interest in the demo itself.
 
-Email **<CONTACT-ADDRESS>** with the subject `ForgeOps — operation`.
-
-> **Unresolved.** This needs a real address before the surface goes anywhere.
-> A personal mailbox is the wrong thing to put on a page intended to become
-> public, and a role address that nobody watches is worse than none. Decide who
-> answers and how fast before this line is filled in.
+Email **forgeops@ykdynamics.com** with the subject `ForgeOps — operation`.
 
 Four questions. Rough answers are fine; we would rather have four imprecise
 answers than one polished paragraph.
@@ -31,9 +26,11 @@ answers than one polished paragraph.
 
 ## What happens then
 
-We read it and reply. If it looks like a fit we will ask to talk, and if it
-does not we will say so and why — a clear no is worth more to you than a
-courteous maybe.
+A person reads it and replies — normally within two working days. If it looks
+like a fit we will ask to talk, and if it does not we will say so and why. A
+clear no is worth more to you than a courteous maybe.
+
+This address is read by the people building ForgeOps, not by a sales function.
 
 ## Telling us it does not fit
 
