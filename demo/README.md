@@ -12,6 +12,11 @@ cd forgeops-first-touch-*
 Prerequisites: Docker, `curl`, `python3`, `lsof`, `bash`, and free local ports.
 No account, email, sign-up or source build.
 
+Exercised on macOS on Apple silicon and on Linux x86-64. The bundle carries
+binaries for the platform it was built for, so tell us which you are on. Docker
+is used for one Postgres container and is pulled on first run; nothing else
+needs network access.
+
 Then, if you want to see an AI make the same requests through the same
 authority path:
 
@@ -40,10 +45,28 @@ pulling the Postgres image the first time.
 
 ## Getting a copy
 
-> **Unresolved.** ForgeOps is in private evaluation and the bundle is not
-> published anywhere yet. Today it is sent directly. How an evaluator obtains
-> it — and whether that stays deliberate rather than becoming a download link —
-> is part of the publication decision, not something to settle by putting a file
-> somewhere convenient.
+**Delivery is direct and guided.** There is no download link, and that is
+deliberate rather than unfinished.
+
+```text
+you run the demo, or read about it
+        |
+        v
+CONTACT.md — tell us the operation you actually have
+        |
+        v
+we send the bundle directly
+        |
+        v
+local evaluation, with someone available if it misbehaves
+```
+
+ForgeOps is in private evaluation. Handing out an anonymous download would cost
+us the only thing this stage is for: knowing who is evaluating it and what
+problem they brought. It would also mean shipping to people we cannot help when
+something breaks, which at this stage is a real possibility.
+
+Whether this later becomes an authenticated download and then a public one is a
+decision that has not been made. It is not a gap in this page.
 
 Ask via [CONTACT.md](../CONTACT.md).
