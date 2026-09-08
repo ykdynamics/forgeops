@@ -15,27 +15,31 @@ implement  the one thing it does
 authorize  bind it to a revision, and to the artifact that may deliver it
 ```
 
-## What you cannot do yet, stated plainly
+## This step is not self-serve
 
-You cannot build one of these today without us.
+The demo is a plain download because it costs you nothing and teaches you
+something. This step is different: writing an operation means talking about
+*your* environment, your target, and who should hold authority over it — and
+that is a conversation, not a package.
 
-The capability SDK is not independently distributable. It exists, it is small,
-and it has no third-party dependencies — but it lives inside a private
-repository with no published module, so the ordinary thing a developer would
-do fails:
+So building a capability happens with us in the loop. Write to
+[forgeops@ykdynamics.com](../CONTACT.md) describing the operation you have in
+mind, and we will get you a working starting point for it.
+
+**Two things are true here and we would rather say both.** The gate above is a
+choice. Separately, the SDK is not published as a Go module today, so even if
+this step were self-serve, the ordinary thing a developer would do would fail:
 
 ```text
 $ go get github.com/ykdynamics/forgeops-capabilities/sdk
 404 Not Found — not found: invalid version
 ```
 
-We could have papered over this by pasting the SDK into this page. We would
-rather tell you it is a real gap, because a copied SDK is one you cannot
-update and we cannot support.
-
-Until it is fixed, adapting an operation happens with us in the loop: ask via
-[CONTACT.md](../CONTACT.md) and we will get you a working starting point. That
-is a worse answer than a `go get`, and it is the true one.
+It is small and depends on nothing but the standard library, so this is a
+publishing decision rather than a hard problem. But we have not made it, and
+describing an unbuilt path as a deliberate gate would be the kind of claim this
+project tries not to make. We could also have pasted the SDK onto this page;
+a copied SDK is one you cannot update and we cannot support.
 
 ## What the contract looks like
 
