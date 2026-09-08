@@ -1,24 +1,56 @@
-# Getting the demo bundle
+# Run the demo
 
-The demo is a local bundle, not a source checkout. You get a tarball, you can
-inspect it, and you run one command.
+No account, no email, no form. Download it and run it.
+
+## Download
+
+Pick your platform:
+
+| | |
+|---|---|
+| macOS, Apple silicon | `forgeops-first-touch-darwin-arm64.tar.gz` |
+| macOS, Intel | `forgeops-first-touch-darwin-amd64.tar.gz` |
+| Linux, x86-64 | `forgeops-first-touch-linux-amd64.tar.gz` |
+| Linux, arm64 | `forgeops-first-touch-linux-arm64.tar.gz` |
 
 ```bash
-tar -xzf forgeops-first-touch-*.tar.gz
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/6924153696ef
+KIT=forgeops-first-touch-darwin-arm64.tar.gz    # change to match your platform
+
+curl -O "$BASE/$KIT"
+curl -O "$BASE/$KIT.sha256"
+shasum -a 256 -c "$KIT.sha256"
+
+tar -xzf "$KIT"
 cd forgeops-first-touch-*
 ./try-forgeops
 ```
 
+Downloading in the terminal is not incidental. The binaries are not code-signed
+— we are a small team in private evaluation and have not bought into Apple's
+signing programme yet — and macOS attaches a quarantine flag to anything a
+browser downloads, which would block them. `curl` does not set that flag, so
+nothing is being bypassed or overridden; the demo simply runs.
+
+Check the checksum anyway. It is the only integrity claim we can make right
+now, and it is worth more than our assurance.
+
+The path carries a build identifier, so a link always means exactly one build.
+Published artifacts are never overwritten — if you come back to this URL later
+you get the same bytes, and a newer build lives at a different one.
+
+## What it does
+
+Starts a fictional ACME customer connector on your machine, then walks through
+diagnostics that succeed, a restart that waits for approval, and a shell request
+that is refused. Nothing is simulated: the restart really restarts the service,
+the denial really leaves it alone.
+
 Prerequisites: Docker, `curl`, `python3`, `lsof`, `bash`, and free local ports.
-No account, email, sign-up or source build.
+Docker is used for one Postgres container, pulled on first run; nothing else
+needs network access, and nothing phones home.
 
-Exercised on macOS on Apple silicon and on Linux x86-64. The bundle carries
-binaries for the platform it was built for, so tell us which you are on. Docker
-is used for one Postgres container and is pulled on first run; nothing else
-needs network access.
-
-Then, if you want to see an AI make the same requests through the same
-authority path:
+Then, to see an AI make the same requests through the same authority path:
 
 ```bash
 ./try-with-ai-mcp
