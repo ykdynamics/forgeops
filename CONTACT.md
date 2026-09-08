@@ -3,6 +3,11 @@
 If something in the demo matched a real problem you have, this is the useful
 conversation — more useful to us than any amount of interest in the demo itself.
 
+You do not need to write to us to try ForgeOps. The demo is a
+[plain download](demo/), no account and no form. This page is for the step
+after it: you have an operation of your own in mind, and want to know whether
+it fits.
+
 Email **forgeops@ykdynamics.com** with the subject `ForgeOps — operation`.
 
 Four questions. Rough answers are fine; we would rather have four imprecise
