@@ -64,5 +64,10 @@ you, that is worth telling us — see [CONTACT.md](CONTACT.md).
 
 ## Status
 
-ForgeOps is in private evaluation. It is not generally available, and this
-repository is not public.
+ForgeOps is early. The demo below is real and runs on your machine; the product
+behind it is being evaluated with a small number of people rather than sold.
+
+What that means practically: the binaries are not code-signed, there is no
+hosted service to sign up for, and the parts beyond the local demo — running
+this against an edge you operate, building your own operation — happen with us
+rather than self-serve. If that is what you want, [say so](CONTACT.md).
