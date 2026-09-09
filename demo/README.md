@@ -53,6 +53,84 @@ That is the whole demo. The interesting part is not that the restart works —
 it is that the shell request cannot be made to work, and that the restart
 needed someone else's decision.
 
+## What it looks like
+
+The whole run, on a laptop, in about a minute:
+
+```text
+== starting Postgres, Platform and Control ==
+OK: Platform and Control ready; canonical-input enforcement ON
+
+== declaring the first-touch fabric ==
+applied Environment/first-touch
+applied Capability/acme.service.status
+applied Capability/acme.service.restart
+applied Capability/acme.service.shell
+applied Agent/first-touch-edge
+applied Policy/first-touch
+
+== starting ACME Sync Connector, capability runtimes and edge ==
+OK: first-touch-edge Ready
+
+== provisioning requester and customer-approver identities ==
+OK: requester and approver identities are distinct; policy revision 1
+
+== A. diagnostics ALLOW returns target-derived connector state ==
+OK: diagnostics completed; target says pending_jobs=17 config=v4 restart_count=0
+
+== B/C. restart ASK holds, then browser approval releases one real effect ==
+
+Open http://127.0.0.1:18054/ and click Approve for proposal prop-82f3283c9e76.
+OK: restart approved and executed exactly once; receipt=action:act-058b53b992fe
+
+== D. denying a held restart produces zero target effect ==
+
+Open http://127.0.0.1:18054/ and click Deny for proposal prop-c6d44e5a2257.
+OK: denied restart ended denied and produced zero target effect
+
+== E. shell access DENY refuses by policy with zero effect ==
+OK: shell refused by authority: denied by edge policy: rule 3 (acme.service.shell)
+
+== F. requester has no direct credential path used by the scenario ==
+OK: customer token stayed in edge secrets file and ACME target env
+
+FIRST-TOUCH PASSED
+```
+
+It stops twice and waits for you. That is not a pause in a script — the action
+has reached the customer side and cannot go further without a decision.
+
+## The page where the decision is made
+
+`http://127.0.0.1:18054/` is the customer's surface, not yours. It opens on the
+same laptop for convenience; the authority it represents is the other side of
+the boundary.
+
+```text
+  +--------------------------------------------------------------+
+  |  Customer Approval                                            |
+  |                                                               |
+  |  The requester can ask for this operation.                    |
+  |  The customer decides whether it runs.                        |
+  |                                                               |
+  |  ACME Support wants to restart ACME Sync Connector            |
+  |                                                               |
+  |  Reason                Connector has 17 pending jobs.         |
+  |  Requested operation   acme.service.restart                   |
+  |  Target                acme-service                           |
+  |                                                               |
+  |            [ Deny ]              [ Approve ]                  |
+  +--------------------------------------------------------------+
+```
+
+Everything on that page came from the request itself — who asked, for what,
+against which target, and why. The customer is not approving "ACME Support";
+they are approving one operation, once.
+
+Click **Approve** and `restart_count` moves from 0 to 1. Run it again, click
+**Deny**, and it stays at 1. You can read the counter yourself before and after;
+that is the difference between being told the denial worked and seeing it.
+
 ## What is actually running
 
 Everything is on your laptop, but it is arranged as three separate sides that
