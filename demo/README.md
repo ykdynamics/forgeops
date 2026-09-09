@@ -185,6 +185,62 @@ The direction of the arrow between ForgeOps and the edge matters: **the edge
 opens the connection outward**. Nothing dials into the customer side, which is
 why this works where a VPN or an inbound agent would not be allowed.
 
+## How your software asks
+
+The demo drives this from a shell script, but the interface is an API, because
+the caller is normally your software rather than a person at a prompt. One
+request creates one Action:
+
+```http
+POST /v1/tenants/{tenant}/actions
+Authorization: Bearer <your workspace token>
+
+{
+  "workspace_id":        "ws-1",
+  "capability_uid":      "acme.service.restart",
+  "capability_revision": 1,
+  "target":              "acme-service",
+  "input":               {"service": "acme-service"},
+  "policy_revision":     1,
+  "idempotency_key":     "restart-after-queue-alert",
+  "max_attempts":        1,
+  "request_purpose":     "Connector has 17 pending jobs."
+}
+```
+
+You get back an action id, and you poll it or take the result on a webhook. The
+same request is what the AI/MCP path makes; `forge-mcp` is an adapter in front
+of this, not a second way in.
+
+Two fields carry more weight than they look:
+
+`capability_revision` pins **which** version of the operation you are asking
+for. A capability that changed since you integrated is a different operation,
+and it will not be silently substituted.
+
+`request_purpose` is what the human on the customer side reads when the
+operation needs approval. "Connector has 17 pending jobs" is the line in the
+screenshot above. Write it for them, not for your logs.
+
+## What the CLI is for
+
+`forgectl` ships in the bundle, and it is worth being clear about what it is:
+the **operator and customer-side** tool, not the way a vendor asks for work.
+
+```bash
+forgectl pending          # calls held at the edge, waiting for a human
+forgectl approvals        # the proposal ledger
+forgectl audit --tail 20  # what was asked, decided and executed
+forgectl edges            # fleet status, one line per edge
+forgectl doctor           # diagnose the control plane, boundary by boundary
+```
+
+There is a `forgectl call`, and it is the transitional direct-call path this
+system deliberately closed: a supported caller creates an Action first, so that
+every operation has a record before anything is placed. Against this demo it
+returns 401 and the control plane says so at startup. It is mentioned here only
+so that finding it in `--help` does not read as a second, quieter door.
+
 ## When each thing happens
 
 **Diagnostics — allowed, so nobody is asked.**
@@ -200,6 +256,35 @@ forgectl ---> api ---> forge-control ---> forge-agent
                                               v
                               pending_jobs=17 config=v4
 ```
+
+As a sequence, with the restart — the interesting one, because it stops:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant V as Your software
+    participant P as ForgeOps Platform
+    participant C as Control
+    participant E as Edge (customer side)
+    participant H as Customer human
+    participant T as ACME connector
+
+    V->>P: POST /actions  restart acme-service
+    P->>C: place the action
+    C->>E: over the session the EDGE opened
+    E->>E: policy: this one is ASK
+    E-->>H: proposal, with the requester's stated purpose
+    Note over V,T: nothing has run. the action is held.
+    H->>E: Approve
+    E->>T: acme-service-restart, with the edge's own credential
+    T-->>E: restart_count 0 -> 1, receipt
+    E-->>C: result
+    C-->>P: result
+    P-->>V: succeeded
+```
+
+Deny at step 7 and the sequence ends there: no call to the connector, no change
+to the counter, and the requester is told it was refused.
 
 **Restart — held, until a person on the customer side decides.**
 
