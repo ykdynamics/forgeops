@@ -176,8 +176,8 @@ environment you were never given access to.
 ```text
 bin/          the ForgeOps runtime and the fictional ACME connector
 scripts/      what the entry points run, readable before you run them
-docs/         the same concepts as this repository, offline
 try-forgeops  the entry point
+metadata.env  the exact revisions this bundle was built from
 SHA256SUMS    checksums for everything above
 ```
 
