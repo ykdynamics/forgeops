@@ -15,31 +15,35 @@ does not do it, it does not go in the picture.
 ## What is here
 
 ```text
-request-without-authority.svg   landing-page mental model: requester, ForgeOps,
-                                trust boundary, customer policy, capability,
-                                target
+request-without-authority.svg          landing-page mental model: requester,
+                                       ForgeOps, trust boundary, customer policy,
+                                       capability, target
 
-trust-boundary.svg              what crosses into/out of the customer environment,
-                                and what deliberately stays customer-local
+the-problem-today.svg                  why the problem exists: a narrow operation
+                                       often requires broad standing access today
 
-demo-allow-ask-deny.svg         first-touch demo outcomes: diagnostics ALLOW,
-                                restart ASK, shell DENY
+trust-boundary.svg                     what crosses into/out of the customer
+                                       environment, and what stays customer-local
 
-demo-three-sides.svg            demo topology: vendor, ForgeOps and customer-side
-                                processes, including the edge-opened session
+demo-allow-ask-deny.svg                first-touch demo outcomes: diagnostics
+                                       ALLOW, restart ASK, shell DENY
+
+demo-three-sides.svg                   demo topology: vendor, ForgeOps and
+                                       customer-side processes, including the
+                                       edge-opened session
+
+same-operation-different-requester.svg human, service, automation and AI through
+                                       one authority model; requester is not
+                                       authority
 ```
 
-The diagrams deliberately overlap only at the concepts that need reinforcing.
-The landing image answers "what is ForgeOps?"; the boundary image answers "why
-is this not remote access?"; the demo images answer "what will I actually see?"
-and "what is running where?".
+The diagrams deliberately overlap only at concepts that need reinforcing:
 
-## Still wanted
+- the landing image answers **what is ForgeOps?**
+- the problem image answers **why does this need to exist?**
+- the boundary image answers **why is this not remote access?**
+- the demo images answer **what will I actually see?** and **what runs where?**
+- the requester image answers **does AI or automation get a different trust path?**
 
-```text
-the-problem.svg        standing access today, before ForgeOps appears at all
-same-operation.svg     human, automation and AI through one authority model
-```
-
-`same-operation.svg` should come after ForgeOps itself has been explained. AI is
-a useful caller of the platform, not the product definition.
+The AI visual comes after ForgeOps itself has been explained. AI is a useful
+caller of the platform, not the product definition.
