@@ -15,31 +15,66 @@ implement  the one thing it does
 authorize  bind it to a revision, and to the artifact that may deliver it
 ```
 
-## This step is not self-serve
+## Write one, and run it in the demo you already have
 
-The demo is a plain download because it costs you nothing and teaches you
-something. This step is different: writing an operation means talking about
-*your* environment, your target, and who should hold authority over it — and
-that is a conversation, not a package.
+You do not need us for this part any more.
 
-So building a capability happens with us in the loop. Write to
-[forgeops@ykdynamics.com](../CONTACT.md) describing the operation you have in
-mind, and we will get you a working starting point for it.
+```bash
+mkdir my-capability && cd my-capability
+# capability.yaml  — what the operation is
+# my-capability    — the executable that implements it
 
-**Two things are true here and we would rather say both.** The gate above is a
-choice. Separately, the SDK is not published as a Go module today, so even if
-this step were self-serve, the ordinary thing a developer would do would fail:
-
-```text
-$ go get github.com/ykdynamics/forgeops-capabilities/sdk
-404 Not Found — not found: invalid version
+./try-forgeops --with ./my-capability
 ```
 
-It is small and depends on nothing but the standard library, so this is a
-publishing decision rather than a hard problem. But we have not made it, and
-describing an unbuilt path as a deliberate gate would be the kind of claim this
-project tries not to make. We could also have pasted the SDK onto this page;
-a copied SDK is one you cannot update and we cannot support.
+The demo declares your operation beside its own, hosts it on the same edge, and
+puts it through the same path: a request, a policy decision, and — if you
+declared a mutation — a human on the customer side who has to agree.
+
+You will need the SDK to build the executable. It is not published as a Go
+module yet, so ask at [forgeops@ykdynamics.com](../CONTACT.md) and we will send
+it. That part is still a conversation, and it is a short one.
+
+## Three declarations, and the third is the one that teaches you something
+
+Your `capability.yaml` produces all three:
+
+```text
+Capability    what the operation is, and the target it may reach
+Agent         that this edge HOSTS it
+Policy        allow, ask, or deny
+```
+
+The second one is easy to skip and instructive when you do. A capability that
+exists, and that policy permits, still cannot run unless the edge says it hosts
+it:
+
+```text
+placement: refused (no_eligible_agent): capability "inventory.check"
+is not bound to any eligible agent
+```
+
+The customer's side decides what may execute there. Not the requester, and not
+the policy alone.
+
+## The decision comes from what you declare
+
+```yaml
+effect:
+  mutation: true     # -> ASK. a human decides, every time.
+  mutation: false    # -> ALLOW. a read runs on its own.
+
+decision: deny       # or say so outright, and watch it be refused
+```
+
+A mutation defaults to asking. You can override it, deliberately, in writing.
+
+## Where this stops
+
+Running your operation in the local demo is not the same as running it in a
+customer environment. That needs the implementation pinned and bound to an
+authorized revision, on an edge somebody operates — which is a conversation,
+and the point at which we would want to know what you built.
 
 ## What the contract looks like
 
