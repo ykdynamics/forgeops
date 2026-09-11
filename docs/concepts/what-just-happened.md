@@ -5,23 +5,7 @@ mechanics.
 
 ## The path a request takes
 
-```text
-you                 request one operation, by name, with its input
-  |
-  v
-ForgeOps            binds the request to exact authority: which capability,
-                    which revision, which target, whose policy
-  |
-  v
-customer side       decides. allow, hold for a person, or refuse
-  |
-  v
-capability          runs, using access that lives on the customer side and
-                    never leaves it
-  |
-  v
-effect + evidence   what changed, and a record naming what ran and where
-```
+![A named operation moves from requester through ForgeOps binding and customer-side authority to a bounded capability, then produces an effect and receipt.](../images/request-path.svg)
 
 Five things are worth noticing.
 
