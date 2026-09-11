@@ -18,6 +18,8 @@ Your connector, service or appliance runs inside your enterprise customer's
 environment. Something goes wrong. You need to look at it, restart it, or apply
 a bounded fix.
 
+![The common pattern today: a narrow operational need is solved by granting broad standing access through VPN, SSH, credentials, jump hosts or screen sharing.](docs/images/the-problem-today.svg)
+
 Today that means asking for access: a VPN account, an SSH key, a jump host, a
 screen-share with someone who has the credentials. The customer grants standing
 access to solve an occasional problem, and then lives with it.
@@ -57,6 +59,8 @@ carries no artifact identity. Those properties are real and hold elsewhere; the
 laptop cannot show them, and the page says which is which.
 
 ## Humans, automation and AI
+
+![Human, service, automation and AI callers all request through the same ForgeOps authority path; changing the requester does not transfer customer authority.](docs/images/same-operation-different-requester.svg)
 
 The same request, the same authority. An AI caller goes through the identical
 path and **cannot approve its own request** — the demo checks that by having it
