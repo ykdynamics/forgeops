@@ -43,6 +43,8 @@ you get the same bytes, and a newer build lives at a different one.
 
 Three requests against a fictional customer connector running on your machine:
 
+![The demo sends three requests through customer policy: diagnostics are allowed, restart asks for customer approval, and shell access is denied with no target effect.](../docs/images/demo-allow-ask-deny.svg)
+
 ```text
 read diagnostics       ALLOW   runs immediately, returns the connector's state
 restart the connector  ASK     waits for a human, then really restarts it
@@ -135,6 +137,8 @@ that is the difference between being told the denial worked and seeing it.
 
 Everything is on your laptop, but it is arranged as three separate sides that
 only talk through ForgeOps. No process reaches across a line.
+
+![The local demo has three logical sides: vendor requester, ForgeOps control plane, and customer-side edge with policy, credential, capability runtime and target. The edge opens the session outward.](../docs/images/demo-three-sides.svg)
 
 ```text
   YOUR LAPTOP
