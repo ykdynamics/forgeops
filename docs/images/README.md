@@ -35,6 +35,16 @@ demo-three-sides.svg                   demo topology: vendor, ForgeOps and
 same-operation-different-requester.svg human, service, automation and AI through
                                        one authority model; requester is not
                                        authority
+
+request-path.svg                       requester -> binding -> customer authority
+                                       -> bounded capability -> effect / receipt
+
+remote-access-vs-forgeops.svg          broad capability + narrow intent versus
+                                       narrow capability + explicit authority
+
+evaluation-ladder.svg                  what the laptop demo proves, what a real
+                                       private edge adds, and what evaluator-owned
+                                       infrastructure adds beyond that
 ```
 
 The diagrams deliberately overlap only at concepts that need reinforcing:
@@ -44,6 +54,15 @@ The diagrams deliberately overlap only at concepts that need reinforcing:
 - the boundary image answers **why is this not remote access?**
 - the demo images answer **what will I actually see?** and **what runs where?**
 - the requester image answers **does AI or automation get a different trust path?**
+- the request path answers **what happens between asking and getting an effect?**
+- the access comparison answers **where is trust placed differently?**
+- the evaluation ladder answers **what does each level of evidence actually prove?**
 
 The AI visual comes after ForgeOps itself has been explained. AI is a useful
 caller of the platform, not the product definition.
+
+## What stays as text
+
+Terminal transcripts, API requests, shell commands and inspectable demo output
+stay as text. Those blocks are meant to be copied, searched or compared against
+what the user actually sees; turning them into pictures would reduce their value.
