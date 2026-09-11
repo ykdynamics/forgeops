@@ -15,20 +15,31 @@ does not do it, it does not go in the picture.
 ## What is here
 
 ```text
-request-without-authority.svg   the defining one: requester, ForgeOps, the
+request-without-authority.svg   landing-page mental model: requester, ForgeOps,
                                 trust boundary, customer policy, capability,
                                 target
+
+trust-boundary.svg              what crosses into/out of the customer environment,
+                                and what deliberately stays customer-local
+
+demo-allow-ask-deny.svg         first-touch demo outcomes: diagnostics ALLOW,
+                                restart ASK, shell DENY
+
+demo-three-sides.svg            demo topology: vendor, ForgeOps and customer-side
+                                processes, including the edge-opened session
 ```
+
+The diagrams deliberately overlap only at the concepts that need reinforcing.
+The landing image answers "what is ForgeOps?"; the boundary image answers "why
+is this not remote access?"; the demo images answer "what will I actually see?"
+and "what is running where?".
 
 ## Still wanted
 
 ```text
 the-problem.svg        standing access today, before ForgeOps appears at all
-what-crosses.svg       what passes the boundary and what does not
-who-decides.svg        ALLOW / ASK / DENY as three visible outcomes
 same-operation.svg     human, automation and AI through one authority model
 ```
 
-The first three have a drafted design. `same-operation.svg` should come last:
-it only makes sense once ForgeOps itself has been explained, and leading with it
-would read as an AI product.
+`same-operation.svg` should come after ForgeOps itself has been explained. AI is
+a useful caller of the platform, not the product definition.
