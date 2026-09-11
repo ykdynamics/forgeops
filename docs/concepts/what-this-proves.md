@@ -42,19 +42,7 @@ Each level of evaluation proves what it proves. A property demonstrated on the
 real estate does not retroactively become true of the laptop demo, and this page
 does not get quietly upgraded when a stronger proof exists elsewhere.
 
-```text
-LOCAL DEMO (this bundle)
-  proves    a real bounded operation, real approval by a separate identity,
-            a real refusal, and a real effect you can read
-  does not  cross a machine boundary, verify semantically, or bind an artifact
-
-REAL PRIVATE EDGE (guided session)
-  adds      an independently operated edge, a target the requester cannot
-            reach, semantic verification, and artifact identity by digest
-
-EVALUATOR-OWNED EDGE (optional, later)
-  adds      independence from us: your machine, your enrolment, your network
-```
+![The evaluation ladder: the local demo proves bounded operation, separate approval, refusal and effect; a real private edge adds machine boundary, semantic verification and artifact identity; an evaluator-owned edge adds independence from ForgeOps operators.](../images/evaluation-ladder.svg)
 
 If you ever find a claim on this page that the bundle you were given does not
 produce, that is a defect worth telling us about — it is the failure mode this
