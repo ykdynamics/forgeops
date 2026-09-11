@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 280" width="980" height="280" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+  <rect width="980" height="280" rx="14" fill="#ffffff"/>
+  <text x="34" y="38" font-size="17" font-weight="700" fill="#172033">Remote access and ForgeOps place trust differently</text>
+
+  <rect x="34" y="72" width="438" height="158" rx="12" fill="#fff1f1" stroke="#efc1c6"/>
+  <text x="58" y="101" font-size="14" font-weight="700" fill="#a22f3d">STANDING ACCESS</text>
+  <text x="58" y="128" font-size="13" fill="#4f5d72">Grant broad capability first</text>
+  <path d="M58 146 H390" stroke="#c94a57" stroke-width="2" marker-end="url(#red)"/>
+  <text x="58" y="176" font-size="13" fill="#4f5d72">Trust the actor to use it narrowly</text>
+  <text x="58" y="204" font-size="12.5" fill="#7a4b52">Control is mostly after the fact: logs, review, discipline.</text>
+
+  <rect x="508" y="72" width="438" height="158" rx="12" fill="#eef8f2" stroke="#b8dac4"/>
+  <text x="532" y="101" font-size="14" font-weight="700" fill="#2f6b46">FORGEOPS</text>
+  <text x="532" y="128" font-size="13" fill="#4f5d72">Request one bounded operation</text>
+  <path d="M532 146 H864" stroke="#35a56f" stroke-width="2" marker-end="url(#green)"/>
+  <text x="532" y="176" font-size="13" fill="#4f5d72">Authority decides before execution</text>
+  <text x="532" y="204" font-size="12.5" fill="#526b5c">No route, no customer credential, no arbitrary fallback.</text>
+
+  <text x="490" y="259" text-anchor="middle" font-size="13" font-weight="700" fill="#172033">Broad capability + narrow intent  ≠  narrow capability + explicit authority</text>
+
+  <defs>
+    <marker id="red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#c94a57"/></marker>
+    <marker id="green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#35a56f"/></marker>
+  </defs>
+</svg>
