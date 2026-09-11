@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" width="900" height="420" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+  <rect width="900" height="420" fill="#ffffff"/>
+  <text x="450" y="34" text-anchor="middle" font-size="24" font-weight="700" fill="#10213d">The problem today</text>
+  <text x="450" y="58" text-anchor="middle" font-size="14" fill="#627089">To get one thing done inside a customer environment, we often grant broad access.</text>
+
+  <rect x="40" y="96" width="220" height="240" rx="12" fill="#f4f7fb" stroke="#cbd4e2"/>
+  <text x="150" y="124" text-anchor="middle" font-size="13" font-weight="700" fill="#40506b" letter-spacing="1">YOUR SIDE</text>
+  <text x="72" y="164" font-size="15" fill="#15233a">Support engineer</text>
+  <text x="72" y="204" font-size="15" fill="#15233a">Automation</text>
+  <text x="72" y="244" font-size="15" fill="#15233a">Backend service</text>
+  <text x="72" y="284" font-size="15" fill="#15233a">AI / agent</text>
+
+  <rect x="326" y="124" width="248" height="184" rx="12" fill="#fff2f2" stroke="#efb7bd"/>
+  <text x="450" y="152" text-anchor="middle" font-size="13" font-weight="700" fill="#a12a3a" letter-spacing="1">ACCESS LAYER</text>
+  <text x="450" y="188" text-anchor="middle" font-size="16" fill="#a12a3a">VPN</text>
+  <text x="450" y="218" text-anchor="middle" font-size="16" fill="#a12a3a">SSH</text>
+  <text x="450" y="248" text-anchor="middle" font-size="16" fill="#a12a3a">Customer credentials</text>
+  <text x="450" y="278" text-anchor="middle" font-size="16" fill="#a12a3a">Jump host / screen share</text>
+
+  <rect x="640" y="96" width="220" height="240" rx="12" fill="#f4f8f6" stroke="#c7dbcf"/>
+  <text x="750" y="124" text-anchor="middle" font-size="13" font-weight="700" fill="#3e6d52" letter-spacing="1">CUSTOMER ENVIRONMENT</text>
+  <text x="678" y="164" font-size="15" fill="#15233a">Connector</text>
+  <text x="678" y="204" font-size="15" fill="#15233a">Service</text>
+  <text x="678" y="244" font-size="15" fill="#15233a">Database</text>
+  <text x="678" y="284" font-size="15" fill="#15233a">Appliance</text>
+
+  <path d="M260 216 L326 216" stroke="#c84b5c" stroke-width="4" marker-end="url(#r)"/>
+  <path d="M574 216 L640 216" stroke="#c84b5c" stroke-width="4" marker-end="url(#r)"/>
+
+  <rect x="180" y="358" width="540" height="36" rx="8" fill="#fff4f4" stroke="#efc1c5"/>
+  <text x="450" y="381" text-anchor="middle" font-size="14" font-weight="700" fill="#9b2434">Broad access for a narrow need: more privilege, more risk, harder revocation and audit.</text>
+
+  <defs>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#c84b5c"/></marker>
+  </defs>
+</svg>
