@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 460" width="900" height="460" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+  <rect width="900" height="460" fill="#ffffff"/>
+  <text x="450" y="34" text-anchor="middle" font-size="24" font-weight="700" fill="#10213d">Same operation. Same authority.</text>
+  <text x="450" y="58" text-anchor="middle" font-size="14" fill="#627089">The caller can change. The trust model does not.</text>
+
+  <g font-size="14" fill="#15233a">
+    <rect x="42" y="104" width="150" height="56" rx="10" fill="#f4f7fb" stroke="#ccd5e3"/><text x="117" y="138" text-anchor="middle">Human</text>
+    <rect x="42" y="180" width="150" height="56" rx="10" fill="#f4f7fb" stroke="#ccd5e3"/><text x="117" y="214" text-anchor="middle">Service</text>
+    <rect x="42" y="256" width="150" height="56" rx="10" fill="#f4f7fb" stroke="#ccd5e3"/><text x="117" y="290" text-anchor="middle">Automation</text>
+    <rect x="42" y="332" width="150" height="56" rx="10" fill="#f4f7fb" stroke="#ccd5e3"/><text x="117" y="366" text-anchor="middle">AI / MCP</text>
+  </g>
+
+  <path d="M192 132 C260 132 252 190 330 190" fill="none" stroke="#2c6ed5" stroke-width="2" marker-end="url(#b)"/>
+  <path d="M192 208 C260 208 252 205 330 205" fill="none" stroke="#2c6ed5" stroke-width="2" marker-end="url(#b)"/>
+  <path d="M192 284 C260 284 252 220 330 220" fill="none" stroke="#2c6ed5" stroke-width="2" marker-end="url(#b)"/>
+  <path d="M192 360 C260 360 252 235 330 235" fill="none" stroke="#2c6ed5" stroke-width="2" marker-end="url(#b)"/>
+
+  <rect x="330" y="126" width="238" height="180" rx="12" fill="#122c57"/>
+  <text x="449" y="157" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff">ForgeOps</text>
+  <text x="449" y="185" text-anchor="middle" font-size="13" fill="#dbe7f7">identity + capability binding</text>
+  <text x="449" y="210" text-anchor="middle" font-size="13" fill="#dbe7f7">policy + approval</text>
+  <text x="449" y="235" text-anchor="middle" font-size="13" fill="#dbe7f7">placement + execution record</text>
+  <text x="449" y="275" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">requester ≠ authority</text>
+
+  <path d="M568 216 L650 216" stroke="#2f8f62" stroke-width="3" marker-end="url(#g)"/>
+
+  <rect x="650" y="104" width="208" height="232" rx="12" fill="#f2f8f4" stroke="#bfd9c8"/>
+  <text x="754" y="132" text-anchor="middle" font-size="13" font-weight="700" fill="#3e6d52" letter-spacing="1">CUSTOMER AUTHORITY</text>
+  <rect x="682" y="156" width="144" height="38" rx="7" fill="#ffffff" stroke="#bfd9c8"/><text x="754" y="180" text-anchor="middle" font-size="13" fill="#15233a">ALLOW</text>
+  <rect x="682" y="210" width="144" height="38" rx="7" fill="#fff9eb" stroke="#e6cf8b"/><text x="754" y="234" text-anchor="middle" font-size="13" fill="#7a5b0b">ASK a person</text>
+  <rect x="682" y="264" width="144" height="38" rx="7" fill="#fff2f2" stroke="#efb7bd"/><text x="754" y="288" text-anchor="middle" font-size="13" fill="#a12a3a">DENY</text>
+
+  <rect x="222" y="388" width="456" height="40" rx="9" fill="#f6f4ff" stroke="#d5caef"/>
+  <text x="450" y="413" text-anchor="middle" font-size="14" font-weight="700" fill="#4b3784">AI can request. It does not inherit approval or customer authority.</text>
+
+  <defs>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2c6ed5"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f8f62"/></marker>
+  </defs>
+</svg>
