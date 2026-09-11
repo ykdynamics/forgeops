@@ -3,6 +3,8 @@
 The reasonable first reaction is that this is a VPN with a nicer UI. Here is the
 actual difference, and the ways it could be got wrong.
 
+![What crosses the customer boundary: operation requests, identity and purpose go in; decisions, results and receipts come back; credentials, secrets, arbitrary commands, inbound routes and standing access do not cross.](../images/trust-boundary.svg)
+
 ## The difference
 
 Remote access grants a **capability to act**, then relies on the actor to act
