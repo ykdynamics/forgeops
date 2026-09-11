@@ -17,10 +17,7 @@ requester holds no route and no credential. If the operation was not authorized,
 there is nothing to misuse — not a policy against misuse, an absence of the
 means.
 
-```text
-standing access     broad capability, narrow use, trust after the fact
-ForgeOps            narrow capability, decided in advance, nothing else granted
-```
+![Standing access grants broad capability and relies on narrow use; ForgeOps requests a narrow capability and requires explicit authority before execution.](../images/remote-access-vs-forgeops.svg)
 
 ## How it could be got wrong
 
