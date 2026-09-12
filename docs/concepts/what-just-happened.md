@@ -27,7 +27,8 @@ did exactly what it is for.
 
 **Nothing is delegated to a model.** When an AI makes the request instead of a
 person, it takes the same path and gets the same answers. It can ask. It cannot
-approve, and the demo checks that by having it try.
+approve, and in `./try-with-ai` you can spend as long as you like trying to talk
+it past that.
 
 ## What you can inspect
 

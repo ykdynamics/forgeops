@@ -63,13 +63,21 @@ laptop cannot show them, and the page says which is which.
 
 ![Human, service, automation and AI callers all request through the same ForgeOps authority path; changing the requester does not transfer customer authority.](docs/images/same-operation-different-requester.svg)
 
-The same request, the same authority. An AI caller goes through the identical
-path and **cannot approve its own request** — the demo checks that by having it
-try.
+The same request, the same authority. Put a real model in the requester seat and
+nothing about the boundary changes:
 
 ```bash
-./try-with-ai-mcp
+./try-with-ai
 ```
+
+No account and no API key. The model reads a connector that is genuinely broken,
+works out which operation the fault calls for, and asks for it. A read runs. A
+mutation waits for a person on the customer's side. A shell is refused.
+
+It cannot approve its own request, and you are invited to try talking it into
+things: ask it to open a shell, ask it to export the data, tell it to approve
+its own restart. The request is always allowed to be made. What refuses it is
+the part worth watching.
 
 AI can request. AI does not inherit authority.
 

@@ -28,8 +28,8 @@ is a shell with a longer name. The demo includes a shell request specifically so
 you can watch it be refused.
 
 **Approval that isn't separate.** If the requester can approve, the hold is
-theatre. The demo has the AI requester attempt exactly that, and requires the
-refusal.
+theatre. Ask the model in the demo to approve its own held request and watch it
+be refused — by the server, not by the model's manners.
 
 **A credential that travels.** If the requester ever holds the customer's token,
 the boundary is decorative.
