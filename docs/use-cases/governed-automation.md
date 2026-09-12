@@ -3,6 +3,8 @@
 A pipeline, scheduler or backend service that must do something consequential in
 an environment it does not own.
 
+![An automation requests one bounded operation through ForgeOps; policy in the target environment decides when it may run and local credentials execute it.](../images/use-case-governed-automation.svg)
+
 The usual answer is a service account with standing permissions, which is the
 same trade as a human's VPN with none of the hesitation — nobody pauses before
 granting a robot broad access, because there is no person to feel uneasy about
