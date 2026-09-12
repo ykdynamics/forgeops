@@ -42,7 +42,8 @@ service, and the denial really leaves it alone.
 ./try-forgeops
 ```
 
-See [demo/](demo/) for the download and what you will see.
+See [demo/](demo/) for the download and exact executable walkthrough, or start
+with the [diagram-first visual walkthrough](demo/VISUAL-GUIDE.md).
 
 ## How it works
 
