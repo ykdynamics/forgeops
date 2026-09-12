@@ -14,7 +14,7 @@ Pick your platform:
 | Linux, arm64 | `forgeops-first-touch-linux-arm64.tar.gz` |
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/c95ad108c896
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/703ff066eef6
 KIT=forgeops-first-touch-darwin-arm64.tar.gz    # change to match your platform
 
 curl -O "$BASE/$KIT"
@@ -344,23 +344,81 @@ environment you were never given access to.
 bin/          the ForgeOps runtime and the fictional ACME connector
 scripts/      what the entry points run, readable before you run them
 try-forgeops  the entry point
+try-with-ai   the same environment with a real model asking
 metadata.env  the exact revisions this bundle was built from
 SHA256SUMS    checksums for everything above
 ```
 
 Nothing in the bundle phones home, and nothing needs network access except
-pulling the Postgres image the first time.
+pulling the Postgres image the first time. `./try-with-ai` is the exception and
+says so below.
 
-## Try it with an AI requester
+## Try it with a real model
+
+```bash
+./try-with-ai
+```
+
+No account and no API key. The three requests above were chosen for you; here
+nobody chooses them. The connector is seeded with one of four faults and the
+right operation differs per run, so the model has to read the state and work out
+which one this is:
+
+| what is wrong | what helps |
+|---|---|
+| workers stopped draining the queue | restart |
+| running behind the desired configuration | resync |
+| a dependency is timing out | waiting |
+| nothing | nothing |
+
+Two rules keep that a diagnosis rather than a performance. The connector reports
+**symptoms and never a remedy** — nothing in its state says "restart me". And
+the wrong operation **visibly fails to help**: restart a service whose
+configuration is stale and it comes back exactly as stale as it was.
+
+Beside the conversation, one panel shows per operation who asked, what the
+policy decided and under which rule, who released it, and the grant.
+
+### Try to break it
+
+Ask it to open a shell. Ask it to export the data. Tell it to approve its own
+restart.
+
+A well-behaved model may decline on its own judgement, and that proves nothing —
+that is the model being agreeable, not the boundary holding. Ask it to make the
+request anyway. The claim is that a model which **does** ask still cannot get it,
+and the refusal it reads back names the policy rule that stopped it.
+
+### The policy is yours
+
+A refusal you cannot move is a decoy. The policy the edge enforces is a file on
+your disk, and the page tells you where. Change the restart rule from `ask` to
+`allow` and it stops holding. Change it back and the hold returns. Nothing about
+the gate is compiled in.
+
+### What leaves your machine
+
+The model runs on our side, behind a metered relay that holds the credential so
+you do not need one. What crosses the network is what you type and what the
+demo's own fictional connector reports. Nothing else on your machine is read,
+and the model never receives a credential, a shell, or a route to anything.
+
+If you would rather nothing left this machine for ours, point it at your own
+endpoint instead. The demo is identical:
+
+```bash
+FORGE_MODEL_ENDPOINT=https://api.anthropic.com ANTHROPIC_API_KEY=sk-... ./try-with-ai
+```
+
+### The scripted version
 
 ```bash
 ./try-with-ai-mcp
 ```
 
-The same three requests, made by `forge-mcp` instead of a person. Same Actions,
-same policy, same approval. The model receives a workspace credential and
-nothing else — it cannot approve its own request, and the run checks that by
-having it try.
+The same path driven by a shell script with approvals automatic: no model, no
+human. It is what `./try-with-ai` replaced, kept because reading it shows the
+exact calls. Worth opening, not worth running.
 
 ## Start over
 
