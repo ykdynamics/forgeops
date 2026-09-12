@@ -32,6 +32,12 @@ demo-three-sides.svg                   demo topology: vendor, ForgeOps and
                                        customer-side processes, including the
                                        edge-opened session
 
+customer-approval.svg                  what a customer actually approves: requester,
+                                       purpose, exact operation, target, once
+
+demo-operation-paths.svg               detailed ALLOW / ASK / DENY execution paths,
+                                       including the held-before-effect boundary
+
 same-operation-different-requester.svg human, service, automation and AI through
                                        one authority model; requester is not
                                        authority
@@ -52,7 +58,8 @@ The diagrams deliberately overlap only at concepts that need reinforcing:
 - the landing image answers **what is ForgeOps?**
 - the problem image answers **why does this need to exist?**
 - the boundary image answers **why is this not remote access?**
-- the demo images answer **what will I actually see?** and **what runs where?**
+- the demo images answer **what will I actually see?**, **what runs where?**,
+  **what exactly is approved?**, and **where does each request stop or execute?**
 - the requester image answers **does AI or automation get a different trust path?**
 - the request path answers **what happens between asking and getting an effect?**
 - the access comparison answers **where is trust placed differently?**
