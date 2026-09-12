@@ -12,9 +12,15 @@ diluting it before.
 
 Read them as *this shape also fits*, not as *we have customers here*. We do not.
 
-```text
-software-vendor.md          the primary wedge
-governed-automation.md      a service or pipeline that needs a real effect
-ai-agent-operations.md      a model that can ask and cannot decide
-sovereign-edge.md           environments the centre cannot reach
-```
+## Start with the closest shape
+
+| Situation | What ForgeOps changes | Page |
+|---|---|---|
+| You ship software into a customer's environment and occasionally need to operate it | replace broad support access with named, customer-governed operations | [Software vendor](software-vendor.md) |
+| A pipeline, scheduler or backend must cause a real effect in another authority domain | let the automation request the effect without owning the target credential or approval rule | [Governed automation](governed-automation.md) |
+| An AI agent can discover or propose an operational action | let the model ask without inheriting approval authority or customer secrets | [AI agent operations](ai-agent-operations.md) |
+| The target sits in a private, regulated or unreachable environment | use an edge-opened outbound session while keeping policy, credentials and execution local | [Sovereign edge](sovereign-edge.md) |
+
+The first three visual walkthroughs deliberately show different requesters and
+environments while preserving the same invariant: **the requester is not the
+authority simply because it can ask.**
