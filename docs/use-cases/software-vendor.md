@@ -2,6 +2,8 @@
 
 The primary case, and the one the demo models.
 
+![A vendor support engineer requests one bounded operation through ForgeOps; customer policy decides and customer-local credentials execute it without VPN, SSH or arbitrary shell access.](../images/use-case-software-vendor.svg)
+
 You ship a connector, agent, appliance or service that runs on your customer's
 infrastructure. It occasionally needs something done to it: a diagnostic read, a
 restart, a bounded fix. You do not control the environment it runs in, and you
