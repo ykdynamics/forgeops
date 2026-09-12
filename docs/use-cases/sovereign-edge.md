@@ -4,6 +4,8 @@ A factory floor, a branch, a ship, a regulated estate, a customer network with n
 inbound path. The common property: something has to happen there, and nothing
 from outside may dial in.
 
+![A central requester sends a bounded operation through ForgeOps over a session opened outward by the private edge; local policy and credentials decide and execute while the target remains unreachable directly.](../images/use-case-sovereign-edge.svg)
+
 ## Why the usual answer does not work
 
 Remote management assumes a route. Where the route is forbidden — by policy, by
