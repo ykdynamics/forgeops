@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 440" width="920" height="440" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+  <rect width="920" height="440" fill="#ffffff"/>
+  <text x="460" y="36" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">Private / sovereign edge — operations without an inbound path</text>
+
+  <rect x="42" y="82" width="250" height="126" rx="10" fill="#f4f7fb" stroke="#ccd3dd"/>
+  <text x="167" y="108" text-anchor="middle" font-size="13" font-weight="700" fill="#445066">CENTRAL SYSTEM</text>
+  <text x="167" y="136" text-anchor="middle" font-size="15" fill="#172033">Operator / service / AI</text>
+  <text x="167" y="162" text-anchor="middle" font-size="13" fill="#68758c">can request an operation</text>
+  <text x="167" y="184" text-anchor="middle" font-size="13" fill="#b23a48">cannot route into the edge</text>
+
+  <rect x="346" y="82" width="220" height="126" rx="10" fill="#15233a"/>
+  <text x="456" y="110" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">FORGEOPS</text>
+  <text x="456" y="138" text-anchor="middle" font-size="13" fill="#d5dfef">holds request + policy state</text>
+  <text x="456" y="162" text-anchor="middle" font-size="13" fill="#d5dfef">relays over edge-opened session</text>
+  <text x="456" y="184" text-anchor="middle" font-size="13" fill="#d5dfef">records result / refusal</text>
+
+  <rect x="628" y="62" width="250" height="166" rx="10" fill="#f2f8f4" stroke="#bcd8c6"/>
+  <text x="753" y="89" text-anchor="middle" font-size="13" font-weight="700" fill="#2f6b46">PRIVATE / SOVEREIGN EDGE</text>
+  <text x="753" y="118" text-anchor="middle" font-size="13" fill="#172033">forge-agent opens outward</text>
+  <text x="753" y="144" text-anchor="middle" font-size="13" fill="#68758c">local policy decides</text>
+  <text x="753" y="168" text-anchor="middle" font-size="13" fill="#68758c">local credential executes</text>
+  <text x="753" y="194" text-anchor="middle" font-size="13" fill="#172033">target remains unreachable directly</text>
+
+  <path d="M292 145 L346 145" stroke="#15233a" stroke-width="2" marker-end="url(#a)"/>
+  <text x="319" y="132" text-anchor="middle" font-size="12" fill="#68758c">request</text>
+
+  <path d="M628 132 C600 112 592 112 566 132" stroke="#2f6b46" stroke-width="2.3" fill="none" marker-end="url(#g)"/>
+  <text x="598" y="96" text-anchor="middle" font-size="12" fill="#2f6b46">session opened outward</text>
+  <path d="M566 170 C592 190 600 190 628 170" stroke="#15233a" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+  <text x="598" y="211" text-anchor="middle" font-size="12" fill="#68758c">request / result on that session</text>
+
+  <line x1="42" y1="258" x2="878" y2="258" stroke="#d8dee8"/>
+  <text x="460" y="292" text-anchor="middle" font-size="13" font-weight="700" fill="#445066">BOUNDARY PROPERTIES</text>
+  <g font-size="14">
+    <text x="160" y="332" text-anchor="middle" fill="#b23a48">✕ no inbound route</text>
+    <text x="360" y="332" text-anchor="middle" fill="#b23a48">✕ no central credential</text>
+    <text x="560" y="332" text-anchor="middle" fill="#2f6b46">✓ local authority</text>
+    <text x="760" y="332" text-anchor="middle" fill="#2f6b46">✓ local execution</text>
+  </g>
+  <text x="460" y="382" text-anchor="middle" font-size="16" font-weight="700" fill="#172033">The centre can ask. The edge remains sovereign enough to refuse.</text>
+
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#15233a"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f6b46"/></marker>
+  </defs>
+</svg>
