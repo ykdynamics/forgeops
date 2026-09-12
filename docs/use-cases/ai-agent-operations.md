@@ -3,6 +3,8 @@
 The interesting property when an AI is the requester is not that it can act. It
 is that **its authority does not grow because it asked convincingly.**
 
+![Human, service, automation and AI callers all go through the same ForgeOps authority path; changing the requester does not transfer customer authority.](../images/same-operation-different-requester.svg)
+
 ## What is actually true here
 
 An AI caller reaches the same path as any other requester. It receives a
