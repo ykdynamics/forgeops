@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 690" width="1120" height="690" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+  <rect width="1120" height="690" fill="#ffffff"/>
+  <text x="60" y="56" font-size="28" font-weight="700" fill="#0f172a">Three operation paths through the same authority model</text>
+  <text x="60" y="86" font-size="15" fill="#475569">The request path is the same. Customer policy decides where execution stops or proceeds.</text>
+
+  <g transform="translate(60,120)">
+    <rect width="1000" height="150" rx="18" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <circle cx="40" cy="40" r="18" fill="#15803d"/>
+    <text x="40" y="46" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">1</text>
+    <text x="74" y="42" font-size="20" font-weight="700" fill="#14532d">Diagnostics — ALLOW</text>
+    <text x="74" y="68" font-size="14" fill="#475569">Low-risk read operation. Nobody is asked.</text>
+    <text x="74" y="112" font-size="15" fill="#0f172a">Requester → Platform → Control → Edge → Policy: ALLOW → acme-service-status → target state → result</text>
+    <text x="74" y="136" font-size="13" fill="#166534">Effect: returns pending_jobs=17, config=v4, restart_count unchanged.</text>
+  </g>
+
+  <g transform="translate(60,290)">
+    <rect width="1000" height="200" rx="18" fill="#fffbeb" stroke="#fde68a"/>
+    <circle cx="40" cy="40" r="18" fill="#d97706"/>
+    <text x="40" y="46" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">2</text>
+    <text x="74" y="42" font-size="20" font-weight="700" fill="#92400e">Restart — ASK</text>
+    <text x="74" y="68" font-size="14" fill="#475569">The action reaches the customer side, then stops before any target effect.</text>
+    <text x="74" y="108" font-size="15" fill="#0f172a">Requester → Platform → Control → Edge → Policy: ASK → proposal to customer human</text>
+    <line x1="74" y1="128" x2="900" y2="128" stroke="#d97706" stroke-width="1.5" stroke-dasharray="7 6"/>
+    <text x="487" y="151" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">HELD HERE — NOTHING HAS RUN</text>
+    <text x="74" y="176" font-size="15" fill="#0f172a">Approve → bounded restart capability → edge-local credential → ACME connector → restart_count 0 → 1 → receipt</text>
+  </g>
+
+  <g transform="translate(60,510)">
+    <rect width="1000" height="140" rx="18" fill="#fef2f2" stroke="#fecaca"/>
+    <circle cx="40" cy="40" r="18" fill="#dc2626"/>
+    <text x="40" y="46" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">3</text>
+    <text x="74" y="42" font-size="20" font-weight="700" fill="#991b1b">Shell — DENY</text>
+    <text x="74" y="68" font-size="14" fill="#475569">Policy refuses the operation. There is no negotiation path to execution.</text>
+    <text x="74" y="108" font-size="15" fill="#0f172a">Requester → Platform → Control → Edge → Policy: DENY → refused</text>
+    <text x="74" y="132" font-size="13" fill="#b91c1c">Effect: no capability runs, no target change, restart_count unchanged.</text>
+  </g>
+</svg>
