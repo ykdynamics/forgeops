@@ -149,6 +149,13 @@ property applies equally to software, automation, humans and models:
 
 > **The ability to request an operation is not the authority to perform arbitrary operations.**
 
+## Have an AI-operated use case like this?
+
+If a real system you operate has an AI or automation requester but the customer
+should retain final authority, tell us the exact operation and current workaround:
+
+**[Tell us about the operation](https://ykdynamics.com/en/forgeops)**
+
 ## Go deeper
 
 - [Run the basic ALLOW / ASK / DENY demo first](README.md).
