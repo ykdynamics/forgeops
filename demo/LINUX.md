@@ -26,8 +26,8 @@ curl -O "$BASE/$KIT"
 curl -O "$BASE/$KIT.sha256"
 sha256sum -c "$KIT.sha256"
 
-tar -xzf "$KIT"
-cd "$(tar -tzf "$KIT" | head -1 | cut -d/ -f1)"
+tar --exclude='._*' -xzf "$KIT"
+cd "$(tar -tzf "$KIT" 2>/dev/null | cut -d/ -f1 | grep -v '^\._' | head -1)"
 ./try-forgeops
 ```
 
@@ -41,8 +41,8 @@ curl -O "$BASE/$KIT"
 curl -O "$BASE/$KIT.sha256"
 sha256sum -c "$KIT.sha256"
 
-tar -xzf "$KIT"
-cd "$(tar -tzf "$KIT" | head -1 | cut -d/ -f1)"
+tar --exclude='._*' -xzf "$KIT"
+cd "$(tar -tzf "$KIT" 2>/dev/null | cut -d/ -f1 | grep -v '^\._' | head -1)"
 ./try-forgeops
 ```
 
