@@ -106,6 +106,18 @@ same Action, placement and customer-side policy path. Start with
 [`examples/inventory-check/`](examples/inventory-check/) and the
 [adapt-an-operation walkthrough](examples/).
 
+## Have a real operation like this?
+
+Try ForgeOps anonymously first. If the demo or your own capability resembles a
+real operation you need inside a customer environment, tell us about that
+operation — not just that you liked the demo.
+
+**[Tell us about the operation](https://ykdynamics.com/en/forgeops)**
+
+The short evaluator form asks what runs on the customer side, what operation you
+need, how you handle it today, and who should have final authority. It is not a
+mailing-list signup and it is not required to download or run ForgeOps.
+
 ## Where else this fits
 
 Software vendors operating what they shipped is the sharpest version of the
