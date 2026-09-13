@@ -3,15 +3,18 @@
 If something in the demo matched a real problem you have, this is the useful
 conversation — more useful to us than any amount of interest in the demo itself.
 
-You do not need to write to us to try ForgeOps. The demo is a
+You do not need to identify yourself to try ForgeOps. The demo is a
 [plain download](demo/), no account and no form. This page is for the step
-after it: you have an operation of your own in mind, and want to know whether
-it fits.
+after it: you have an operation of your own in mind and want to know whether it
+fits.
 
-Email **forgeops@ykdynamics.com** with the subject `ForgeOps — operation`.
+## Tell us about the operation
 
-Four questions. Rough answers are fine; we would rather have four imprecise
-answers than one polished paragraph.
+Use the short evaluator form:
+
+**https://ykdynamics.com/en/forgeops**
+
+It asks for your email and four things about the problem:
 
 1. **What software do you operate inside your customers' environments?**
    The thing that runs on their side, not what you sell.
@@ -29,13 +32,20 @@ answers than one polished paragraph.
    Their admin, their security team, an on-call engineer, or you under a
    contract term. Whoever would actually have to be comfortable.
 
+Rough answers are fine. We would rather have four imprecise answers than one
+polished paragraph.
+
+Prefer email? Send the same four answers to **forgeops@ykdynamics.com** with the
+subject `ForgeOps — operation`.
+
 ## What happens then
 
-A person reads it and replies — normally within two working days. If it looks
-like a fit we will ask to talk, and if it does not we will say so and why. A
-clear no is worth more to you than a courteous maybe.
+A person building ForgeOps reads the submission. If it looks like a fit, the
+next useful step is usually a short technical conversation or a real-edge
+evaluation. If it does not fit, we would rather say so directly and explain why.
 
-This address is read by the people building ForgeOps, not by a sales function.
+The form is not a mailing-list signup and submitting it does not create a
+ForgeOps account. The demo remains anonymous and ungated.
 
 ## Telling us it does not fit
 
