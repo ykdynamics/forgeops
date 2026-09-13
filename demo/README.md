@@ -7,7 +7,7 @@ No account, no email, no form. Download it and run it.
 ```text
 Docker           running (the demo starts a Postgres container)
 curl, python3, lsof, bash
-ports free       8010-8012, 8080, 8089, 8093-8095, 18054-18056, 55454
+ports free       8010-8012, 8080, 8089, 8093-8095, 18054-18057, 55454
 about 1 GB       the kit plus the Postgres image on first run
 ```
 
@@ -30,7 +30,7 @@ Pick your platform:
 | Linux, arm64 | `forgeops-first-touch-linux-arm64.tar.gz` |
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/43e73135b8e0
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/ee8dd5960d02
 KIT=forgeops-first-touch-darwin-arm64.tar.gz    # change to match your platform
 
 curl -O "$BASE/$KIT"
@@ -394,6 +394,15 @@ configuration is stale and it comes back exactly as stale as it was.
 
 Beside the conversation, one panel shows per operation who asked, what the
 policy decided and under which rule, who released it, and the grant.
+
+You approve in the **real ForgeOps Approval PWA**, the same surface used outside
+this demo. The terminal prints a link to it. The decision you make there goes to
+the API that surface always calls: the server derives who you are from your
+session, refuses anything without the approver role, and signs the grant the
+edge verifies. The only concession to a laptop is how you got the session — the
+link carries a one-time one for a `customer-approver` identity distinct from the
+model's, because the demo has no identity provider to sign you in against.
+[The AI walkthrough](AI.md) separates that out in full.
 
 ### Try to break it
 
