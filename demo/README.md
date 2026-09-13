@@ -30,7 +30,7 @@ Pick your platform:
 | Linux, arm64 | `forgeops-first-touch-linux-arm64.tar.gz` |
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/b8f291a8f57d
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/8938c080240a
 KIT=forgeops-first-touch-darwin-arm64.tar.gz    # change to match your platform
 
 curl -O "$BASE/$KIT"
@@ -38,7 +38,7 @@ curl -O "$BASE/$KIT.sha256"
 shasum -a 256 -c "$KIT.sha256"
 
 tar -xzf "$KIT"
-cd forgeops-first-touch-*
+cd "$(tar -tzf "$KIT" | head -1 | cut -d/ -f1)"
 ./try-forgeops
 ```
 

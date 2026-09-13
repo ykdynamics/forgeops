@@ -1,0 +1,15 @@
+{
+  "name": "ForgeOps Approvals",
+  "short_name": "Approvals",
+  "description": "Approve and reject ForgeOps agent proposals from your phone. Model proposes, you authorise, ForgeOps acts.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "lang": "en",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
