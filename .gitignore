@@ -1,0 +1,7 @@
+# Downloaded evaluation kits. This is the page that tells people how to download
+# and extract one, so the obvious place to try it is right here -- and a kit is
+# a 300MB directory of binaries. One was committed to a PR against this public
+# repo before this file existed.
+forgeops-first-touch-*/
+forgeops-first-touch-*.tar.gz
+forgeops-first-touch-*.tar.gz.sha256
