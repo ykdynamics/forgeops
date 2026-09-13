@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" width="1100" height="620" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+  <rect width="1100" height="620" fill="#ffffff"/>
+
+  <text x="550" y="42" text-anchor="middle" font-size="28" font-weight="700" fill="#10213d">AI can reason. Authority stays elsewhere.</text>
+  <text x="550" y="70" text-anchor="middle" font-size="15" fill="#627089">The model can choose what to request. It cannot decide what is allowed to happen.</text>
+
+  <rect x="42" y="126" width="190" height="120" rx="14" fill="#f4f7fb" stroke="#ccd5e3"/>
+  <text x="137" y="157" text-anchor="middle" font-size="13" font-weight="700" fill="#627089" letter-spacing="1">USER</text>
+  <text x="137" y="191" text-anchor="middle" font-size="17" font-weight="700" fill="#15233a">“The connector</text>
+  <text x="137" y="216" text-anchor="middle" font-size="17" font-weight="700" fill="#15233a">isn't syncing.”</text>
+
+  <path d="M232 186 L300 186" stroke="#2c6ed5" stroke-width="3" marker-end="url(#blue)"/>
+
+  <rect x="300" y="104" width="220" height="164" rx="14" fill="#f6f4ff" stroke="#d5caef"/>
+  <text x="410" y="137" text-anchor="middle" font-size="20" font-weight="700" fill="#4b3784">AI requester</text>
+  <text x="410" y="171" text-anchor="middle" font-size="14" fill="#473d60">reads symptoms</text>
+  <text x="410" y="198" text-anchor="middle" font-size="14" fill="#473d60">diagnoses the fault</text>
+  <text x="410" y="225" text-anchor="middle" font-size="14" fill="#473d60">chooses an operation</text>
+  <text x="410" y="250" text-anchor="middle" font-size="13" font-weight="700" fill="#4b3784">requests — does not authorize</text>
+
+  <path d="M520 186 L598 186" stroke="#2c6ed5" stroke-width="3" marker-end="url(#blue)"/>
+  <text x="559" y="171" text-anchor="middle" font-size="12" fill="#627089">restart</text>
+
+  <rect x="598" y="104" width="220" height="164" rx="14" fill="#122c57"/>
+  <text x="708" y="137" text-anchor="middle" font-size="20" font-weight="700" fill="#ffffff">ForgeOps</text>
+  <text x="708" y="171" text-anchor="middle" font-size="14" fill="#dbe7f7">bind requester</text>
+  <text x="708" y="198" text-anchor="middle" font-size="14" fill="#dbe7f7">operation + target</text>
+  <text x="708" y="225" text-anchor="middle" font-size="14" fill="#dbe7f7">record the Action</text>
+  <text x="708" y="250" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">requester ≠ authority</text>
+
+  <path d="M818 186 L876 186" stroke="#2f8f62" stroke-width="3" marker-end="url(#green)"/>
+
+  <rect x="876" y="92" width="182" height="188" rx="14" fill="#f2f8f4" stroke="#bfd9c8"/>
+  <text x="967" y="123" text-anchor="middle" font-size="12" font-weight="700" fill="#3e6d52" letter-spacing="1">CUSTOMER AUTHORITY</text>
+  <rect x="904" y="145" width="126" height="32" rx="7" fill="#ffffff" stroke="#bfd9c8"/>
+  <text x="967" y="166" text-anchor="middle" font-size="13" fill="#15233a">ALLOW</text>
+  <rect x="904" y="188" width="126" height="32" rx="7" fill="#fff9eb" stroke="#e6cf8b"/>
+  <text x="967" y="209" text-anchor="middle" font-size="13" fill="#7a5b0b">ASK a person</text>
+  <rect x="904" y="231" width="126" height="32" rx="7" fill="#fff2f2" stroke="#efb7bd"/>
+  <text x="967" y="252" text-anchor="middle" font-size="13" fill="#a12a3a">DENY</text>
+
+  <path d="M967 280 L967 354" stroke="#2f8f62" stroke-width="3" marker-end="url(#green)"/>
+  <text x="989" y="324" font-size="12" fill="#627089">approve</text>
+
+  <rect x="790" y="354" width="268" height="146" rx="14" fill="#f7faf8" stroke="#bfd9c8"/>
+  <text x="924" y="386" text-anchor="middle" font-size="13" font-weight="700" fill="#3e6d52" letter-spacing="1">CUSTOMER ENVIRONMENT</text>
+  <text x="924" y="420" text-anchor="middle" font-size="20" font-weight="700" fill="#15233a">ACME Sync Connector</text>
+  <text x="924" y="452" text-anchor="middle" font-size="15" fill="#15233a">pending jobs 17 → 0</text>
+  <text x="924" y="479" text-anchor="middle" font-size="15" fill="#15233a">restart count 0 → 1</text>
+
+  <rect x="42" y="330" width="680" height="170" rx="14" fill="#fbfcfe" stroke="#d6deea"/>
+  <text x="72" y="365" font-size="14" font-weight="700" fill="#10213d">Changing the prompt does not change the authority</text>
+
+  <text x="72" y="405" font-size="14" fill="#15233a">AI requests diagnostics</text>
+  <text x="352" y="405" font-size="14" font-weight="700" fill="#2f8f62">ALLOW</text>
+  <text x="72" y="438" font-size="14" fill="#15233a">AI requests restart</text>
+  <text x="352" y="438" font-size="14" font-weight="700" fill="#7a5b0b">ASK → customer decides</text>
+  <text x="72" y="471" font-size="14" fill="#15233a">AI requests shell / export</text>
+  <text x="352" y="471" font-size="14" font-weight="700" fill="#a12a3a">DENY</text>
+
+  <rect x="214" y="540" width="672" height="48" rx="10" fill="#122c57"/>
+  <text x="550" y="570" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">AI chooses what to request. Customer authority decides what may actually happen.</text>
+
+  <defs>
+    <marker id="blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2c6ed5"/></marker>
+    <marker id="green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2f8f62"/></marker>
+  </defs>
+</svg>
