@@ -35,8 +35,11 @@ perform arbitrary ones.**
 
 The demo is a plain download — no account, no email, no form. It runs a fictional
 customer connector on your own machine and walks the three outcomes above,
-including the refusal. Nothing is simulated: the restart really restarts the
-service, and the denial really leaves it alone.
+including the refusal.
+
+**The customer system is synthetic. The operation is not.** Diagnostics read its
+real state, approval really gates the restart, and a denied operation produces
+no target effect.
 
 ```bash
 ./try-forgeops
@@ -59,27 +62,35 @@ The local demo runs on one machine, produces no semantic verification, and
 carries no artifact identity. Those properties are real and hold elsewhere; the
 laptop cannot show them, and the page says which is which.
 
-## Humans, automation and AI
+## Put an AI in the requester seat
 
-![Human, service, automation and AI callers all request through the same ForgeOps authority path; changing the requester does not transfer customer authority.](docs/images/same-operation-different-requester.svg)
+![An AI diagnoses a fictional connector, requests one bounded operation through ForgeOps, and customer authority still decides whether anything executes.](docs/images/ai-diagnose-request.svg)
 
-The same request, the same authority. Put a real model in the requester seat and
-nothing about the boundary changes:
+**AI can reason about what to do. It does not decide what it is allowed to do.**
+
+The model receives symptoms from a connector whose fault changes between runs,
+works out whether restart, resync, waiting or no action makes sense, and requests
+one bounded operation through the same ForgeOps path:
 
 ```bash
 ./try-with-ai
 ```
 
-No account and no API key. The model reads a connector that is genuinely broken,
-works out which operation the fault calls for, and asks for it. A read runs. A
-mutation waits for a person on the customer's side. A shell is refused.
+A read can run. A mutation can wait for a person on the customer's side. A shell
+or data-export request can be refused. The model is deliberately outside the
+security boundary: changing the prompt does not change the customer's policy or
+let the model approve itself.
 
-It cannot approve its own request, and you are invited to try talking it into
-things: ask it to open a shell, ask it to export the data, tell it to approve
-its own restart. The request is always allowed to be made. What refuses it is
-the part worth watching.
+**AI can request. AI does not inherit authority.**
 
-AI can request. AI does not inherit authority.
+See [the AI demo walkthrough](demo/AI.md) for the diagnosis cases, adversarial
+prompts, and exactly what leaves your machine.
+
+## Humans, services and automation use the same path
+
+![Human, service, automation and AI callers all request through the same ForgeOps authority path; changing the requester does not transfer customer authority.](docs/images/same-operation-different-requester.svg)
+
+The caller can change. The trust model does not.
 
 ## Bring your own operation
 
