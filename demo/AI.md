@@ -93,6 +93,8 @@ That distinction is the point:
 
 ## Where you decide
 
+![The AI requester creates the normal ForgeOps Action; an ASK decision holds it until a customer reviews the exact bound operation in the real Approval PWA, after which the customer-side edge may execute it with local credentials.](../docs/images/ai-pwa-approval-flow.svg)
+
 The terminal prints a link to the **ForgeOps Approval PWA** — the real approval
 surface, the same one used outside this demo, not a page written for it. Open
 it, read what the operation is bound to, and approve or reject.
