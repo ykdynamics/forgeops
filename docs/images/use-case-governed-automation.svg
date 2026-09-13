@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 430" width="920" height="430" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+  <rect width="920" height="430" fill="#ffffff"/>
+  <text x="460" y="36" text-anchor="middle" font-size="22" font-weight="700" fill="#172033">Automation that can trigger a real effect — without owning the target</text>
+
+  <rect x="40" y="76" width="220" height="126" rx="10" fill="#f4f7fb" stroke="#ccd3dd"/>
+  <text x="150" y="102" text-anchor="middle" font-size="13" font-weight="700" fill="#445066">AUTOMATION</text>
+  <text x="150" y="130" text-anchor="middle" font-size="15" fill="#172033">Pipeline / scheduler</text>
+  <text x="150" y="154" text-anchor="middle" font-size="13" fill="#68758c">detects a condition</text>
+  <text x="150" y="178" text-anchor="middle" font-size="13" fill="#68758c">requests service.restart</text>
+
+  <path d="M260 139 L350 139" stroke="#15233a" stroke-width="2" marker-end="url(#a)"/>
+  <text x="305" y="126" text-anchor="middle" font-size="12" fill="#68758c">one operation</text>
+
+  <rect x="350" y="76" width="220" height="126" rx="10" fill="#15233a"/>
+  <text x="460" y="104" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">FORGEOPS</text>
+  <text x="460" y="132" text-anchor="middle" font-size="13" fill="#d5dfef">identity + exact capability</text>
+  <text x="460" y="154" text-anchor="middle" font-size="13" fill="#d5dfef">target + policy revision</text>
+  <text x="460" y="178" text-anchor="middle" font-size="13" fill="#d5dfef">record before effect</text>
+
+  <path d="M570 139 L660 139" stroke="#15233a" stroke-width="2" marker-end="url(#a)"/>
+  <text x="615" y="126" text-anchor="middle" font-size="12" fill="#68758c">governed request</text>
+
+  <rect x="660" y="60" width="220" height="158" rx="10" fill="#f2f8f4" stroke="#bcd8c6"/>
+  <text x="770" y="87" text-anchor="middle" font-size="13" font-weight="700" fill="#2f6b46">TARGET ENVIRONMENT</text>
+  <text x="770" y="116" text-anchor="middle" font-size="13" fill="#172033">policy decides here</text>
+  <text x="770" y="142" text-anchor="middle" font-size="13" fill="#68758c">business hours → ALLOW</text>
+  <text x="770" y="166" text-anchor="middle" font-size="13" fill="#68758c">outside window → ASK</text>
+  <text x="770" y="190" text-anchor="middle" font-size="13" fill="#172033">local credential executes</text>
+
+  <line x1="40" y1="248" x2="880" y2="248" stroke="#d8dee8"/>
+  <text x="460" y="282" text-anchor="middle" font-size="13" font-weight="700" fill="#445066">THE AUTOMATION DOES NOT NEED</text>
+  <g font-size="14" fill="#b23a48">
+    <text x="170" y="322" text-anchor="middle">✕ standing service-account rights</text>
+    <text x="460" y="322" text-anchor="middle">✕ target credentials</text>
+    <text x="745" y="322" text-anchor="middle">✕ logic for who may approve</text>
+  </g>
+
+  <text x="460" y="372" text-anchor="middle" font-size="16" font-weight="700" fill="#172033">Timing can vary. Authority stays with the target environment.</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#15233a"/></marker></defs>
+</svg>

@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 560" width="1180" height="560" font-family="system-ui,-apple-system,Segoe UI,sans-serif">
+  <rect width="1180" height="560" rx="24" fill="#f8fbff"/>
+  <text x="590" y="48" text-anchor="middle" font-size="30" font-weight="700" fill="#102a43">AI can request. A customer still decides.</text>
+  <text x="590" y="80" text-anchor="middle" font-size="16" fill="#5d7288">The first-touch AI demo exercises the real Approval PWA on the same governed Action path.</text>
+
+  <rect x="42" y="126" width="190" height="150" rx="16" fill="#f6f4ff" stroke="#d5caef" stroke-width="2"/>
+  <text x="137" y="160" text-anchor="middle" font-size="13" font-weight="700" fill="#6c55a2" letter-spacing="1">REQUESTER</text>
+  <text x="137" y="197" text-anchor="middle" font-size="22" font-weight="700" fill="#3f2d73">AI model</text>
+  <text x="137" y="228" text-anchor="middle" font-size="14" fill="#53476e">reads symptoms</text>
+  <text x="137" y="252" text-anchor="middle" font-size="14" fill="#53476e">requests restart</text>
+
+  <path d="M232 201 H306" stroke="#2563eb" stroke-width="4" marker-end="url(#blue)"/>
+  <text x="269" y="185" text-anchor="middle" font-size="12" fill="#5d7288">Action</text>
+
+  <rect x="306" y="126" width="210" height="150" rx="16" fill="#122c57"/>
+  <text x="411" y="160" text-anchor="middle" font-size="13" font-weight="700" fill="#bdd7ff" letter-spacing="1">FORGEOPS</text>
+  <text x="411" y="197" text-anchor="middle" font-size="22" font-weight="700" fill="#ffffff">Bind the request</text>
+  <text x="411" y="228" text-anchor="middle" font-size="14" fill="#dbe7f7">requester + capability</text>
+  <text x="411" y="252" text-anchor="middle" font-size="14" fill="#dbe7f7">revision + target + purpose</text>
+
+  <path d="M516 201 H590" stroke="#2563eb" stroke-width="4" marker-end="url(#blue)"/>
+
+  <rect x="590" y="112" width="208" height="178" rx="16" fill="#fff9eb" stroke="#e7cf86" stroke-width="2"/>
+  <text x="694" y="146" text-anchor="middle" font-size="13" font-weight="700" fill="#8a680d" letter-spacing="1">CUSTOMER POLICY</text>
+  <rect x="620" y="168" width="148" height="32" rx="8" fill="#ecfdf5"/>
+  <text x="694" y="190" text-anchor="middle" font-size="13" font-weight="700" fill="#0f7b51">ALLOW</text>
+  <rect x="620" y="210" width="148" height="32" rx="8" fill="#fff3c4" stroke="#e7cf86"/>
+  <text x="694" y="232" text-anchor="middle" font-size="13" font-weight="700" fill="#8a680d">ASK</text>
+  <rect x="620" y="252" width="148" height="32" rx="8" fill="#fff1f2"/>
+  <text x="694" y="274" text-anchor="middle" font-size="13" font-weight="700" fill="#b23a48">DENY</text>
+
+  <path d="M694 290 V342" stroke="#d29a17" stroke-width="4" marker-end="url(#gold)"/>
+  <text x="712" y="323" font-size="12" fill="#7a5b0b">held</text>
+
+  <rect x="555" y="342" width="278" height="146" rx="16" fill="#ffffff" stroke="#bcd8c6" stroke-width="2"/>
+  <text x="694" y="375" text-anchor="middle" font-size="13" font-weight="700" fill="#3e6d52" letter-spacing="1">CUSTOMER APPROVAL PWA</text>
+  <text x="694" y="410" text-anchor="middle" font-size="18" font-weight="700" fill="#102a43">Review one bound operation</text>
+  <text x="694" y="439" text-anchor="middle" font-size="14" fill="#526b5c">requester · reason · capability · target</text>
+  <rect x="590" y="454" width="90" height="30" rx="8" fill="#fff1f2" stroke="#efb7bd"/>
+  <text x="635" y="474" text-anchor="middle" font-size="13" font-weight="700" fill="#a12a3a">Reject</text>
+  <rect x="708" y="454" width="90" height="30" rx="8" fill="#ecfdf5" stroke="#bcd8c6"/>
+  <text x="753" y="474" text-anchor="middle" font-size="13" font-weight="700" fill="#0f7b51">Approve</text>
+
+  <path d="M833 415 H903" stroke="#0f9f6e" stroke-width="4" marker-end="url(#green)"/>
+  <text x="868" y="397" text-anchor="middle" font-size="12" fill="#526b5c">signed grant</text>
+
+  <rect x="903" y="342" width="235" height="146" rx="16" fill="#f2f8f4" stroke="#bcd8c6" stroke-width="2"/>
+  <text x="1020" y="375" text-anchor="middle" font-size="13" font-weight="700" fill="#3e6d52" letter-spacing="1">CUSTOMER ENVIRONMENT</text>
+  <text x="1020" y="410" text-anchor="middle" font-size="20" font-weight="700" fill="#102a43">Edge + capability</text>
+  <text x="1020" y="440" text-anchor="middle" font-size="14" fill="#526b5c">uses customer-local credential</text>
+  <text x="1020" y="466" text-anchor="middle" font-size="14" fill="#526b5c">executes target exactly once</text>
+
+  <path d="M1020 342 V290" stroke="#0f9f6e" stroke-width="3" marker-end="url(#greenUp)"/>
+  <text x="1042" y="321" font-size="12" fill="#526b5c">result</text>
+
+  <rect x="872" y="126" width="266" height="150" rx="16" fill="#ffffff" stroke="#d6e2f0" stroke-width="2"/>
+  <text x="1005" y="160" text-anchor="middle" font-size="13" font-weight="700" fill="#5d7288" letter-spacing="1">OUTCOME</text>
+  <text x="1005" y="197" text-anchor="middle" font-size="20" font-weight="700" fill="#102a43">Effect or refusal</text>
+  <text x="1005" y="228" text-anchor="middle" font-size="14" fill="#526b5c">receipt returns through ForgeOps</text>
+  <text x="1005" y="252" text-anchor="middle" font-size="14" fill="#526b5c">requester never receives the secret</text>
+
+  <rect x="42" y="342" width="430" height="146" rx="16" fill="#fff1f2"/>
+  <text x="70" y="378" font-size="15" font-weight="700" fill="#8d2634">What the AI still cannot do</text>
+  <text x="70" y="411" font-size="14" fill="#6f3740">• approve itself</text>
+  <text x="70" y="438" font-size="14" fill="#6f3740">• widen customer policy</text>
+  <text x="70" y="465" font-size="14" fill="#6f3740">• obtain the customer credential or a shell</text>
+
+  <defs>
+    <marker id="blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker>
+    <marker id="green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0f9f6e"/></marker>
+    <marker id="greenUp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0f9f6e"/></marker>
+    <marker id="gold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#d29a17"/></marker>
+  </defs>
+</svg>

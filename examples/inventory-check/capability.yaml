@@ -1,0 +1,18 @@
+name: inventory.check
+revision: 1
+description: Read one bounded piece of inventory state from the demo target.
+
+input:
+  service: string
+
+effect:
+  mutation: false
+
+# The local first-touch demo resolves this target name and binds the capability
+# to the same customer-side edge that runs the built-in ACME operations.
+targets:
+  - kind: service
+    names: [acme-service]
+
+# Leave this as a read for the worked example. Change mutation to true in your
+# own operation and the first-touch harness defaults the decision to ASK.
