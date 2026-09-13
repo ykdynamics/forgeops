@@ -45,7 +45,8 @@ no target effect.
 ./try-forgeops
 ```
 
-See [demo/](demo/) for the download and exact executable walkthrough, or start
+See [demo/](demo/) for the download and exact executable walkthrough. If you are
+starting on Linux, use the [Linux tester quick start](demo/LINUX.md). Or start
 with the [diagram-first visual walkthrough](demo/VISUAL-GUIDE.md).
 
 ## How it works
@@ -83,8 +84,8 @@ let the model approve itself.
 
 **AI can request. AI does not inherit authority.**
 
-See [the AI demo walkthrough](demo/AI.md) for the diagnosis cases, adversarial
-prompts, and exactly what leaves your machine.
+See [the AI demo walkthrough](demo/AI.md) for the diagnosis cases, the real
+Approval PWA step, adversarial prompts, and exactly what leaves your machine.
 
 ## Humans, services and automation use the same path
 
