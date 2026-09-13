@@ -72,7 +72,7 @@ Pick your platform:
 | Linux, arm64 | `forgeops-first-touch-linux-arm64.tar.gz` |
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/8938c080240a
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/d5c50a10e10f
 KIT=forgeops-first-touch-darwin-arm64.tar.gz    # change to match your platform
 
 curl -O "$BASE/$KIT"
