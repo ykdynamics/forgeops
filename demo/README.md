@@ -30,7 +30,7 @@ Pick your platform:
 | Linux, arm64 | `forgeops-first-touch-linux-arm64.tar.gz` |
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/ee8dd5960d02
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/bd54a42b29c0
 KIT=forgeops-first-touch-darwin-arm64.tar.gz    # change to match your platform
 
 curl -O "$BASE/$KIT"
@@ -98,12 +98,12 @@ OK: diagnostics completed; target says pending_jobs=17 config=v4 restart_count=0
 
 == B/C. restart ASK holds, then browser approval releases one real effect ==
 
-Open http://127.0.0.1:18054/ and click Approve for proposal prop-82f3283c9e76.
+Open http://127.0.0.1:18057/#ft=... and approve proposal prop-82f3283c9e76.
 OK: restart approved and executed exactly once; receipt=action:act-058b53b992fe
 
 == D. denying a held restart produces zero target effect ==
 
-Open http://127.0.0.1:18054/ and click Deny for proposal prop-c6d44e5a2257.
+Open http://127.0.0.1:18057/#ft=... and reject proposal prop-c6d44e5a2257.
 OK: denied restart ended denied and produced zero target effect
 
 == E. shell access DENY refuses by policy with zero effect ==
@@ -120,9 +120,15 @@ has reached the customer side and cannot go further without a decision.
 
 ## The page where the decision is made
 
-`http://127.0.0.1:18054/` is the customer's surface, not yours. It opens on the
-same laptop for convenience; the authority it represents is the other side of
-the boundary.
+The link the terminal prints opens the **ForgeOps Approval PWA** — the real
+approval surface, the same one used outside this demo. It is the customer's
+surface, not yours. It opens on the same laptop for convenience; the authority
+it represents is the other side of the boundary.
+
+The link carries a one-time session, because the surface normally signs in
+against an identity provider and this demo has none. The page strips it from
+the address bar as soon as it loads. [The AI walkthrough](AI.md) separates what
+that does and does not skip.
 
 ```text
   +--------------------------------------------------------------+
@@ -176,7 +182,7 @@ only talk through ForgeOps. No process reaches across a line.
   :                              v                                         :
   :  CUSTOMER SIDE           the environment you are NOT given access to    :
   :    forge-agent           the edge. holds the policy and the secret      :
-  :    approval page :18054  where a human allows or refuses                :
+  :    approval PWA :18057   where a human allows or refuses                :
   :                              |                                         :
   :                              v                                         :
   :    acme-service-status   capability: read state                        :
@@ -315,8 +321,8 @@ forgectl ---> api ---> forge-control ---> forge-agent
                                               |
                           the action stops here. nothing runs.
                                               |
-                          you open http://127.0.0.1:18054/
-                          and approve AS THE CUSTOMER, not as the requester
+                     you open the approval PWA on :18057
+                     and approve AS THE CUSTOMER, not as the requester
                                               |
                                               v
                                    acme-service-restart
