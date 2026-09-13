@@ -401,6 +401,10 @@ configuration is stale and it comes back exactly as stale as it was.
 Beside the conversation, one panel shows per operation who asked, what the
 policy decided and under which rule, who released it, and the grant.
 
+[The AI walkthrough](AI.md) has five messages that reach every part of this,
+starting with the one that gets the model to diagnose. The page offers each as a
+button, so you can click rather than type.
+
 You approve in the **real ForgeOps Approval PWA**, the same surface used outside
 this demo. The terminal prints a link to it. The decision you make there goes to
 the API that surface always calls: the server derives who you are from your
