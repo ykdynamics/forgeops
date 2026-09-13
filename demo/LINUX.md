@@ -27,7 +27,7 @@ curl -O "$BASE/$KIT.sha256"
 sha256sum -c "$KIT.sha256"
 
 tar -xzf "$KIT"
-cd forgeops-first-touch-*
+cd "$(tar -tzf "$KIT" | head -1 | cut -d/ -f1)"
 ./try-forgeops
 ```
 
@@ -42,7 +42,7 @@ curl -O "$BASE/$KIT.sha256"
 sha256sum -c "$KIT.sha256"
 
 tar -xzf "$KIT"
-cd forgeops-first-touch-*
+cd "$(tar -tzf "$KIT" | head -1 | cut -d/ -f1)"
 ./try-forgeops
 ```
 

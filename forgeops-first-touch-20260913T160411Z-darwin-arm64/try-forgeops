@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORK="${FIRST_TOUCH_WORK:-$(mktemp -d /tmp/forgeops-first-touch-kit.XXXXXX)}"
+
+# --with <dir> runs an operation you wrote alongside the demo's own.
+WITH=""
+if [ "${1:-}" = "--with" ]; then
+  [ -n "${2:-}" ] || { echo "usage: ./try-forgeops --with <capability-directory>" >&2; exit 2; }
+  WITH="$(cd "$2" && pwd)"
+fi
+
+cat <<'INTRO'
+ForgeOps first touch
+
+Operate software inside customer environments -- without remote access.
+
+This starts a fictional ACME customer connector on this machine, then walks
+through diagnostics, a customer-approved restart, and a refused shell request.
+No signup, email, GitHub OAuth, SSH, VPN, or customer credential handoff is used.
+INTRO
+
+FIRST_TOUCH_BIN_DIR="$HERE/bin" \
+FIRST_TOUCH_METADATA="$HERE/metadata.env" \
+FIRST_TOUCH_WORK="$WORK" \
+FIRST_TOUCH_COMMANDS_BEFORE_READY=1 \
+FIRST_TOUCH_WITH="$WITH" \
+FIRST_TOUCH_PHONE="${FIRST_TOUCH_PHONE:-0}" \
+bash "$HERE/scripts/first-touch-local.sh"
+
+echo
+echo "Evidence and friction measures are in: $WORK"
+echo "Repeat from seeded state: bash scripts/first-touch-reset.sh && ./try-forgeops"
