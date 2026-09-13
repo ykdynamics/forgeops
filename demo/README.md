@@ -2,6 +2,22 @@
 
 No account, no email, no form. Download it and run it.
 
+## Before you download
+
+```text
+Docker           running (the demo starts a Postgres container)
+curl, python3, lsof, bash
+ports free       8010-8012, 8080, 8089, 8093-8095, 18054-18056, 55454
+about 1 GB       the kit plus the Postgres image on first run
+```
+
+Stated here rather than after the download, because two of these decide whether
+it is worth your time and one of them is a 50 MB file.
+
+The demo binds every one of those ports to localhost and nothing else. It opens
+no inbound port, and the only thing that leaves your machine is described under
+"Try it with a real model" below.
+
 ## Download
 
 Pick your platform:
@@ -14,7 +30,7 @@ Pick your platform:
 | Linux, arm64 | `forgeops-first-touch-linux-arm64.tar.gz` |
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/703ff066eef6
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/43e73135b8e0
 KIT=forgeops-first-touch-darwin-arm64.tar.gz    # change to match your platform
 
 curl -O "$BASE/$KIT"
