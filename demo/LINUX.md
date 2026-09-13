@@ -1,6 +1,7 @@
 # Linux tester quick start
 
-This is the shortest path for a clean Linux machine. The full explanation and trust model remain in [README.md](README.md).
+This is the shortest path for a clean Linux machine. For the full core-demo
+explanation and trust model, see [Demo 1 — Core authority](BASIC.md).
 
 ## Requirements
 
@@ -56,7 +57,7 @@ After the basic ALLOW / ASK / DENY run works:
 
 The model diagnoses a synthetic connector state and requests an operation through the same ForgeOps Action path. If policy returns ASK, the terminal prints a loopback link to the real ForgeOps Approval PWA. Approve or reject there; the target does not execute before that decision.
 
-See [AI.md](AI.md) for the exact model boundary, adversarial prompts to try, and what leaves the machine.
+See [Demo 2 — AI + MCP](AI.md) for the exact model boundary, adversarial prompts to try, and what leaves the machine.
 
 ## If something fails
 
