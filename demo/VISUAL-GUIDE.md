@@ -1,8 +1,8 @@
 # ForgeOps demo — visual walkthrough
 
-This page is the diagram-first version of the first-touch demo. The executable
-transcript and exact commands remain in [README.md](README.md); this page exists
-to make the trust model visible before you inspect the mechanics.
+This page is the diagram-first version of **Demo 1 — Core authority**. The
+executable transcript and exact commands live in [BASIC.md](BASIC.md); this page
+exists to make the trust model visible before you inspect the mechanics.
 
 ## 1. Three requests, three outcomes
 
@@ -50,4 +50,5 @@ boundaries, read [what this demo does and does not prove](../docs/concepts/what-
 
 ---
 
-If the pictures make sense, run the real thing: [download and execute the demo](README.md).
+If the pictures make sense, [download and run Demo 1](BASIC.md). Or go back to
+[the demo chooser](README.md) to put a real model in the requester seat.
