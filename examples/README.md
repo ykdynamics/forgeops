@@ -127,6 +127,12 @@ revision to an immutable artifact, customer-local targets and secrets, and the
 edge that is allowed to host it. That deeper path is intentionally separate from
 the first-touch demo.
 
+If you reached this point with an operation of your own, that is exactly the
+signal we care about. Tell us what you built and what customer boundary it needs
+to cross:
+
+**[Tell us about the operation](https://ykdynamics.com/en/forgeops)**
+
 ## State the delivery guarantee honestly
 
 Every mutating operation has an idempotency owner, and there are only three
