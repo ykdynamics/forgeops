@@ -3,8 +3,6 @@
 The demo restarts a fictional connector. The question that matters is whether
 your operation fits the same shape.
 
-## The shape
-
 An operation is a **capability**: a small program that does one thing, declares
 what it needs, and returns a result. It runs on the customer side. It is not
 given a shell, and it does not choose its own target.
@@ -12,42 +10,76 @@ given a shell, and it does not choose its own target.
 ```text
 declare    what the operation is, what input it takes, what it may reach
 implement  the one thing it does
-authorize  bind it to a revision, and to the artifact that may deliver it
+run        put it through the same ForgeOps authority path as the demo
 ```
 
-## Write one, and run it in the demo you already have
+## Start with the worked example
 
-You do not need us for this part any more.
+[`inventory-check/`](inventory-check/) is deliberately small:
+
+```text
+inventory-check/
+  capability.yaml   the operation and its boundary
+  main.go           the implementation
+```
+
+Read `capability.yaml` first. The manifest is what carries the boundary; the code
+only implements it.
+
+The example accepts one target name, `acme-service`, and returns one bounded read.
+There is no host, command, path or arbitrary URL in its input. That is intentional:
+a capability that accepts arbitrary work is a remote shell with a longer name.
+
+## Build it
+
+The capability SDK is packaged separately rather than published as a Go module
+while the external contract is still being evaluated. If you have the SDK kit,
+unpack it beside this example and use a local `replace`:
 
 ```bash
-mkdir my-capability && cd my-capability
-# capability.yaml  — what the operation is
-# my-capability    — the executable that implements it
+tar -xzf forgeops-capability-sdk-*.tar.gz
+cp -R examples/inventory-check ./my-capability
+cd my-capability
 
+cat > go.mod <<'MOD'
+module example.com/my-capability
+
+go 1.23
+
+require github.com/ykdynamics/forgeops-capabilities v0.0.0
+replace github.com/ykdynamics/forgeops-capabilities => ../forgeops-capability-sdk-<version>
+MOD
+
+go build -o inventory-check .
+```
+
+If you do not have the SDK kit yet, use [CONTACT.md](../CONTACT.md). The SDK is a
+small source bundle, not access to the private ForgeOps repositories.
+
+## Run your operation in the demo you already have
+
+Put the executable beside `capability.yaml` and pass the directory to the first-touch
+bundle:
+
+```bash
 ./try-forgeops --with ./my-capability
 ```
 
-The demo declares your operation beside its own, hosts it on the same edge, and
-puts it through the same path: a request, a policy decision, and — if you
-declared a mutation — a human on the customer side who has to agree.
+This is not a mock path. The first-touch harness reads the manifest, declares the
+capability, tells the customer-side edge that it hosts it, creates the policy
+binding, starts your runtime, and sends the operation through the same canonical
+Action, placement and edge-policy path as the built-in demo operations.
 
-You will need the SDK to build the executable. It is not published as a Go
-module yet, so ask at [forgeops@ykdynamics.com](../CONTACT.md) and we will send
-it. That part is still a conversation, and it is a short one.
-
-## Three declarations, and the third is the one that teaches you something
-
-Your `capability.yaml` produces all three:
+The important relationship is:
 
 ```text
-Capability    what the operation is, and the target it may reach
-Agent         that this edge HOSTS it
-Policy        allow, ask, or deny
+Capability    what the operation is and the target it may reach
+Agent         this customer edge says it hosts the operation
+Policy        whether the operation is ALLOW / ASK / DENY
 ```
 
-The second one is easy to skip and instructive when you do. A capability that
-exists, and that policy permits, still cannot run unless the edge says it hosts
-it:
+A capability can exist and policy can permit it, but placement still refuses it
+if the edge has not declared that it hosts the operation. That is intentional:
 
 ```text
 placement: refused (no_eligible_agent): capability "inventory.check"
@@ -55,57 +87,56 @@ is not bound to any eligible agent
 ```
 
 The customer's side decides what may execute there. Not the requester, and not
-the policy alone.
+policy alone.
 
-## The decision comes from what you declare
+## Make it consequential
+
+The worked example is a read, so its manifest says:
 
 ```yaml
 effect:
-  mutation: true     # -> ASK. a human decides, every time.
-  mutation: false    # -> ALLOW. a read runs on its own.
-
-decision: deny       # or say so outright, and watch it be refused
+  mutation: false
 ```
 
-A mutation defaults to asking. You can override it, deliberately, in writing.
+For an operation that changes customer state:
 
-## Where this stops
-
-Running your operation in the local demo is not the same as running it in a
-customer environment. That needs the implementation pinned and bound to an
-authorized revision, on an edge somebody operates — which is a conversation,
-and the point at which we would want to know what you built.
-
-## What the contract looks like
-
-Worth knowing even before you can build it, because this is the part that
-carries the guarantees rather than the code:
-
-```text
-a manifest    names the operation, its input and output, the target it may
-              reach, the secrets it requires, and whether its effect needs
-              verification
-an executable implements exactly that, reads its secret from the edge, and
-              never chooses its own target
-a revision    binds both to an authorized artifact, so what runs is what was
-              approved
+```yaml
+effect:
+  mutation: true
 ```
 
-An operation that accepts an arbitrary command is not a capability, whatever
-the manifest says.
+The local harness defaults a mutation to **ASK**, so the operation stops for a
+customer decision. You can also declare an explicit decision when the exercise
+needs it:
 
-## State your guarantee honestly
+```yaml
+decision: allow
+decision: ask
+decision: deny
+```
 
-The one thing worth insisting on. Every operation has an idempotency owner, and
-there are only three answers:
+That lets you watch **your operation**, not ours, reach the same authority gate.
+
+## Where the local exercise stops
+
+Running your operation in the laptop demo proves that it fits the capability and
+authority model. It does **not** prove production delivery.
+
+A real customer-edge deployment additionally binds an authorized capability
+revision to an immutable artifact, customer-local targets and secrets, and the
+edge that is allowed to host it. That deeper path is intentionally separate from
+the first-touch demo.
+
+## State the delivery guarantee honestly
+
+Every mutating operation has an idempotency owner, and there are only three
+honest answers:
 
 ```text
 the target owns it        re-running is safe because the target makes it safe
-the capability owns it    it dedupes, and declares the scope and durability
-nobody owns it            it is honestly at-least-once
+the capability owns it    it dedupes, with a declared scope and durability
+nobody owns it            the operation is honestly at-least-once
 ```
 
-The third answer is fine. Pretending it is the first is not. A read-before-write
-check narrows a window; it does not make an operation exactly-once, and a system
-that claims otherwise will eventually restart something twice and tell you it
-didn't.
+The third answer is valid. A read-before-write check does not turn it into
+exactly-once execution.
