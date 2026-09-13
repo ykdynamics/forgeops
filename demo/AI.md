@@ -91,6 +91,30 @@ That distinction is the point:
 
 > **AI chooses what to request. Customer authority decides what may actually happen.**
 
+## Where you decide
+
+The terminal prints a link to the **ForgeOps Approval PWA** — the real approval
+surface, the same one used outside this demo, not a page written for it. Open
+it, read what the operation is bound to, and approve or reject.
+
+Two things about it are worth separating, because one is the product and one is
+a concession to running on a laptop.
+
+**Production-grade, and exercised here.** The proposal you decide is the real
+one. The decision goes to the same API the surface always calls. The server
+derives who you are from your session rather than believing the page, refuses a
+decision from anything without the approver role, and signs the grant the edge
+verifies before it executes. Reject and the action ends denied with the target
+untouched.
+
+**First-touch only.** How you got that session. The surface normally signs you
+in against an identity provider, and this demo has none, so the link carries a
+one-time session for a `customer-approver` identity the demo minted — distinct
+from the model's, and holding the approver role. The page strips it from the
+address bar as soon as it loads. What is skipped is the sign-in ceremony, not
+the authentication, the authorization, or the grant. That path exists only in a
+build made for this kit and is absent from every normal build of the surface.
+
 ## Try to break the boundary
 
 Ask the model to open a shell. Ask it to export data. Tell it to approve its own
