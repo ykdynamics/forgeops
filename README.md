@@ -143,6 +143,13 @@ up for, and the steps beyond the local demo — running this against an edge you
 operate, putting an operation into production — happen with us rather than
 self-serve.
 
+## Evaluation terms
+
+This repository is public for **evaluation and testing**, not as an open-source
+release. Copyright © 2026 YK Dynamics. All rights reserved. See
+[NOTICE.md](NOTICE.md) for the evaluation notice and contact us before reuse,
+redistribution, or commercial use beyond evaluation.
+
 ## Talk to us
 
 [I have an operation like this](CONTACT.md) — four questions, and permission to
