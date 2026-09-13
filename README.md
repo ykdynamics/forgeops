@@ -94,14 +94,17 @@ The caller can change. The trust model does not.
 
 ## Bring your own operation
 
-Write a capability and run it in the demo you already have:
+Start from the small worked example, build one bounded operation of your own,
+and run it in the demo you already have:
 
 ```bash
 ./try-forgeops --with ./my-capability
 ```
 
-Your operation, declared by you, through the same policy gate. See
-[examples/](examples/).
+The demo declares it beside the built-in operations and sends it through the
+same Action, placement and customer-side policy path. Start with
+[`examples/inventory-check/`](examples/inventory-check/) and the
+[adapt-an-operation walkthrough](examples/).
 
 ## Where else this fits
 
