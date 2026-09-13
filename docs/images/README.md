@@ -38,6 +38,12 @@ customer-approval.svg                  what a customer actually approves: reques
 demo-operation-paths.svg               detailed ALLOW / ASK / DENY execution paths,
                                        including the held-before-effect boundary
 
+ai-diagnose-request.svg                AI diagnoses and requests; customer authority
+                                       still governs ALLOW / ASK / DENY
+
+ai-pwa-approval-flow.svg               the AI first-touch ASK path through the real
+                                       Approval PWA before customer-local execution
+
 same-operation-different-requester.svg human, service, automation and AI through
                                        one authority model; requester is not
                                        authority
@@ -60,12 +66,13 @@ The diagrams deliberately overlap only at concepts that need reinforcing:
 - the boundary image answers **why is this not remote access?**
 - the demo images answer **what will I actually see?**, **what runs where?**,
   **what exactly is approved?**, and **where does each request stop or execute?**
+- the AI PWA image answers **where does the real human decision happen in the AI demo?**
 - the requester image answers **does AI or automation get a different trust path?**
 - the request path answers **what happens between asking and getting an effect?**
 - the access comparison answers **where is trust placed differently?**
 - the evaluation ladder answers **what does each level of evidence actually prove?**
 
-The AI visual comes after ForgeOps itself has been explained. AI is a useful
+The AI visuals come after ForgeOps itself has been explained. AI is a useful
 caller of the platform, not the product definition.
 
 ## What stays as text
