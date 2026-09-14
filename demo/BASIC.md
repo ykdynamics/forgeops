@@ -73,7 +73,7 @@ Pick your platform:
 | Linux, arm64 | `forgeops-first-touch-linux-arm64.tar.gz` |
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/d5c50a10e10f
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/05c4e8806c70
 KIT="forgeops-first-touch-$(uname -s | tr 'A-Z' 'a-z')-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz"
 
 curl -O "$BASE/$KIT"

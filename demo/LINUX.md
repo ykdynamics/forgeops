@@ -21,7 +21,7 @@ The demo binds its local services to loopback. The basic demo does not open an i
 ## x86-64
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/d5c50a10e10f
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/05c4e8806c70
 KIT=forgeops-first-touch-linux-amd64.tar.gz
 
 curl -O "$BASE/$KIT"
@@ -36,7 +36,7 @@ cd "$(tar -tzf "$KIT" 2>/dev/null | cut -d/ -f1 | grep -v '^\._' | head -1)"
 ## arm64
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/d5c50a10e10f
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/05c4e8806c70
 KIT=forgeops-first-touch-linux-arm64.tar.gz
 
 curl -O "$BASE/$KIT"
