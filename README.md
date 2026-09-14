@@ -12,23 +12,17 @@ restart the connector   ASK     waits for a person on the customer's side
 open a shell            DENY    refused, and nothing happens
 ```
 
-## In sixty seconds
+## Why ForgeOps exists
 
-Your connector, service or appliance runs inside an enterprise customer's
-environment. Something goes wrong. You need to inspect it, restart it or apply a
-bounded fix.
+Sometimes you need to inspect, restart, or fix software running inside a customer environment.
+
+The usual answer is to obtain access: VPN, SSH, customer credentials, a jump host, or someone sharing their screen.
 
 ![The common pattern today: a narrow operational need is solved by granting broad standing access through VPN, SSH, credentials, jump hosts or screen sharing.](docs/images/the-problem-today.svg)
 
-Today that often means asking for access: VPN, SSH, a jump host, a customer
-credential or a screen-share with someone who has one.
+ForgeOps takes a different approach: **request one bounded operation, let the customer side decide whether it may run, and execute it there with customer-local authority.**
 
-ForgeOps changes the primitive. The requester asks for **one named operation**.
-The customer's environment decides whether that operation may run and performs
-it with customer-local authority.
-
-The requester does not receive SSH, VPN, a customer credential or a route into
-the environment.
+The requester does not receive SSH, VPN, a customer credential or a route into the environment.
 
 **The ability to request an operation is not the authority to perform arbitrary ones.**
 
@@ -147,14 +141,57 @@ The evaluator form asks what runs customer-side, what operation is needed, the
 current workaround and who should retain final authority. It is not required to
 download or run ForgeOps.
 
-## Where else this fits
+## The broader direction
 
-Software vendors operating what they shipped is the sharpest version of the
-problem and the one this repository leads with. The underlying primitive —
-separating the ability to *request* an operation from the authority to *perform*
-one — is more general.
+ForgeOps starts with a narrow problem: performing bounded operations inside
+customer environments without handing the requester standing access.
 
-See [the use-case collection](docs/use-cases/).
+The underlying primitive is broader:
+
+**separate the ability to request an operation from the authority required to perform it.**
+
+That pattern can apply wherever execution crosses a trust boundary:
+
+- software vendors operating what they deployed inside customer environments
+- central platforms operating workloads in restricted or sovereign environments
+- automation requesting changes that remain subject to local policy or human approval
+- AI agents selecting and requesting tools without inheriting the authority behind them
+- edge and IoT environments where a trusted local gateway performs bounded operations against devices or appliances
+- industrial or operational systems where execution remains subject to local policy and safety controls
+
+The target does not have to run ForgeOps itself. A trusted execution point can
+sit beside it and use a local API, protocol, credential or capability to perform
+the approved operation.
+
+```text
+requester
+    |
+    |  bounded operation
+    v
+ForgeOps
+    |
+    |  identity + target + policy + approval
+    v
+trusted execution point
+    |
+    |  local authority
+    v
+software / service / gateway / appliance / device
+```
+
+The longer-term direction is not to turn ForgeOps into a fleet platform, an IoT
+platform or an AI framework. It is to make the same authority boundary useful
+across more kinds of targets and environments — a **governed execution plane for
+bounded operations across trust boundaries**.
+
+Different systems can supply the intelligence around that execution. A fleet
+platform may detect drift. An AI may diagnose a fault. An operator may request a
+restart. ForgeOps remains concerned with the question that follows:
+
+**Should this exact operation, against this exact target, be allowed to happen — and where should the authority to perform it live?**
+
+See [the current use-case collection](docs/use-cases/) for the concrete cases the
+project documents today.
 
 ## What ForgeOps is not
 
