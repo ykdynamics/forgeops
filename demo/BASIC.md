@@ -330,11 +330,14 @@ A read (`mutation: false`, or no effect block) defaults to `allow` and runs
 without a human, exactly as diagnostics does.
 
 [The worked example](../examples/) has a manifest and an implementation to copy.
-It is built against the capability SDK, which is a source bundle available on
-request rather than a published module — see [CONTACT.md](../CONTACT.md). The
-SDK is a convenience: what the harness requires is an executable speaking that
-small HTTP contract, so an operation can be written in anything that can serve
-two endpoints.
+The SDK it builds against is a source bundle available on request rather than a
+published module — see [CONTACT.md](../CONTACT.md) — but it is a convenience,
+not the contract: the harness requires an executable serving two HTTP
+endpoints, so an operation can be written in anything.
+
+**[The full walkthrough →](BRING-YOUR-OWN.md)** — the manifest contract, both
+endpoints with their payloads and error classes, the approval sequence phase Z
+sits behind, and how to verify the edge really ran your code.
 
 ## Next: change the requester to AI
 
