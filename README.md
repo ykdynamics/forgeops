@@ -2,8 +2,6 @@
 
 **Operate your software inside customer environments — without standing access.**
 
-![ForgeOps — one bounded operation, with customer-side policy, approval and execution](docs/images/forgeops-hero.svg)
-
 You request an operation. The customer keeps authority.
 
 ![How ForgeOps works: a requester asks for one named operation; ForgeOps binds it to exact authority; the customer's own policy allows, asks a human, or refuses.](docs/images/request-without-authority.svg)
