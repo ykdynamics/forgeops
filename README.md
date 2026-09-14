@@ -2,7 +2,7 @@
 
 **Operate your software inside customer environments — without standing access.**
 
-![What if access was not the primitive at all? Request an operation; customer-side policy, approval and execution keep control.](docs/images/forgeops-hero.jpg)
+![ForgeOps — one bounded operation, with customer-side policy, approval and execution](docs/images/forgeops-hero.svg)
 
 You request an operation. The customer keeps authority.
 
