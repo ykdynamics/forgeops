@@ -321,10 +321,21 @@ effect:
 ```
 
 Run it and your own operation holds, waiting for the same separate approver in
-the same PWA. Add `decision: allow` to the manifest and run the identical binary
-again — the hold is gone. That is the whole claim in one edit: something that
-changes a customer's system asks, unless someone decided otherwise on purpose,
-and the deciding happens in a declaration rather than in your implementation.
+the same PWA. Now override it — `decision:` goes at the **top level**, not
+inside the effect block:
+
+```yaml
+name: inventory.refresh
+decision: allow      # top level, column 0
+
+effect:
+  mutation: true
+```
+
+Run the identical binary again and the hold is gone. That is the whole claim in
+one edit: something that changes a customer's system asks, unless someone
+decided otherwise on purpose, and the deciding happens in a declaration rather
+than in your implementation.
 
 A read (`mutation: false`, or no effect block) defaults to `allow` and runs
 without a human, exactly as diagnostics does.
