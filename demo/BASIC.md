@@ -145,6 +145,105 @@ separate:
 
 The edge opens the session outward. Nothing dials into the customer side.
 
+## What actually happens, in order
+
+The component view above is where things sit. This is the order they move in,
+for the restart — the one operation that stops.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor R as Requester (vendor)
+    participant P as Platform (api)
+    participant C as Control (forge-control)
+    participant E as Edge (forge-agent)
+    participant K as Capability runtime
+    participant T as acme-service (target)
+    actor A as Approver (customer)
+
+    Note over E,C: the edge already holds an outbound session —<br/>nothing ever dials into the customer side
+
+    R->>P: Action: acme.service.restart rev 1, target acme-service,<br/>input, policy_revision, purpose
+    P->>P: record canonical Action act-… and hash the input
+    P->>C: place the Action
+    C-->>E: delivered down the edge's own session
+
+    E->>E: local policy: restart = ask
+    E-->>P: held, proposal prop-…
+
+    P-->>A: shown in the Approval PWA<br/>requester, purpose, operation, target
+    A->>P: approve prop-…
+    P->>P: sign the grant (audience forgeops-edge, short ttl)
+    P->>C: grant
+    C-->>E: grant
+
+    E->>E: verify the signature against approval-trust.pem,<br/>then check the target and input hash match what was approved
+    E->>K: execute, with SERVICE_TOKEN from the edge's own secrets
+    K->>T: restart, once
+    T-->>K: restart_count 0 → 1, receipt
+    K-->>E: receipt
+    E-->>P: succeeded, with the receipt
+    P-->>R: succeeded
+```
+
+Two things in that order matter more than the rest.
+
+**Step 4 is a delivery, not a connection.** Control does not reach into the
+customer side; it hands the Action to a session the edge opened outward. You can
+watch that session come up in the edge's own log, `agent.log` in the run's work
+directory under `/tmp/forgeops-first-touch-kit.*`:
+
+```text
+agent: first-touch-edge maintains an outbound session at 127.0.0.1:8012
+agent: first-touch-edge session live at 127.0.0.1:8012
+```
+
+**Step 12 is where an approval becomes an effect, and it is checked twice.** The
+edge verifies who signed the grant, then verifies that the operation and target
+in it are the ones the approver was shown. Only then does it supply the
+credential (13) and let the restart happen, once (14). A grant for a different
+target does not execute — approving one thing cannot release another.
+
+### Where the three outcomes diverge
+
+All three requests take the same path to the edge. They separate at one point:
+
+```mermaid
+flowchart LR
+    A["Action arrives<br/>at the edge"] --> P{"local policy<br/>for this capability"}
+    P -->|"allow<br/>diagnostics"| X["execute now"]
+    P -->|"ask<br/>restart"| H["hold for a<br/>separate approver"]
+    P -->|"deny<br/>shell"| N["refuse<br/>no target effect"]
+    H -->|approved| X
+    H -->|denied| N
+```
+
+The decision is the customer's policy, evaluated on the customer's side, after
+the Action has already arrived. That is why the refusal is not a missing feature
+on the vendor side — the request was made, reached the edge, and was stopped
+there.
+
+### The run, phase by phase
+
+Each banner in the terminal maps to one of those layers doing one thing:
+
+| Banner | What is happening |
+|---|---|
+| `using the bundled ForgeOps runtime` | prebuilt binaries from the kit; nothing is compiled |
+| `preparing local ports` | frees the fixed loopback ports the demo uses |
+| `starting Postgres, Platform and Control` | the ForgeOps side comes up; canonical-input enforcement on |
+| `declaring the first-touch fabric` | applies Environment, four Capabilities, Agent, Policy — 7 resources |
+| `starting ACME Sync Connector, capability runtimes and edge` | the customer side comes up and the edge reaches `Ready` |
+| `provisioning requester and customer-approver identities` | two distinct subjects; the requester cannot approve |
+| `A. diagnostics ALLOW` | policy allows, no human, target state returned |
+| `B/C. restart ASK` | held at the edge until the PWA decision, then one real effect |
+| `D. denying a held restart` | same path, opposite decision, `restart_count` unchanged |
+| `shell DENY` | refused by policy; never reaches the target |
+
+The fabric and identity phases are the ones worth not skipping. The policy that
+stops the restart is applied in the fourth phase, from a file, and the identity
+that can approve it is created in the sixth — separately from the one that asks.
+
 ## How a requester asks
 
 The demo is driven for you, but the product contract is an Action. A normal
