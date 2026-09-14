@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 600" width="980" height="600" font-family="system-ui,-apple-system,Segoe UI,sans-serif">
+  <rect width="980" height="600" rx="24" fill="#f8fbff"/>
+  <text x="50" y="54" font-size="30" font-weight="700" fill="#102a43">Three sides, one laptop</text>
+  <text x="50" y="86" font-size="16" fill="#5d7288">The local demo separates requester, ForgeOps, and customer-side authority even though all processes run on your machine.</text>
+
+  <rect x="55" y="130" width="250" height="360" rx="18" fill="#ffffff" stroke="#d6e2f0" stroke-width="2"/>
+  <text x="85" y="168" font-size="18" font-weight="700" fill="#102a43">Vendor side</text>
+  <text x="85" y="205" font-size="15" fill="#334e68">forgectl</text>
+  <text x="85" y="236" font-size="15" fill="#334e68">forge-mcp</text>
+  <rect x="85" y="280" width="190" height="72" rx="12" fill="#edf5ff"/>
+  <text x="180" y="308" text-anchor="middle" font-size="14" fill="#2563eb">asks for one operation</text>
+  <text x="180" y="334" text-anchor="middle" font-size="16" font-weight="700" fill="#2563eb">“restart connector”</text>
+  <text x="85" y="405" font-size="13" fill="#5d7288">No customer token</text>
+  <text x="85" y="431" font-size="13" fill="#5d7288">No direct route to target</text>
+
+  <rect x="365" y="130" width="250" height="360" rx="18" fill="#143d72"/>
+  <text x="395" y="168" font-size="18" font-weight="700" fill="#ffffff">ForgeOps</text>
+  <text x="395" y="205" font-size="15" fill="#dbeafe">api</text>
+  <text x="395" y="236" font-size="15" fill="#dbeafe">forge-control</text>
+  <text x="395" y="286" font-size="14" fill="#bfdbfe">records the Action</text>
+  <text x="395" y="318" font-size="14" fill="#bfdbfe">binds authority</text>
+  <text x="395" y="350" font-size="14" fill="#bfdbfe">places on an edge</text>
+  <text x="395" y="382" font-size="14" fill="#bfdbfe">relays result</text>
+  <text x="395" y="442" font-size="13" fill="#93c5fd">does not hold the customer credential</text>
+
+  <rect x="675" y="130" width="250" height="360" rx="18" fill="#ffffff" stroke="#bcd8c6" stroke-width="2"/>
+  <text x="705" y="168" font-size="18" font-weight="700" fill="#102a43">Customer side</text>
+  <text x="705" y="205" font-size="15" fill="#334e68">forge-agent</text>
+  <text x="705" y="236" font-size="15" fill="#334e68">approval page</text>
+  <text x="705" y="267" font-size="15" fill="#334e68">capability runtime</text>
+  <text x="705" y="298" font-size="15" fill="#334e68">ACME connector</text>
+  <rect x="705" y="334" width="190" height="86" rx="12" fill="#ecfdf5"/>
+  <text x="800" y="361" text-anchor="middle" font-size="14" fill="#0f9f6e">policy + credential</text>
+  <text x="800" y="386" text-anchor="middle" font-size="14" fill="#0f9f6e">stay here</text>
+  <text x="800" y="407" text-anchor="middle" font-size="13" fill="#5d7288">target effect happens here</text>
+
+  <path d="M305 300 L365 300" stroke="#2563eb" stroke-width="4" fill="none" marker-end="url(#b)"/>
+  <path d="M615 300 L675 300" stroke="#0f9f6e" stroke-width="4" fill="none" marker-end="url(#g)"/>
+  <text x="645" y="280" text-anchor="middle" font-size="12" fill="#0f9f6e">edge-opened session</text>
+
+  <line x1="335" y1="115" x2="335" y2="510" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="7 7"/>
+  <line x1="645" y1="115" x2="645" y2="510" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="7 7"/>
+
+  <rect x="55" y="525" width="870" height="48" rx="13" fill="#e8f1ff"/>
+  <text x="490" y="555" text-anchor="middle" font-size="16" font-weight="700" fill="#102a43">The edge opens outward. Nothing dials into the customer side.</text>
+
+  <defs>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0f9f6e"/></marker>
+  </defs>
+</svg>

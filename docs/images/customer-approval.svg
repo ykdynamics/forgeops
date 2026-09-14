@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 520" width="920" height="520" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+  <rect width="920" height="520" fill="#ffffff"/>
+  <rect x="70" y="46" width="780" height="420" rx="18" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="110" y="94" font-size="24" font-weight="700" fill="#0f172a">Customer approval</text>
+  <text x="110" y="124" font-size="15" fill="#475569">The requester can ask for this operation. The customer decides whether it runs.</text>
+
+  <rect x="110" y="158" width="700" height="84" rx="12" fill="#ffffff" stroke="#dbe4ee"/>
+  <text x="138" y="190" font-size="14" font-weight="700" fill="#334155">REQUESTER</text>
+  <text x="300" y="190" font-size="16" fill="#0f172a">ACME Support</text>
+  <text x="138" y="220" font-size="14" font-weight="700" fill="#334155">PURPOSE</text>
+  <text x="300" y="220" font-size="16" fill="#0f172a">Connector has 17 pending jobs.</text>
+
+  <rect x="110" y="258" width="700" height="112" rx="12" fill="#ffffff" stroke="#dbe4ee"/>
+  <text x="138" y="294" font-size="14" font-weight="700" fill="#334155">OPERATION</text>
+  <text x="300" y="294" font-size="16" fill="#0f172a">acme.service.restart</text>
+  <text x="138" y="328" font-size="14" font-weight="700" fill="#334155">TARGET</text>
+  <text x="300" y="328" font-size="16" fill="#0f172a">acme-service</text>
+  <text x="138" y="360" font-size="14" font-weight="700" fill="#334155">DECISION SCOPE</text>
+  <text x="300" y="360" font-size="16" fill="#0f172a">This operation, this target, once</text>
+
+  <rect x="470" y="396" width="150" height="46" rx="10" fill="#ffffff" stroke="#dc2626" stroke-width="1.6"/>
+  <text x="545" y="425" text-anchor="middle" font-size="16" font-weight="700" fill="#b91c1c">Deny</text>
+  <rect x="640" y="396" width="170" height="46" rx="10" fill="#166534"/>
+  <text x="725" y="425" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">Approve once</text>
+
+  <text x="110" y="448" font-size="13" fill="#64748b">Approval grants one bounded operation. It does not grant access to the environment.</text>
+</svg>
