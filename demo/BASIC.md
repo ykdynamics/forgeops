@@ -54,6 +54,7 @@ held case again and deny it: the counter stays where it is.
 Docker           running (the demo starts a Postgres container)
 curl, python3, lsof, bash
 ports free       8010-8012, 8080, 8089, 8093-8095, 18054-18057, 55454
+                 plus 8099 if you use --with
 about 1 GB       the kit plus the Postgres image on first run
 ```
 
@@ -73,11 +74,11 @@ Pick your platform:
 
 ```bash
 BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/d5c50a10e10f
-KIT=forgeops-first-touch-darwin-arm64.tar.gz    # change to match your platform
+KIT="forgeops-first-touch-$(uname -s | tr 'A-Z' 'a-z')-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz"
 
 curl -O "$BASE/$KIT"
 curl -O "$BASE/$KIT.sha256"
-shasum -a 256 -c "$KIT.sha256"
+shasum -a 256 -c "$KIT.sha256" 2>/dev/null || sha256sum -c "$KIT.sha256"
 
 tar --exclude='._*' -xzf "$KIT"
 cd "$(tar -tzf "$KIT" 2>/dev/null | cut -d/ -f1 | grep -v '^\._' | head -1)"
@@ -348,6 +349,49 @@ Once the authority model is clear, run **Demo 2 — AI + MCP**:
 ```
 
 [Continue to Demo 2 →](AI.md)
+
+## If it does not start
+
+Four failures account for nearly every unsuccessful first run.
+
+**`platform exited before it became usable (pid …)`** — two different causes,
+one message.
+
+First check the bundle matches your machine:
+
+```bash
+file bin/api        # must say your platform, e.g. "ELF 64-bit ... x86-64" on Linux
+```
+
+`Mach-O` on Linux (or the reverse) means the wrong bundle was downloaded — the
+command above picks it automatically, so re-run the download block.
+
+If the bundle is right, **run it again.** Bundles built before 14 September 2026
+check whether Postgres is ready over a Unix socket, which reports success a
+fraction of a second before the database accepts TCP connections. It fails
+roughly one run in four and succeeds on a retry. Later bundles wait for the
+right thing.
+
+**`cannot start: port :NNNN is already listening`** — something from a previous
+run survived, or another program holds the port:
+
+```bash
+bash scripts/first-touch-reset.sh
+```
+
+**`cd: not a directory: ._forgeops-first-touch-…`** — the bundle was packaged on
+macOS with a sidecar file per entry, and `._…` sorts first. The extract command
+in the download block above skips them; bundles built after 13 September 2026 do
+not contain them.
+
+**`FIRST-TOUCH FAILED: denied restart did not reach a terminal refusal`** — the
+run asks for two browser decisions and they want different answers. Phase B/C
+says *approve*, phase D says *reject*. Approving both fails the run. Use
+`AUTO_DECIDE=1 ./try-forgeops` to have both decided correctly for you.
+
+For an empty approval page, see
+[if the approval page is empty](AI.md#if-the-approval-page-is-empty) — the same
+one-time session applies to both demos.
 
 ## Start over
 

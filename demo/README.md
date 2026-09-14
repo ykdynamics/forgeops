@@ -72,6 +72,7 @@ Both demos use the same first-touch bundle.
 Docker           running
 curl, python3, lsof, bash
 ports free       8010-8012, 8080, 8089, 8093-8095, 18054-18057, 55454
+                 plus 8099 if you bring your own operation
 about 1 GB       bundle + Postgres image on first run
 ```
 
