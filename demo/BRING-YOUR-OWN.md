@@ -67,7 +67,8 @@ instead.
 ## The runtime contract
 
 Two endpoints on `CAPABILITY_ADDR` (`:8099` by default, or
-`FIRST_TOUCH_WITH_PORT`):
+`FIRST_TOUCH_WITH_PORT`). That port has to be free — the run refuses to start
+otherwise:
 
 **`GET /health`** → `200`, no body required.
 
@@ -119,32 +120,69 @@ Go SDK is a convenience that handles the envelopes, the deadline and the
 refusal classes for you; it is a source bundle available on request rather than
 a published module — see [CONTACT.md](../CONTACT.md).
 
+## What you need, and where it lives
+
+Three separate things, in three places. Most of the confusion on this path comes
+from not knowing that.
+
+| | what it is | where you got it |
+|---|---|---|
+| the **kit** | `try-forgeops` and `scripts/` | the tarball you downloaded and unpacked |
+| this **repo** | `examples/inventory-check/` to copy | `git clone https://github.com/ykdynamics/forgeops` |
+| the **SDK** | the Go package the example imports | a source bundle on request — [CONTACT.md](../CONTACT.md) |
+
+You also need **Go 1.23 or later** to compile your runtime. The kit ships
+prebuilt binaries and needs no toolchain; this path does, because you are
+building something of your own.
+
+The kit and your capability directory can live anywhere — you pass a path, and a
+relative one is resolved from wherever you run `try-forgeops`.
+
 ## Build it
 
-Copy the worked example, point a `replace` at the SDK bundle, build:
+These commands use absolute paths, because the build happens in one directory
+and the run happens in another. Set these to match your machine:
 
 ```bash
-cp -R examples/inventory-check ./my-capability
-cd my-capability
+KIT=~/forgeops-first-touch-<stamp>-<platform>    # where you unpacked the kit
+REPO=~/forgeops                                  # this repository
+SDK=~/forgeops-capability-sdk-<version>          # the unpacked SDK bundle
+```
 
-cat > go.mod <<'MOD'
+Copy the worked example out and compile it:
+
+```bash
+cp -R "$REPO/examples/inventory-check" ~/my-capability
+cd ~/my-capability
+
+cat > go.mod <<MOD
 module example.com/my-capability
 
 go 1.23
 
 require github.com/ykdynamics/forgeops-capabilities v0.0.0
 
-replace github.com/ykdynamics/forgeops-capabilities => ../forgeops-capability-sdk-<version>
+replace github.com/ykdynamics/forgeops-capabilities => $SDK
 MOD
 
 go build -o my-capability .
 ```
 
+Two things that will stop you here:
+
+- **The executable has to end up beside `capability.yaml`.** `go build -o` into
+  the same directory, as above. Pointing `--with` at
+  `$REPO/examples/inventory-check` fails with `has no executable beside
+  capability.yaml` — that directory is the source template, not a built one.
+- **Exactly one executable in the directory.** The harness takes the first file
+  it finds with `find -maxdepth 1 -type f -perm -111`.
+
 ## Run it
 
 ```bash
+cd "$KIT"
 bash scripts/first-touch-reset.sh
-./try-forgeops --with ./my-capability
+./try-forgeops --with ~/my-capability
 ```
 
 Your operation arrives as the last phase:
@@ -167,7 +205,7 @@ refusal`) three phases before your capability gets a turn — it will have been
 loaded and hosted, but never invoked. To skip the decisions entirely:
 
 ```bash
-AUTO_DECIDE=1 ./try-forgeops --with ./my-capability
+AUTO_DECIDE=1 ./try-forgeops --with ~/my-capability
 ```
 
 ## Verify it actually ran
@@ -184,9 +222,9 @@ means phase Z was never reached — check whether an earlier phase failed.
 Comment out `decision: allow` and run the **identical binary** again:
 
 ```bash
-sed -i 's/^decision: allow/# decision: allow/' my-capability/capability.yaml
-bash scripts/first-touch-reset.sh
-./try-forgeops --with ./my-capability
+sed -i 's/^decision: allow/# decision: allow/' ~/my-capability/capability.yaml
+cd "$KIT" && bash scripts/first-touch-reset.sh
+./try-forgeops --with ~/my-capability
 ```
 
 Phase Z now holds and prints its own approval prompt. Same code, byte for byte;

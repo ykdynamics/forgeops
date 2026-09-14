@@ -13,6 +13,7 @@ lsof
 bash
 sha256sum
 ports free: 8010-8012, 8080, 8089, 8093-8095, 18054-18057, 55454
+            plus 8099 if you use --with
 ```
 
 The demo binds its local services to loopback. The basic demo does not open an inbound LAN service.
