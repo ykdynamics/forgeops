@@ -2,9 +2,13 @@
 
 **Operate your software inside customer environments — without standing access.**
 
-![How ForgeOps works: a requester asks for one named operation; ForgeOps binds it to exact authority; the customer's own policy allows, asks a human, or refuses.](docs/images/request-without-authority.svg)
+<p align="center">
+  <img src="docs/images/forgeops-hero.jpg" alt="What if access was not the primitive at all? Request an operation; customer-side policy, approval and execution keep control." width="560">
+</p>
 
 You request an operation. The customer keeps authority.
+
+![How ForgeOps works: a requester asks for one named operation; ForgeOps binds it to exact authority; the customer's own policy allows, asks a human, or refuses.](docs/images/request-without-authority.svg)
 
 ```text
 read diagnostics        ALLOW   runs immediately
