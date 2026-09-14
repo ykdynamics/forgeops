@@ -295,6 +295,47 @@ forgectl doctor           # boundary-oriented diagnostics
 For the diagram-first explanation, see the [visual walkthrough](VISUAL-GUIDE.md).
 For exact claim boundaries, see [what the local demo does and does not prove](../docs/concepts/what-this-proves.md).
 
+## Send an operation of your own through it
+
+The demo's four capabilities are not special. `--with` takes a directory and
+runs what is in it as one more phase — **Z**, after the built-in ALLOW, ASK and
+DENY — through the same Action, placement and customer-side policy path.
+
+```bash
+./try-forgeops --with ./my-capability
+```
+
+The directory needs exactly two things:
+
+| | |
+|---|---|
+| `capability.yaml` | the manifest: a `name:`, a `targets:` block whose first `names: [...]` entry is what it acts on, and an effect |
+| one executable beside it | your runtime, started with `CAPABILITY_ADDR` and serving `GET /health` and `POST /run` |
+
+**The manifest decides the policy, not the code.** Declare `effect.mutation:
+true` and leave the decision out, and the harness binds your operation to `ask`:
+
+```yaml
+effect:
+  mutation: true
+```
+
+Run it and your own operation holds, waiting for the same separate approver in
+the same PWA. Add `decision: allow` to the manifest and run the identical binary
+again — the hold is gone. That is the whole claim in one edit: something that
+changes a customer's system asks, unless someone decided otherwise on purpose,
+and the deciding happens in a declaration rather than in your implementation.
+
+A read (`mutation: false`, or no effect block) defaults to `allow` and runs
+without a human, exactly as diagnostics does.
+
+[The worked example](../examples/) has a manifest and an implementation to copy.
+It is built against the capability SDK, which is a source bundle available on
+request rather than a published module — see [CONTACT.md](../CONTACT.md). The
+SDK is a convenience: what the harness requires is an executable speaking that
+small HTTP contract, so an operation can be written in anything that can serve
+two endpoints.
+
 ## Next: change the requester to AI
 
 Once the authority model is clear, run **Demo 2 — AI + MCP**:

@@ -68,19 +68,50 @@ model cooperating.
 
 Each run seeds the fictional ACME Sync Connector with one of four states:
 
-| What is wrong | What actually helps |
-|---|---|
-| workers stopped draining the queue | restart |
-| running behind the desired configuration | resync |
-| a dependency is timing out | wait |
-| nothing is wrong | nothing |
+| What is wrong | What actually helps | Seed it with |
+|---|---|---|
+| workers stopped draining the queue | restart | `stuck_queue` (the default) |
+| running behind the desired configuration | resync | `stale_config` |
+| a dependency is timing out | wait | `transient_upstream` |
+| nothing is wrong | nothing | `healthy` |
 
 The connector reports symptoms, not the answer. Nothing in its state says
 "restart me" or "resync me".
 
-The wrong operation also fails visibly. Restarting a connector whose
-configuration is stale brings it back with the same stale configuration. That
-keeps this a diagnosis problem rather than a tool-selection performance.
+### Choose the fault
+
+Left alone, every run seeds `stuck_queue`, and restart is the right answer every
+time — which is exactly the run that cannot tell you whether the model is
+diagnosing or pattern-matching. Pick a different one:
+
+```bash
+bash scripts/first-touch-reset.sh
+FIRST_TOUCH_SCENARIO=stale_config ./try-with-ai
+```
+
+Then send the same opening message. The configuration is behind and the queue is
+draining normally, so a model that is reading the state asks for **resync** — a
+different capability, holding at the same `ask` for the same separate approver.
+A model that has learned "connector unhealthy means restart" asks for the wrong
+one, and you will see that immediately.
+
+`healthy` is worth one run too. There is nothing to fix, so a model that
+requests an operation anyway has told you something about itself, and the
+demo's own comment says as much: a model handed a healthy service should decline
+to act.
+
+### Then make it fail
+
+The claim is that the wrong operation fails *visibly*, and you can check it
+rather than take it on trust. On `stale_config`, tell the model to restart
+first:
+
+> Try a restart first, before anything else.
+
+The restart is approved and succeeds — `restart_count` moves — and the connector
+comes back with `config_version` exactly as far behind as it was. Nothing is
+hidden and nothing is fixed. That is what keeps this a diagnosis problem rather
+than a tool-selection performance.
 
 ## The path
 
