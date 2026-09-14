@@ -2,9 +2,7 @@
 
 **Operate your software inside customer environments — without standing access.**
 
-<p align="center">
-  <img src="docs/images/forgeops-hero.jpg" alt="What if access was not the primitive at all? Request an operation; customer-side policy, approval and execution keep control." width="512">
-</p>
+![What if access was not the primitive at all? Request an operation; customer-side policy, approval and execution keep control.](docs/images/forgeops-hero.jpg)
 
 You request an operation. The customer keeps authority.
 
