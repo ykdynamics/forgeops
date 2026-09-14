@@ -337,4 +337,4 @@ should retain final authority, tell us the exact operation and current workaroun
 - [Choose between the demos](README.md).
 - [See what the local demo proves — and what it does not](../docs/concepts/what-this-proves.md).
 - [Understand why this is not remote access](../docs/concepts/not-remote-access.md).
-- [Bring your own operation](../examples/).
+- [Bring your own operation](BRING-YOUR-OWN.md) — send an operation you wrote through the same path.

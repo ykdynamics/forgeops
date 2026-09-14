@@ -130,8 +130,10 @@ send it through the same Action, placement and customer-side policy path:
 ./try-forgeops --with ./my-capability
 ```
 
-Start with [`examples/inventory-check/`](examples/inventory-check/) and the
-[adapt-an-operation walkthrough](examples/).
+The [bring-your-own-operation walkthrough](demo/BRING-YOUR-OWN.md) has the
+manifest contract, the two HTTP endpoints a runtime serves, and how to check
+that the customer-side edge really executed your code. Start from
+[`examples/inventory-check/`](examples/inventory-check/).
 
 ## Have a real operation like this?
 
