@@ -73,7 +73,7 @@ Pick your platform:
 | Linux, arm64 | `forgeops-first-touch-linux-arm64.tar.gz` |
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/05c4e8806c70
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/ca17969a2e8b
 KIT="forgeops-first-touch-$(uname -s | tr 'A-Z' 'a-z')-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz"
 
 curl -O "$BASE/$KIT"
@@ -92,6 +92,15 @@ this early preview.
 
 The artifact path includes a build identifier. Published builds are not
 overwritten.
+
+Current build checksums:
+
+| Bundle | SHA-256 |
+|---|---|
+| `forgeops-first-touch-darwin-arm64.tar.gz` | `5221cb4c921760c187b74e25778171b688c83e1543f8e1e41c716899b0e8ab94` |
+| `forgeops-first-touch-darwin-amd64.tar.gz` | `32e69897aed3d85afa31dcf1f7c54fa45dfe6956a5c444b60fafcff80adbe014` |
+| `forgeops-first-touch-linux-amd64.tar.gz` | `1b8d3f2dc3f957842f3e6f738c861e49c4383f4de90a72ac69a186a3e5f11845` |
+| `forgeops-first-touch-linux-arm64.tar.gz` | `b00feef4ac0229ca7cdb776597559709a6b787cafb91ffc8e6b7d5105eaedf5c` |
 
 If you are testing on Linux, see the [Linux quick start](LINUX.md).
 
