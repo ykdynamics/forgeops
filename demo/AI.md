@@ -41,7 +41,14 @@ The connector's live state is shown beside the conversation, so a model saying
 ![An AI diagnoses a fictional connector, requests one bounded operation through ForgeOps, and customer authority still decides whether anything executes.](../docs/images/ai-diagnose-request.svg)
 
 The checked-in image explains the flow. The running demo gives you the actual
-browser surfaces.
+browser surfaces. This is what they look like, recorded from this download
+(build `70c2e2857ead`) on one laptop:
+
+![A recording of ./try-with-ai: the model reads the connector, asks for a restart that the customer side holds, a person approves it in the Approval PWA, the model checks the result, and a shell request is denied by policy.](../docs/images/recording-ai-demo-70c2e2857ead.webp)
+
+The recording is captioned and edited for pace: still waits are shortened and
+short steps held for reading, and it says so on screen. Your run will differ in
+the model's words, not in what the customer side allows.
 
 ## What changes — and what does not
 
