@@ -29,7 +29,10 @@ If you have not run ForgeOps before, start with
 The browser experience has two jobs:
 
 - a local chat surface where you talk to the real model and watch the operations
-  it requests;
+  it requests, with a live diagram above the conversation that shows where each
+  request went and where it stopped: allowed straight through, held for a person,
+  or refused by the customer's policy (drawn from ForgeOps' own record of the
+  operation, not from what the model says);
 - the real ForgeOps Approval PWA when a consequential Action reaches `ASK`.
 
 The connector's live state is shown beside the conversation, so a model saying
