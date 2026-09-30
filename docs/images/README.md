@@ -12,6 +12,14 @@ are read by people deciding whether to trust the software. A diagram is a claim
 like any other sentence on these pages, and the same rule applies: if the demo
 does not do it, it does not go in the picture.
 
+**One exception to SVG: recordings of the download itself.** A recording can't
+be an SVG, so a `recording-*.webp` is allowed when it is a recording of the
+published kit and nothing else: that build, on one machine, captioned only
+with what that build does. Its file name carries the build id, and it is
+replaced when the kit is republished with changes that show on screen. A
+recording of any other setup (a second machine, features the kit doesn't ship)
+does not belong here.
+
 ## What is here
 
 ```text
@@ -37,6 +45,11 @@ customer-approval.svg                  what a customer actually approves: reques
 
 demo-operation-paths.svg               detailed ALLOW / ASK / DENY execution paths,
                                        including the held-before-effect boundary
+
+recording-ai-demo-70c2e2857ead.webp    ./try-with-ai from build 70c2e2857ead, recorded
+                                       on one laptop: real model, approval in the
+                                       real Approval PWA, shell denied (78 s, captioned,
+                                       edited for pace, 2 frames a second)
 
 ai-diagnose-request.svg                AI diagnoses and requests; customer authority
                                        still governs ALLOW / ASK / DENY
