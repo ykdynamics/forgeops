@@ -73,7 +73,7 @@ Pick your platform:
 | Linux, arm64 | `forgeops-first-touch-linux-arm64.tar.gz` |
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/626044e8b4b2
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/54e3ac73129d
 KIT="forgeops-first-touch-$(uname -s | tr 'A-Z' 'a-z')-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz"
 
 curl -O "$BASE/$KIT"
@@ -97,10 +97,10 @@ Current build checksums:
 
 | Bundle | SHA-256 |
 |---|---|
-| `forgeops-first-touch-darwin-arm64.tar.gz` | `8cbf6b310c3d1350281b38fde9b445026a0e6f1cede1ff1b40bc2ee38097e013` |
-| `forgeops-first-touch-darwin-amd64.tar.gz` | `c10c21a4b1e6d4284a90bbeec59fbfd88349a6bbc6b6d5884ed266d0c195048f` |
-| `forgeops-first-touch-linux-amd64.tar.gz` | `de7a64866afa07fba6aa5eca47c9472b766b7ba20ea7cf6eebbf604c76522f8f` |
-| `forgeops-first-touch-linux-arm64.tar.gz` | `c4fa631667a21bc2f47c5afa471e1d23c7c2f6efe7595ea08d5cfe1cc98b9c25` |
+| `forgeops-first-touch-darwin-arm64.tar.gz` | `0cc01d2076de085d8c421856fbff733fbcad674be2b36f78dcb208f93543e490` |
+| `forgeops-first-touch-darwin-amd64.tar.gz` | `afbc6c2ffa98e7ea8bd37a1416fb51a51fd298eeb50cf0d97bd6116e3e86c71d` |
+| `forgeops-first-touch-linux-amd64.tar.gz` | `72f89728d9286462dcaaa0037c55ba21932feec44665e6c8ba77e5a90d989ea3` |
+| `forgeops-first-touch-linux-arm64.tar.gz` | `218f74fb6c49b5ac8f4ffeebb62f92251c92ebe7870edca15541a5d73ce4cc70` |
 
 If you are testing on Linux, see the [Linux quick start](LINUX.md).
 
