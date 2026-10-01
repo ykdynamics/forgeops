@@ -8,6 +8,18 @@ You do not need to identify yourself to try ForgeOps. The demo is a
 after it: you have an operation of your own in mind and want to know whether it
 fits.
 
+## Ask for a live session
+
+The download runs every side on one laptop. If you want to see it split the way
+it would really be — our laptop as the vendor, a separate small computer on its
+own network as the customer's site, its own screen saying what it decided — ask
+for a live session: about 30 to 45 minutes, online or in person.
+
+Use the form below and say **"live session"**, or email
+**forgeops@ykdynamics.com** with the subject `ForgeOps — live session`. Telling
+us what you operate inside customer environments helps us show the parts that
+matter to you.
+
 ## Tell us about the operation
 
 Use the short evaluator form:
