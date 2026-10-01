@@ -21,16 +21,19 @@ screen what it decided and did — holding, done, verified, rejected, refused.
 *Recorded on our own hardware (a laptop and a Raspberry Pi), captioned and edited
 for pace. The download below runs the same thing with every side on your laptop.*
 
+**Run it yourself:** [Demo 1 — you approve](#demo-1--core-authority) ·
+[Demo 2 — an AI asks](#demo-2--ai--mcp). One download, no account.
+
 ```text
 read diagnostics        ALLOW   runs immediately
 restart the connector   ASK     waits for a person on the customer's side
 open a shell            DENY    refused, and nothing happens
 ```
 
-## Now try it on your laptop (five minutes, no account)
+## Try it on your laptop: one download, two demos
 
-Everything runs on your machine. You need macOS or Linux, Docker running,
-`curl`, `python3`, `lsof` and `bash`.
+Everything runs on your machine, no account. You need macOS or Linux, Docker
+running, `curl`, `python3`, `lsof` and `bash`.
 
 ```bash
 BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/70c2e2857ead
@@ -38,24 +41,38 @@ KIT="forgeops-first-touch-$(uname -s | tr 'A-Z' 'a-z')-$(uname -m | sed 's/x86_6
 curl -O "$BASE/$KIT" && curl -O "$BASE/$KIT.sha256"
 shasum -a 256 -c "$KIT.sha256" 2>/dev/null || sha256sum -c "$KIT.sha256"
 tar --exclude='._*' -xzf "$KIT" && cd "$(tar -tzf "$KIT" | cut -d/ -f1 | grep -v '^\._' | head -1)"
+```
 
+### Demo 1 — Core authority
+
+**You are the customer's approver.** About five minutes.
+
+```bash
 ./try-forgeops
 ```
 
-You play the customer's approver: diagnostics run on their own, the restart
-waits for **your** approval in the browser, the shell is refused with nothing
-touched. **[Walkthrough →](demo/BASIC.md)** (checksums, ports, Linux,
+Diagnostics run on their own, the restart waits for **your** approval in the
+browser, the shell is refused with nothing touched.
+**[Demo 1 walkthrough →](demo/BASIC.md)** (checksums, ports, Linux,
 troubleshooting; the binaries are not code-signed).
 
-### Then put an AI in the vendor's seat
+### Demo 2 — AI + MCP
+
+**An AI asks instead of a script.** Same download, a few minutes more.
 
 ```bash
 ./try-with-ai
 ```
 
+![A recording of ./try-with-ai: the model asks, the customer side holds, a person approves in the Approval PWA, and a shell request is denied.](docs/images/recording-ai-demo-70c2e2857ead.webp)
+
+*Recorded from the download (build `70c2e2857ead`) on one laptop, edited for pace.*
+
 A real model reads the connector, works out what is wrong and asks for the fix.
 It still cannot approve its own request, reach the connector or widen the
-customer's policy. **[Walkthrough →](demo/AI.md)**
+customer's policy. The model is remote by default, so this one needs internet;
+approval, credentials and execution stay on your laptop.
+**[Demo 2 walkthrough →](demo/AI.md)**
 
 Prefer pictures first? [Visual walkthrough](demo/VISUAL-GUIDE.md). Want to send
 an operation of your own through it? [Bring your own operation](demo/BRING-YOUR-OWN.md).
