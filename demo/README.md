@@ -1,9 +1,10 @@
 # ForgeOps demos
 
-Two demos. Same authority model.
+One demo, then the same demo with an AI asking.
 
-If you are new to ForgeOps, start with Demo 1. Demo 2 changes the requester to a
-real model after the trust boundary is already clear.
+Start with **Demo 1**: it shows the whole idea, with you as the customer's
+approver. **Demo 2** is the follow-on: the same customer side, with a real model
+in the vendor's seat.
 
 | | **Demo 1 — Core authority** | **Demo 2 — AI + MCP** |
 |---|---|---|
