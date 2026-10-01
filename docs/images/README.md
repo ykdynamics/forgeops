@@ -51,9 +51,10 @@ demo-operation-paths.svg               detailed ALLOW / ASK / DENY execution pat
 
 recording-hardware-narrated.webp       the front page's "See it": our hardware (laptop +
                                        Raspberry Pi edge with its own screen), labelled;
-                                       not the download. Flow view and the box's camera
-                                       side by side, terminal log left out (90 s,
-                                       1600 px, 4 frames a second)
+                                       not the download. The run's page (flow view and
+                                       the log lines that prove each step) beside the
+                                       box's screen and the kit (90 s, 1600 px,
+                                       4 frames a second)
 
 recording-ai-demo-70c2e2857ead.webp    ./try-with-ai from build 70c2e2857ead, recorded
                                        on one laptop: real model, approval in the
