@@ -36,15 +36,17 @@ The browser experience has two jobs:
 - the real ForgeOps Approval PWA when a consequential Action reaches `ASK`.
 
 The connector's live state is shown beside the conversation, so a model saying
-"it worked" is not the evidence — you can inspect the target state yourself.
+"it worked" is not the evidence — you can inspect the target state yourself. After
+an approved restart, a separate checker on the customer side confirms it worked,
+and the operation reads `DONE · VERIFIED`.
 
 ![An AI diagnoses a fictional connector, requests one bounded operation through ForgeOps, and customer authority still decides whether anything executes.](../docs/images/ai-diagnose-request.svg)
 
 The checked-in image explains the flow. The running demo gives you the actual
 browser surfaces. This is what they look like, recorded from this download
-(build `70c2e2857ead`) on one laptop:
+(build `a6df3933c540`) on one laptop:
 
-![A recording of ./try-with-ai: the model reads the connector, asks for a restart that the customer side holds, a person approves it in the Approval PWA, the model checks the result, and a shell request is denied by policy.](../docs/images/recording-ai-demo-70c2e2857ead.webp)
+![A recording of ./try-with-ai: the model reads the connector, asks for a restart that the customer side holds, a person approves it in the Approval PWA, the customer side reports the restart verified, the model checks the result, and a shell request is denied by policy.](../docs/images/recording-ai-demo-a6df3933c540.webp)
 
 The recording is captioned and edited for pace: still waits are shortened and
 short steps held for reading, and it says so on screen. Your run will differ in

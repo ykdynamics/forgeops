@@ -19,8 +19,8 @@ screen what it decided and did — holding, done, verified, rejected, refused.
 ![ForgeOps on our hardware: the flow on the vendor's laptop, and the customer's box on its own screen saying what it decided — holding, done, verified, rejected, refused.](docs/images/recording-hardware-narrated.webp)
 
 *Recorded on our own hardware (a laptop and a Raspberry Pi), captioned and edited
-for pace. The download below runs the same thing with every side on your laptop;
-add `FIRST_TOUCH_VERIFY=1` for the "did it work?" check you see here.*
+for pace. The download below runs the same thing, "did it work?" check included,
+with every side on your laptop.*
 
 **Run it yourself:** [Demo 1 — you approve](#demo-1--core-authority) ·
 [Demo 2 — an AI asks](#demo-2--ai--mcp). One download, no account.
@@ -37,7 +37,7 @@ Everything runs on your machine, no account. You need macOS or Linux, Docker
 running, `curl`, `python3`, `lsof` and `bash`.
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/70c2e2857ead
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/a6df3933c540
 KIT="forgeops-first-touch-$(uname -s | tr 'A-Z' 'a-z')-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz"
 curl -O "$BASE/$KIT" && curl -O "$BASE/$KIT.sha256"
 shasum -a 256 -c "$KIT.sha256" 2>/dev/null || sha256sum -c "$KIT.sha256"
@@ -65,9 +65,9 @@ troubleshooting; the binaries are not code-signed).
 ./try-with-ai
 ```
 
-![A recording of ./try-with-ai: the model asks, the customer side holds, a person approves in the Approval PWA, and a shell request is denied.](docs/images/recording-ai-demo-70c2e2857ead.webp)
+![A recording of ./try-with-ai: the model asks, the customer side holds, a person approves in the Approval PWA, the customer side checks the restart worked, and a shell request is denied.](docs/images/recording-ai-demo-a6df3933c540.webp)
 
-*Recorded from the download (build `70c2e2857ead`) on one laptop, edited for pace.*
+*Recorded from the download (build `a6df3933c540`) on one laptop, edited for pace.*
 
 A real model reads the connector, works out what is wrong and asks for the fix.
 It still cannot approve its own request, reach the connector or widen the
