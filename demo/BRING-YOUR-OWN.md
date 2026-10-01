@@ -185,14 +185,14 @@ bash scripts/first-touch-reset.sh
 ./try-forgeops --with ~/my-capability
 ```
 
-Your operation arrives as the last phase:
+Your operation arrives as phase Z, after the built-in ones:
 
 ```text
 == Z. inventory.refresh — an operation you wrote, through the same path ==
 OK: inventory.refresh succeeded through Platform, Control, the edge policy gate and your runtime
 ```
 
-**Phase Z is last, so the phases before it have to pass.** Two of them stop for
+**Phase Z comes after A–E, so those have to pass first.** Two of them stop for
 a browser decision, and they want *different* answers — the terminal names which:
 
 | phase | the prompt says | do this |
@@ -219,16 +219,23 @@ means phase Z was never reached — check whether an earlier phase failed.
 
 ## The pair worth running
 
-Comment out `decision: allow` and run the **identical binary** again:
+The worked example is a read (`mutation: false`), so it runs without a human.
+Declare it a mutation and run the **identical binary** again:
 
 ```bash
-sed -i 's/^decision: allow/# decision: allow/' ~/my-capability/capability.yaml
+sed -i.bak 's/^  mutation: false/  mutation: true/' ~/my-capability/capability.yaml
 cd "$KIT" && bash scripts/first-touch-reset.sh
 ./try-forgeops --with ~/my-capability
 ```
 
-Phase Z now holds and prints its own approval prompt. Same code, byte for byte;
-opposite authority. That pair is the whole claim: the boundary is carried by the
+Phase Z now holds for a person before it runs:
+
+```text
+OK: inventory.check held for a human, then ran once — your operation, the customer's decision
+```
+
+Same code, byte for byte; opposite authority. (Add `decision: allow` at the top
+level and the hold is gone again: an explicit decision wins.) That pair is the whole claim: the boundary is carried by the
 declaration, and it is the customer's policy — not your implementation — that
 decides whether a human is involved.
 
