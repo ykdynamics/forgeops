@@ -5,9 +5,22 @@
 > **The ability to request an operation is not the authority to perform it.**
 
 You ask for one named operation. The customer's own side decides whether it
-runs, and runs it there with its own credentials.
+runs, and runs it there with its own credentials. No VPN, no SSH, no customer
+password, no route into their network — not for you, and not for an AI acting
+for you.
 
-![How ForgeOps works: a requester asks for one named operation; ForgeOps binds it to exact authority; the customer's own policy allows, asks a human, or refuses.](docs/images/request-without-authority.svg)
+## See it
+
+Left: the vendor's side asks to restart a stuck connector, a person on the
+customer's side approves it, a request for shell access is refused. Right: the
+**customer's own box**, a separate computer on its own network, saying on its
+screen what it decided and did — holding, done, verified, rejected, refused.
+
+![ForgeOps on our hardware: the flow on the vendor's laptop, and the customer's box on its own screen saying what it decided — holding, done, verified, rejected, refused.](docs/images/recording-hardware-narrated.webp)
+
+*Recorded on our own hardware (a laptop and a Raspberry Pi), captioned and edited
+for pace. You can see it live: [ask for a session](CONTACT.md#ask-for-a-live-session).
+The download below runs the same thing with every side on your laptop.*
 
 ```text
 read diagnostics        ALLOW   runs immediately
@@ -15,21 +28,7 @@ restart the connector   ASK     waits for a person on the customer's side
 open a shell            DENY    refused, and nothing happens
 ```
 
-No VPN, no SSH, no customer password, no route into their network. Not for you,
-and not for an AI acting for you.
-
-## 1. Watch it (one minute)
-
-A real AI model is asked to fix a stuck connector. It reads the connector's
-state and asks for a restart; the customer's side holds the request until a
-person approves it in the approval page; a request for shell access is refused
-outright.
-
-![A recording of the downloadable demo: the model asks, the customer side holds, a person approves in the Approval PWA, and a shell request is refused.](docs/images/recording-ai-demo-70c2e2857ead.webp)
-
-Recorded from the download below, on one laptop, captioned and edited for pace.
-
-## 2. Try it yourself (five minutes, free, no account)
+## Now try it on your laptop (five minutes, free, no account)
 
 Everything runs on your machine. You need macOS or Linux, Docker running,
 `curl`, `python3`, `lsof` and `bash`.
@@ -41,38 +40,36 @@ curl -O "$BASE/$KIT" && curl -O "$BASE/$KIT.sha256"
 shasum -a 256 -c "$KIT.sha256" 2>/dev/null || sha256sum -c "$KIT.sha256"
 tar --exclude='._*' -xzf "$KIT" && cd "$(tar -tzf "$KIT" | cut -d/ -f1 | grep -v '^\._' | head -1)"
 
-./try-forgeops      # Demo 1: ALLOW, ASK and DENY, with you as the approver
-./try-with-ai       # Demo 2: the same, with a real AI model asking
+./try-forgeops
 ```
 
-| | What you see | Walkthrough |
-|---|---|---|
-| **Demo 1 — Core authority** | diagnostics run, a restart waits for your approval, a shell is refused with nothing touched | [demo/BASIC.md](demo/BASIC.md) |
-| **Demo 2 — AI + MCP** | a model diagnoses and asks; it cannot approve itself, reach the connector or widen the policy | [demo/AI.md](demo/AI.md) |
+You play the customer's approver: diagnostics run on their own, the restart
+waits for **your** approval in the browser, the shell is refused with nothing
+touched. **[Walkthrough →](demo/BASIC.md)** (checksums, ports, Linux,
+troubleshooting; the binaries are not code-signed).
 
-Checksums, ports, Linux notes and troubleshooting are in the
-[Demo 1 walkthrough](demo/BASIC.md); the binaries are not code-signed. Prefer
-pictures first? [Visual walkthrough](demo/VISUAL-GUIDE.md). Want to send an
-operation of your own through it? [Bring your own operation](demo/BRING-YOUR-OWN.md).
+### Then put an AI in the vendor's seat
 
-## 3. See it on real hardware (a live session with us)
+```bash
+./try-with-ai
+```
 
-The download puts every side on one laptop, so it cannot show a real network
-boundary. In a live session we show the split the way it would really be: our
-laptop as the vendor, and a separate small computer, a Raspberry Pi on its own
-network, as the customer's site.
+A real model reads the connector, works out what is wrong and asks for the fix.
+It still cannot approve its own request, reach the connector or widen the
+customer's policy. **[Walkthrough →](demo/AI.md)**
 
-![A recording on our hardware, not part of the download: the demo's flow on the laptop, and the customer's box on its own screen saying what it decided — holding, approved, verified, refused.](docs/images/recording-hardware-narrated.webp)
+Prefer pictures first? [Visual walkthrough](demo/VISUAL-GUIDE.md). Want to send
+an operation of your own through it? [Bring your own operation](demo/BRING-YOUR-OWN.md).
 
-*This is a recording of our own setup, shown so you know what a session looks
-like. It is not what the download contains.*
+## See it live, on real hardware
 
-In a session you see:
+Your laptop can't show a real network boundary: everything on it is one
+machine. In a live session we show the real split — our laptop as the vendor,
+the Raspberry Pi on its own network as the customer's site — and you see:
 
 - the customer's box **calling out** over an encrypted link, and nothing able to
   call in;
-- the box's **own screen** saying what it decided and did: holding for a person,
-  approved, verified, refused;
+- the box's **own screen** saying what it decided and did;
 - the outcome **checked on the customer's side** ("verified: the queue is
   draining"), not just "the command ran";
 - what happens when you **pull the power or the network** while a request waits
@@ -82,7 +79,7 @@ In a session you see:
 About 30 to 45 minutes, online (we film the box) or in person.
 **[Ask for a live session](CONTACT.md#ask-for-a-live-session)**.
 
-## 4. Go deeper
+## Go deeper
 
 - **How it works:** [what just happened](docs/concepts/what-just-happened.md),
   one request followed through every step.

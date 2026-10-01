@@ -19,9 +19,10 @@ with what that build does. Its file name carries the build id, and it is
 replaced when the kit is republished with changes that show on screen. A
 recording of any other setup (a second machine, features the kit doesn't ship)
 does not belong here, with one labelled exception: `recording-hardware-*.webp`
-shows what a **live session on our hardware** looks like. It is placed only
-where that session is offered, always with a caption saying it is not the
-download.
+shows ForgeOps on **our hardware** (a laptop and a Raspberry Pi edge with its
+own screen). Wherever it appears, its caption says it was recorded on our
+hardware, that the download runs the same thing on one laptop, and how to see
+it live.
 
 ## What is here
 
@@ -49,8 +50,8 @@ customer-approval.svg                  what a customer actually approves: reques
 demo-operation-paths.svg               detailed ALLOW / ASK / DENY execution paths,
                                        including the held-before-effect boundary
 
-recording-hardware-narrated.webp       our hardware (laptop + Raspberry Pi edge with its
-                                       own screen), shown with the live-session offer;
+recording-hardware-narrated.webp       the front page's "See it": our hardware (laptop +
+                                       Raspberry Pi edge with its own screen), labelled;
                                        not the download
 
 recording-ai-demo-70c2e2857ead.webp    ./try-with-ai from build 70c2e2857ead, recorded
