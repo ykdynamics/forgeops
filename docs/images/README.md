@@ -51,12 +51,14 @@ demo-operation-paths.svg               detailed ALLOW / ASK / DENY execution pat
 
 recording-hardware-narrated.webp       the front page's "See it": our hardware (laptop +
                                        Raspberry Pi edge with its own screen), labelled;
-                                       not the download
+                                       not the download. Flow view and the box's camera
+                                       side by side, terminal log left out (90 s,
+                                       1600 px, 4 frames a second)
 
 recording-ai-demo-70c2e2857ead.webp    ./try-with-ai from build 70c2e2857ead, recorded
                                        on one laptop: real model, approval in the
                                        real Approval PWA, shell denied (78 s, captioned,
-                                       edited for pace, 2 frames a second)
+                                       edited for pace, 1200 px, 4 frames a second)
 
 ai-diagnose-request.svg                AI diagnoses and requests; customer authority
                                        still governs ALLOW / ASK / DENY
