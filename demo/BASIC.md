@@ -318,6 +318,21 @@ set -a; . "$(ls -td /tmp/forgeops-first-touch-kit.* | head -1)/session.env"; set
 ./bin/forgectl doctor            # boundary-oriented diagnostics
 ```
 
+### If you know `kubectl`
+
+`forgectl` will feel familiar, and that is on purpose: ForgeOps borrows a lot
+from Kubernetes. The customer side is described as declarative resources
+(`apiVersion: forgeops.io/v1`, `kind`, `metadata`, `spec`, `status`), the
+control plane reconciles them, and the edge agent plays the part a kubelet
+plays on a node. What gets scheduled is not a container but one named
+operation, and the edge decides whether it runs.
+
+```bash
+./bin/forgectl get agents -o wide         # the customer-side edge: phase, policy revision, operations it hosts
+./bin/forgectl get capabilities -o wide   # the four operations the demo can ask for
+./bin/forgectl get policies               # the customer's rules: status allow, restart and resync ask, shell deny
+```
+
 For the diagram-first explanation, see the [visual walkthrough](VISUAL-GUIDE.md).
 For exact claim boundaries, see [what the local demo does and does not prove](../docs/concepts/what-this-proves.md).
 
