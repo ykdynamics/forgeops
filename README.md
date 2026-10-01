@@ -101,7 +101,9 @@ ForgeOps comes out of the YK Dynamics lab, which works on two themes:
   it worked.
 - **Sovereignty.** The side that owns the environment keeps the authority, the
   credentials and the evidence, on its own hardware, with no route in from
-  outside.
+  outside. With the approval key and the policy on the owner's side too, as in
+  the download, the question moves from *where the vendor's cloud is* to *who
+  can act here, and who decides*, and the answer stays with the owner.
 
 ForgeOps applies both to operating software inside customer environments.
 **FleetForge**, a separate lab project, applies them to fleets of connected
