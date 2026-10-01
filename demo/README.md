@@ -61,9 +61,9 @@ anything is released.
 
 ![Schematic preview of the customer approval information shown by the browser surface.](../docs/images/customer-approval.svg)
 
-The image above is a checked-in schematic preview, not a browser screenshot. The
-demo opens the actual PWA locally. A real capture from the current bundle should
-replace this preview when screenshot assets are published.
+The image above is a schematic, not a screenshot. The demo opens the actual PWA
+locally, and the recordings on the [front page](../README.md) and in
+[Demo 2](AI.md) show the real page.
 
 Demo 2 also opens a local chat page with the connector's live state beside the
 conversation so you can compare what the model says with what the target itself

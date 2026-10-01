@@ -37,6 +37,7 @@ requester, the decision, the attempt result, and the receipt. `restart_count` on
 the connector is readable before and after, which is how you can tell the denial
 did nothing rather than being told so.
 
-What that record does **not** contain — verification state and artifact identity
-— is covered in [what this demo does and does not prove](what-this-proves.md).
+What that record does **not** contain — artifact identity, and verification
+unless you run with `FIRST_TOUCH_VERIFY=1` — is covered in
+[what this demo does and does not prove](what-this-proves.md).
 Read it; the gaps are the interesting part.

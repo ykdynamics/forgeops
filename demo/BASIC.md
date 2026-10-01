@@ -256,6 +256,7 @@ Each banner in the terminal maps to one of those layers doing one thing:
 | `provisioning requester and customer-approver identities` | two distinct subjects; the requester cannot approve |
 | `A. diagnostics ALLOW` | policy allows, no human, target state returned |
 | `B/C. restart ASK` | held at the edge until the PWA decision, then one real effect |
+| `C2. execution is not verification` | only with `FIRST_TOUCH_VERIFY=1`: a separate checker on the edge confirms the restart worked |
 | `D. denying a held restart` | same path, opposite decision, `restart_count` unchanged |
 | `E. shell access DENY` | refused by policy; never reaches the target |
 | `F. requester has no direct credential path` | checks the connector's token stayed on the customer side |
@@ -263,6 +264,28 @@ Each banner in the terminal maps to one of those layers doing one thing:
 The fabric and identity phases are the ones worth not skipping. The policy that
 stops the restart is applied in the fourth phase, from a file, and the identity
 that can approve it is created in the sixth — separately from the one that asks.
+
+### Check that it worked, not just that it ran
+
+```bash
+FIRST_TOUCH_VERIFY=1 ./try-forgeops
+```
+
+The restart then declares `verification: required`. After it runs, a separate
+checker on the customer side (`acme.verify.recovery`) asks two questions: does
+the receipt name this action, and is the connector healthy now? The run adds one
+phase:
+
+```text
+== C2. execution is not verification: the review shows both, separately ==
+OK: execution: succeeded; verification: VERIFIED (observed on the edge by acme.verify.recovery)
+```
+
+"It ran" and "it worked" come back as two facts, never merged. It is off by
+default so the plain run stays the smallest one; the recording on the
+[front page](../README.md) runs with it on. On one laptop the checker is ours and
+on the same machine, so it shows the mechanism, not an independent check: see
+[what this demo does and does not prove](../docs/concepts/what-this-proves.md).
 
 ## How a requester asks
 
@@ -422,9 +445,11 @@ run asks for two browser decisions and they want different answers. Phase B/C
 says *approve*, phase D says *reject*. Approving both fails the run. Use
 `AUTO_DECIDE=1 ./try-forgeops` to have both decided correctly for you.
 
-For an empty approval page, see
-[if the approval page is empty](AI.md#if-the-approval-page-is-empty) — the same
-one-time session applies to both demos.
+**Empty approval page, or `Failed to fetch`** — open it from the link the run
+prints (`http://127.0.0.1:18057/#ft=…`), not by typing the address: that link
+carries a one-time session for the demo's approver, and the page removes it from
+the address bar as soon as it loads. If a session from an earlier run gets in the
+way, clear the site data for `127.0.0.1:18057`.
 
 ## Start over
 

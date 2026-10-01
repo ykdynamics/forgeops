@@ -29,7 +29,8 @@ the record survives the disconnection
 
 This is the case where the local demo is least convincing, because a laptop has
 no boundary to cross. Seeing it properly means watching an operation reach a
-machine you can confirm the requester cannot reach — a session, on real hardware,
-rather than a page describing one.
+machine you can confirm the requester cannot reach, on real hardware. The
+recording on the [front page](../../README.md) is that: a Raspberry Pi on its own
+network calling out, with its own screen saying what it decided.
 
 If this is your situation, that is the conversation worth having.
