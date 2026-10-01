@@ -90,7 +90,7 @@ an operation of your own through it? [Bring your own operation](demo/BRING-YOUR-
 - **Where the design comes from:** Kubernetes, in large part. Declarative
   resources, a reconciled control plane, an edge agent in the kubelet's place,
   and `forgectl` for anyone who knows `kubectl`.
-  [Try it after Demo 1 →](demo/BASIC.md#if-you-know-kubectl)
+  [What we borrowed, and what we changed →](docs/concepts/kubernetes.md)
 
 **What ForgeOps is not:** a remote-support tool, an SSH or VPN replacement with a
 nicer UI, a workflow engine, an approval app, or an AI-agent framework. AI is one
