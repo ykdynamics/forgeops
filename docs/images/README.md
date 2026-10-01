@@ -21,8 +21,7 @@ recording of any other setup (a second machine, features the kit doesn't ship)
 does not belong here, with one labelled exception: `recording-hardware-*.webp`
 shows ForgeOps on **our hardware** (a laptop and a Raspberry Pi edge with its
 own screen). Wherever it appears, its caption says it was recorded on our
-hardware, that the download runs the same thing on one laptop, and how to see
-it live.
+hardware and that the download runs the same thing on one laptop.
 
 ## What is here
 
