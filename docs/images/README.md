@@ -26,13 +26,6 @@ hardware and that the download runs the same thing on one laptop.
 ## What is here
 
 ```text
-request-without-authority.svg          landing-page mental model: requester,
-                                       ForgeOps, trust boundary, customer policy,
-                                       capability, target
-
-the-problem-today.svg                  why the problem exists: a narrow operation
-                                       often requires broad standing access today
-
 trust-boundary.svg                     what crosses into/out of the customer
                                        environment, and what stays customer-local
 
