@@ -19,8 +19,7 @@ screen what it decided and did — holding, done, verified, rejected, refused.
 ![ForgeOps on our hardware: the flow on the vendor's laptop, and the customer's box on its own screen saying what it decided — holding, done, verified, rejected, refused.](docs/images/recording-hardware-narrated.webp)
 
 *Recorded on our own hardware (a laptop and a Raspberry Pi), captioned and edited
-for pace. You can see it live: [ask for a session](CONTACT.md#ask-for-a-live-session).
-The download below runs the same thing with every side on your laptop.*
+for pace. The download below runs the same thing with every side on your laptop.*
 
 ```text
 read diagnostics        ALLOW   runs immediately
@@ -28,7 +27,7 @@ restart the connector   ASK     waits for a person on the customer's side
 open a shell            DENY    refused, and nothing happens
 ```
 
-## Now try it on your laptop (five minutes, free, no account)
+## Now try it on your laptop (five minutes, no account)
 
 Everything runs on your machine. You need macOS or Linux, Docker running,
 `curl`, `python3`, `lsof` and `bash`.
@@ -61,24 +60,6 @@ customer's policy. **[Walkthrough →](demo/AI.md)**
 Prefer pictures first? [Visual walkthrough](demo/VISUAL-GUIDE.md). Want to send
 an operation of your own through it? [Bring your own operation](demo/BRING-YOUR-OWN.md).
 
-## See it live, on real hardware
-
-Your laptop can't show a real network boundary: everything on it is one
-machine. In a live session we show the real split — our laptop as the vendor,
-the Raspberry Pi on its own network as the customer's site — and you see:
-
-- the customer's box **calling out** over an encrypted link, and nothing able to
-  call in;
-- the box's **own screen** saying what it decided and did;
-- the outcome **checked on the customer's side** ("verified: the queue is
-  draining"), not just "the command ran";
-- what happens when you **pull the power or the network** while a request waits
-  for approval: it expires, a late approval is refused, nothing runs afterwards;
-- optionally, a real AI model in the vendor's seat.
-
-About 30 to 45 minutes, online (we film the box) or in person.
-**[Ask for a live session](CONTACT.md#ask-for-a-live-session)**.
-
 ## Go deeper
 
 - **How it works:** [what just happened](docs/concepts/what-just-happened.md),
@@ -94,15 +75,43 @@ About 30 to 45 minutes, online (we film the box) or in person.
 nicer UI, a workflow engine, an approval app, or an AI-agent framework. AI is one
 kind of requester, nothing more.
 
+## Let's talk
+
+ForgeOps is early, built by one person as the first stone of a larger stack.
+What helps most now is hearing from people who live the problem:
+
+- **share a scenario:** an operation you need performed inside someone else's
+  environment, and how you handle it today;
+- **tell us where it doesn't fit:** the boundary in the wrong place, your
+  existing agent already does this, it read like remote support;
+- **explore working together:** as a design partner, an integration, or
+  around one of the lab themes below.
+
+[Get in touch](CONTACT.md), or follow
+[YK Dynamics on LinkedIn](https://www.linkedin.com/company/yk-dynamics) to see
+where it goes.
+
+## From the lab
+
+ForgeOps comes out of the YK Dynamics lab, which works on two themes:
+
+- **From data-centric to operation-centric.** Most systems collect and show
+  data, then leave the action to someone with broad access. We build around the
+  operation itself: who may ask for it, who decides, where it runs, and whether
+  it worked.
+- **Sovereignty.** The side that owns the environment keeps the authority, the
+  credentials and the evidence, on its own hardware, with no route in from
+  outside.
+
+ForgeOps applies both to operating software inside customer environments.
+**FleetForge**, a separate lab project, applies them to fleets of connected
+devices: knowing what is deployed, fixing what is unsafe, proving what happened.
+
 ## Status and terms
 
-ForgeOps is early. The demos are real and run on your machine; the product
-behind them is being evaluated with a small number of people, not sold as a
-self-service hosted service.
+The demos are real and run on your machine. There is no hosted service or
+account behind them.
 
 This repository is public for **evaluation and testing**, not as an open-source
 release. Copyright © 2026 YK Dynamics. All rights reserved. See
 [NOTICE.md](NOTICE.md).
-
-**Have an operation like this?** [Tell us about it](CONTACT.md) — four questions,
-and permission to tell us it does not fit.
