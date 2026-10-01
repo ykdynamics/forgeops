@@ -25,6 +25,7 @@ spec:
     - acme.service.restart
     - acme.service.resync
     - acme.service.shell
+    - acme.verify.recovery
 ```
 
 | Kubernetes | ForgeOps | What it is in ForgeOps |

@@ -47,9 +47,9 @@ operation still stops at `ASK`; the model cannot approve itself or widen policy.
 
 ![A real model diagnoses a connector and requests one bounded operation through the same ForgeOps authority path.](../docs/images/ai-diagnose-request.svg)
 
-Recorded from the download (build `70c2e2857ead`), one laptop, edited for pace:
+Recorded from the download (build `a6df3933c540`), one laptop, edited for pace:
 
-![A recording of ./try-with-ai: the model asks, the customer side holds, a person approves in the Approval PWA, and a shell request is denied.](../docs/images/recording-ai-demo-70c2e2857ead.webp)
+![A recording of ./try-with-ai: the model asks, the customer side holds, a person approves in the Approval PWA, the customer side checks the restart worked, and a shell request is denied.](../docs/images/recording-ai-demo-a6df3933c540.webp)
 
 **[Run the AI + MCP walkthrough →](AI.md)**
 

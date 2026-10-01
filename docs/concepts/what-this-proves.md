@@ -24,15 +24,15 @@ processes on your laptop. Nothing you saw distinguishes that from a program
 calling itself. The property only means something across a real boundary, and
 the local demo cannot show you one.
 
-**Verification is off unless you turn it on, and even then it is ours.**
-ForgeOps can require that a separate, governed capability observe an effect
-before it is called verified. In a plain run nothing requires that, so the
-restart is evidenced only by the target's own counter and its receipt — a weaker
-claim, and we would rather say so than let the word "evidence" carry more than it
-should. With `FIRST_TOUCH_VERIFY=1` the restart requires it and a checker on the
-edge reports `VERIFIED` beside the execution result. That shows the mechanism.
-It does not show independence: the checker is ours, on the same laptop as
-everything else.
+**Verification happens, but the checker is ours.** ForgeOps can require that a
+separate, governed capability observe an effect before it is called verified.
+The demo's restart requires it, and a checker on the edge reports `VERIFIED`
+beside the execution result. That shows the mechanism. It does not show
+independence: the checker is ours, on the same laptop as everything else, so
+"verified" here means "our checker says so". With `FIRST_TOUCH_VERIFY=0` the
+check is left out and the restart is evidenced only by the target's own counter
+and its receipt — a weaker claim, and we would rather say so than let the word
+"evidence" carry more than it should.
 
 **No artifact identity.** ForgeOps binds a capability to an immutable artifact by
 digest, so that what executes is exactly what was authorized. The binaries in

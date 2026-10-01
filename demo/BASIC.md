@@ -76,7 +76,7 @@ Pick your platform:
 | Linux, arm64 | `forgeops-first-touch-linux-arm64.tar.gz` |
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/70c2e2857ead
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/a6df3933c540
 KIT="forgeops-first-touch-$(uname -s | tr 'A-Z' 'a-z')-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz"
 
 curl -O "$BASE/$KIT"
@@ -100,10 +100,10 @@ Current build checksums:
 
 | Bundle | SHA-256 |
 |---|---|
-| `forgeops-first-touch-darwin-arm64.tar.gz` | `b4fe30b0acb8e09f01902b89a7d3160a49fa7b74cd3d7c62e4ea921b1f50f07e` |
-| `forgeops-first-touch-darwin-amd64.tar.gz` | `20e95b2a4588a6f3a5370190483398e4936c17713b3a1ce019c703b0effa75d3` |
-| `forgeops-first-touch-linux-amd64.tar.gz` | `2d7d213868516fa03f5d4866eefce1ad47ad71e5dc260654f2561bda34ad84b6` |
-| `forgeops-first-touch-linux-arm64.tar.gz` | `01ede42e8d2e2ca49927c9c71e9b023c6431e528e552c8ee939e20a02def246c` |
+| `forgeops-first-touch-darwin-arm64.tar.gz` | `6a6a34dc253a50a57fea3cd9286479a73952589ece8f1ca5e0e72b74b7dfa221` |
+| `forgeops-first-touch-darwin-amd64.tar.gz` | `9915b5b11882e31f4e4a42d7590f9f3d986f40712352fdeff4ed5f64dfdccb9b` |
+| `forgeops-first-touch-linux-amd64.tar.gz` | `384d9df07008651a9f4b365b5118838cd7cd3198746228d2ca463c4fac2a73aa` |
+| `forgeops-first-touch-linux-arm64.tar.gz` | `fa670a1e04e8d954685a682ab864852daafa2dda052ef6e9894a8a7c62a59672` |
 
 If you are testing on Linux, see the [Linux quick start](LINUX.md).
 
@@ -125,6 +125,9 @@ OK: pending_jobs=17 config=v4 restart_count=0
 Open http://127.0.0.1:18057/#ft=... and approve proposal ...
 OK: restart approved and executed exactly once
 
+== C2. execution is not verification ==
+OK: execution: succeeded; verification: VERIFIED
+
 == deny a held restart ==
 Open the approval page and reject proposal ...
 OK: denied restart produced zero target effect
@@ -136,6 +139,8 @@ OK: shell refused by authority: denied by edge policy: rule 4 (acme.service.shel
 OK: customer token stayed in edge secrets file and ACME target env
 
 FIRST-TOUCH PASSED
+
+Next: the same customer side, with a real AI model asking -> ./try-with-ai
 ```
 
 The demo stops for approval because the Action has reached the customer side and
@@ -251,12 +256,12 @@ Each banner in the terminal maps to one of those layers doing one thing:
 | `using the bundled ForgeOps runtime` | prebuilt binaries from the kit; nothing is compiled |
 | `preparing local ports` | frees the fixed loopback ports the demo uses |
 | `starting Postgres, Platform and Control` | the ForgeOps side comes up; canonical-input enforcement on |
-| `declaring the first-touch fabric` | applies Environment, four Capabilities, Agent, Policy — 7 resources |
+| `declaring the first-touch fabric` | applies Environment, five Capabilities (four operations and the outcome checker), Agent, Policy — 8 resources |
 | `starting ACME Sync Connector, capability runtimes and edge` | the customer side comes up and the edge reaches `Ready` |
 | `provisioning requester and customer-approver identities` | two distinct subjects; the requester cannot approve |
 | `A. diagnostics ALLOW` | policy allows, no human, target state returned |
 | `B/C. restart ASK` | held at the edge until the PWA decision, then one real effect |
-| `C2. execution is not verification` | only with `FIRST_TOUCH_VERIFY=1`: a separate checker on the edge confirms the restart worked |
+| `C2. execution is not verification` | a separate checker on the edge confirms the restart worked, reported beside the execution result |
 | `D. denying a held restart` | same path, opposite decision, `restart_count` unchanged |
 | `E. shell access DENY` | refused by policy; never reaches the target |
 | `F. requester has no direct credential path` | checks the connector's token stayed on the customer side |
@@ -267,24 +272,19 @@ that can approve it is created in the sixth — separately from the one that ask
 
 ### Check that it worked, not just that it ran
 
-```bash
-FIRST_TOUCH_VERIFY=1 ./try-forgeops
-```
-
-The restart then declares `verification: required`. After it runs, a separate
-checker on the customer side (`acme.verify.recovery`) asks two questions: does
-the receipt name this action, and is the connector healthy now? The run adds one
-phase:
+The restart declares `verification: required`. After it runs, a separate checker
+on the customer side (`acme.verify.recovery`) asks two questions: does the
+receipt name this action, and is the connector healthy now? That is phase C2:
 
 ```text
 == C2. execution is not verification: the review shows both, separately ==
 OK: execution: succeeded; verification: VERIFIED (observed on the edge by acme.verify.recovery)
 ```
 
-"It ran" and "it worked" come back as two facts, never merged. It is off by
-default so the plain run stays the smallest one; the recording on the
-[front page](../README.md) runs with it on. On one laptop the checker is ours and
-on the same machine, so it shows the mechanism, not an independent check: see
+"It ran" and "it worked" come back as two facts, never merged.
+`FIRST_TOUCH_VERIFY=0 ./try-forgeops` leaves the check out, if you want to see the
+difference. On one laptop the checker is ours and on the same machine, so it
+shows the mechanism, not an independent check: see
 [what this demo does and does not prove](../docs/concepts/what-this-proves.md).
 
 ## How a requester asks
@@ -353,7 +353,7 @@ deliberately different: [what ForgeOps borrows from Kubernetes](../docs/concepts
 
 ```bash
 ./bin/forgectl get agents -o wide         # the customer-side edge: phase, policy revision, operations it hosts
-./bin/forgectl get capabilities -o wide   # the four operations the demo can ask for
+./bin/forgectl get capabilities -o wide   # the four operations the demo can ask for, and the outcome checker
 ./bin/forgectl get policies               # the customer's rules: status allow, restart and resync ask, shell deny
 ```
 

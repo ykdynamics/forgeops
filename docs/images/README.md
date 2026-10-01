@@ -49,9 +49,10 @@ recording-hardware-narrated.webp       the front page's "See it": our hardware (
                                        box's screen and the kit (90 s, 1600 px,
                                        4 frames a second)
 
-recording-ai-demo-70c2e2857ead.webp    ./try-with-ai from build 70c2e2857ead, recorded
+recording-ai-demo-a6df3933c540.webp    ./try-with-ai from build a6df3933c540, recorded
                                        on one laptop: real model, approval in the
-                                       real Approval PWA, shell denied (78 s, captioned,
+                                       real Approval PWA, restart verified on the
+                                       customer side, shell denied (78 s, captioned,
                                        edited for pace, 1200 px, 4 frames a second)
 
 ai-diagnose-request.svg                AI diagnoses and requests; customer authority
