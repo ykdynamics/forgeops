@@ -19,6 +19,9 @@ The customer system is synthetic. The operations are not. Diagnostics read the
 connector's real state, approval really gates the restart, and a denied request
 produces no target effect.
 
+This is **Demo 1 of 2**. [Demo 2 — AI + MCP](AI.md) uses the same download and
+puts a real model in the vendor's seat.
+
 ## What you will see
 
 Three requests go through the same authority path:
@@ -137,6 +140,9 @@ FIRST-TOUCH PASSED
 
 The demo stops for approval because the Action has reached the customer side and
 cannot continue without another identity making the decision.
+
+**Passed?** Next is [Demo 2 — AI + MCP](AI.md): `./try-with-ai`, same download.
+The rest of this page explains what just happened.
 
 ## What is actually running
 
