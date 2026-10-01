@@ -50,7 +50,8 @@ cd "$(tar -tzf "$KIT" 2>/dev/null | cut -d/ -f1 | grep -v '^\._' | head -1)"
 
 ## Then try the AI requester
 
-After the basic ALLOW / ASK / DENY run works:
+After the basic ALLOW / ASK / DENY run works (this one needs internet: the model
+is remote by default):
 
 ```bash
 ./try-with-ai

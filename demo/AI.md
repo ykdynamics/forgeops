@@ -326,7 +326,7 @@ class.
 That is why ForgeOps is not an AI-agent framework. The underlying property
 applies equally to software, automation, humans and models:
 
-> **The ability to request an operation is not the authority to perform arbitrary operations.**
+> **The ability to request an operation is not the authority to perform it.**
 
 ## Have an AI-operated use case like this?
 

@@ -24,12 +24,15 @@ processes on your laptop. Nothing you saw distinguishes that from a program
 calling itself. The property only means something across a real boundary, and
 the local demo cannot show you one.
 
-**No semantic verification happens.** ForgeOps can require that an independent,
-governed capability observe an effect before it is called verified. No capability
-in this demo declares that, so nothing here is verified in that sense. The
-restart is evidenced by the target's own counter and its receipt — which is a
-weaker claim, and we would rather say so than let the word "evidence" carry more
-than it should.
+**Verification is off unless you turn it on, and even then it is ours.**
+ForgeOps can require that a separate, governed capability observe an effect
+before it is called verified. In a plain run nothing requires that, so the
+restart is evidenced only by the target's own counter and its receipt — a weaker
+claim, and we would rather say so than let the word "evidence" carry more than it
+should. With `FIRST_TOUCH_VERIFY=1` the restart requires it and a checker on the
+edge reports `VERIFIED` beside the execution result. That shows the mechanism.
+It does not show independence: the checker is ours, on the same laptop as
+everything else.
 
 **No artifact identity.** ForgeOps binds a capability to an immutable artifact by
 digest, so that what executes is exactly what was authorized. The binaries in
@@ -59,7 +62,6 @@ everything else here would be worth less.
 
 The two properties above are real and hold on the actual estate, where the
 authorized capability revision carries the verification demand and the artifact
-digest decides what may run. Seeing that requires a session against an
-independently operated edge, not a laptop. If you want that, say so in
-[CONTACT.md](../../CONTACT.md) — it is a better use of your time than a longer
-local demo.
+digest decides what may run. Showing that takes an independently operated edge,
+not a laptop. If that matters for your case, [tell us](../../CONTACT.md): it is a
+better use of your time than a longer local demo.

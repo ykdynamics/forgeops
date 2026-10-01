@@ -19,7 +19,8 @@ screen what it decided and did — holding, done, verified, rejected, refused.
 ![ForgeOps on our hardware: the flow on the vendor's laptop, and the customer's box on its own screen saying what it decided — holding, done, verified, rejected, refused.](docs/images/recording-hardware-narrated.webp)
 
 *Recorded on our own hardware (a laptop and a Raspberry Pi), captioned and edited
-for pace. The download below runs the same thing with every side on your laptop.*
+for pace. The download below runs the same thing with every side on your laptop;
+add `FIRST_TOUCH_VERIFY=1` for the "did it work?" check you see here.*
 
 **Run it yourself:** [Demo 1 — you approve](#demo-1--core-authority) ·
 [Demo 2 — an AI asks](#demo-2--ai--mcp). One download, no account.
