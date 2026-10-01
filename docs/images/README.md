@@ -18,7 +18,10 @@ published kit and nothing else: that build, on one machine, captioned only
 with what that build does. Its file name carries the build id, and it is
 replaced when the kit is republished with changes that show on screen. A
 recording of any other setup (a second machine, features the kit doesn't ship)
-does not belong here.
+does not belong here, with one labelled exception: `recording-hardware-*.webp`
+shows what a **live session on our hardware** looks like. It is placed only
+where that session is offered, always with a caption saying it is not the
+download.
 
 ## What is here
 
@@ -45,6 +48,10 @@ customer-approval.svg                  what a customer actually approves: reques
 
 demo-operation-paths.svg               detailed ALLOW / ASK / DENY execution paths,
                                        including the held-before-effect boundary
+
+recording-hardware-narrated.webp       our hardware (laptop + Raspberry Pi edge with its
+                                       own screen), shown with the live-session offer;
+                                       not the download
 
 recording-ai-demo-70c2e2857ead.webp    ./try-with-ai from build 70c2e2857ead, recorded
                                        on one laptop: real model, approval in the

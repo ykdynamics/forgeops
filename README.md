@@ -2,7 +2,10 @@
 
 **Operate your software inside customer environments — without standing access.**
 
-You request an operation. The customer keeps authority.
+> **The ability to request an operation is not the authority to perform it.**
+
+You ask for one named operation. The customer's own side decides whether it
+runs, and runs it there with its own credentials.
 
 ![How ForgeOps works: a requester asks for one named operation; ForgeOps binds it to exact authority; the customer's own policy allows, asks a human, or refuses.](docs/images/request-without-authority.svg)
 
@@ -12,214 +15,97 @@ restart the connector   ASK     waits for a person on the customer's side
 open a shell            DENY    refused, and nothing happens
 ```
 
-## Why ForgeOps exists
+No VPN, no SSH, no customer password, no route into their network. Not for you,
+and not for an AI acting for you.
 
-Sometimes you need to inspect, restart, or fix software running inside a customer environment.
+## 1. Watch it (one minute)
 
-The usual answer is to obtain access: VPN, SSH, customer credentials, a jump host, or someone sharing their screen.
+A real AI model is asked to fix a stuck connector. It reads the connector's
+state and asks for a restart; the customer's side holds the request until a
+person approves it in the approval page; a request for shell access is refused
+outright.
 
-![The common pattern today: a narrow operational need is solved by granting broad standing access through VPN, SSH, credentials, jump hosts or screen sharing.](docs/images/the-problem-today.svg)
+![A recording of the downloadable demo: the model asks, the customer side holds, a person approves in the Approval PWA, and a shell request is refused.](docs/images/recording-ai-demo-70c2e2857ead.webp)
 
-ForgeOps takes a different approach: **request one bounded operation, let the customer side decide whether it may run, and execute it there with customer-local authority.**
+Recorded from the download below, on one laptop, captioned and edited for pace.
 
-The requester does not receive SSH, VPN, a customer credential or a route into the environment.
+## 2. Try it yourself (five minutes, free, no account)
 
-**The ability to request an operation is not the authority to perform arbitrary ones.**
+Everything runs on your machine. You need macOS or Linux, Docker running,
+`curl`, `python3`, `lsof` and `bash`.
 
-## Try ForgeOps
+```bash
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/70c2e2857ead
+KIT="forgeops-first-touch-$(uname -s | tr 'A-Z' 'a-z')-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz"
+curl -O "$BASE/$KIT" && curl -O "$BASE/$KIT.sha256"
+shasum -a 256 -c "$KIT.sha256" 2>/dev/null || sha256sum -c "$KIT.sha256"
+tar --exclude='._*' -xzf "$KIT" && cd "$(tar -tzf "$KIT" | cut -d/ -f1 | grep -v '^\._' | head -1)"
 
-Two demos. Same authority model.
+./try-forgeops      # Demo 1: ALLOW, ASK and DENY, with you as the approver
+./try-with-ai       # Demo 2: the same, with a real AI model asking
+```
 
-| | **Demo 1 — Core authority** | **Demo 2 — AI + MCP** |
+| | What you see | Walkthrough |
 |---|---|---|
-| See | `ALLOW` / `ASK` / `DENY` against a real local target | a real model diagnose, reason and request through MCP |
-| Requester | fixed first-touch scenario | real AI model |
-| Important moment | restart stops for another identity to decide | AI chooses an operation, then still stops at customer authority |
-| Start | `./try-forgeops` | `./try-with-ai` |
-| Walkthrough | **[Run Demo 1 →](demo/BASIC.md)** | **[Run Demo 2 →](demo/AI.md)** |
+| **Demo 1 — Core authority** | diagnostics run, a restart waits for your approval, a shell is refused with nothing touched | [demo/BASIC.md](demo/BASIC.md) |
+| **Demo 2 — AI + MCP** | a model diagnoses and asks; it cannot approve itself, reach the connector or widen the policy | [demo/AI.md](demo/AI.md) |
 
-Both use the same downloadable first-touch bundle. No account, email or form is
-required. Start at the **[demo chooser](demo/)** for prerequisites, the visual
-walkthrough and Linux notes.
+Checksums, ports, Linux notes and troubleshooting are in the
+[Demo 1 walkthrough](demo/BASIC.md); the binaries are not code-signed. Prefer
+pictures first? [Visual walkthrough](demo/VISUAL-GUIDE.md). Want to send an
+operation of your own through it? [Bring your own operation](demo/BRING-YOUR-OWN.md).
 
-### Demo 1 — Core authority
+## 3. See it on real hardware (a live session with us)
 
-The customer system is synthetic. The operations are not. Diagnostics read its
-real state, approval really gates the restart, and a denied operation produces
-no target effect.
+The download puts every side on one laptop, so it cannot show a real network
+boundary. In a live session we show the split the way it would really be: our
+laptop as the vendor, and a separate small computer, a Raspberry Pi on its own
+network, as the customer's site.
 
-![Diagnostics are allowed, restart asks for customer approval, and shell access is denied with no target effect.](docs/images/demo-allow-ask-deny.svg)
+![A recording on our hardware, not part of the download: the demo's flow on the laptop, and the customer's box on its own screen saying what it decided — holding, approved, verified, refused.](docs/images/recording-hardware-narrated.webp)
 
-```bash
-./try-forgeops
-```
+*This is a recording of our own setup, shown so you know what a session looks
+like. It is not what the download contains.*
 
-**[Download and run Demo 1 →](demo/BASIC.md)**
+In a session you see:
 
-### Demo 2 — AI + MCP
+- the customer's box **calling out** over an encrypted link, and nothing able to
+  call in;
+- the box's **own screen** saying what it decided and did: holding for a person,
+  approved, verified, refused;
+- the outcome **checked on the customer's side** ("verified: the queue is
+  draining"), not just "the command ran";
+- what happens when you **pull the power or the network** while a request waits
+  for approval: it expires, a late approval is refused, nothing runs afterwards;
+- optionally, a real AI model in the vendor's seat.
 
-Put a real model in the requester seat. It receives connector symptoms, discovers
-MCP tools and decides whether restart, resync, waiting or no action makes sense.
-It can request an operation; it cannot approve itself or widen customer policy.
+About 30 to 45 minutes, online (we film the box) or in person.
+**[Ask for a live session](CONTACT.md#ask-for-a-live-session)**.
 
-![An AI diagnoses a fictional connector, requests one bounded operation through ForgeOps, and customer authority still decides whether anything executes.](docs/images/ai-diagnose-request.svg)
+## 4. Go deeper
 
-```bash
-./try-with-ai
-```
+- **How it works:** [what just happened](docs/concepts/what-just-happened.md),
+  one request followed through every step.
+- **Why it isn't remote access:** [the difference](docs/concepts/not-remote-access.md),
+  and how this kind of claim gets faked.
+- **What the demos prove, and what they don't:** [read before believing the
+  stronger claims](docs/concepts/what-this-proves.md).
+- **Where it fits:** [software vendors, governed automation, AI agents,
+  sovereign edge](docs/use-cases/), and [where this could go](docs/direction.md).
 
-**AI can reason about what to do. It does not decide what it is allowed to do.**
+**What ForgeOps is not:** a remote-support tool, an SSH or VPN replacement with a
+nicer UI, a workflow engine, an approval app, or an AI-agent framework. AI is one
+kind of requester, nothing more.
 
-**[Run Demo 2 — AI + MCP →](demo/AI.md)**
+## Status and terms
 
-## What opens in the browser
-
-When an Action reaches `ASK`, the demo opens the **ForgeOps Approval PWA**. The
-customer sees who asked, why, the exact operation and the target before deciding.
-
-![Schematic preview of the customer approval information: requester, purpose, operation, target, and a one-time approve or deny decision.](docs/images/customer-approval.svg)
-
-The checked-in image is a schematic preview; the demo opens the actual browser
-surface locally. Demo 2 also opens a local chat view with the connector's live
-state beside the conversation, so you can verify effects independently of what
-the model says.
-
-## How it works
-
-- [What just happened](docs/concepts/what-just-happened.md) — follow one request
-  through Action, placement, policy, approval and effect.
-- [Why this isn't remote access](docs/concepts/not-remote-access.md) — the
-  distinction that matters and the ways this class of claim gets faked.
-- [Visual walkthrough](demo/VISUAL-GUIDE.md) — see the first-touch trust model
-  before running anything.
-
-## Humans, services, automation and AI use the same path
-
-![Human, service, automation and AI callers all request through the same ForgeOps authority path; changing the requester does not transfer customer authority.](docs/images/same-operation-different-requester.svg)
-
-The caller can change. The trust model does not.
-
-AI is useful here because it makes the separation obvious: a model may reason,
-choose a tool and request a consequential operation, while policy, approval,
-credentials and execution authority remain independent of the model.
-
-That does **not** make ForgeOps an AI-agent framework. AI is one requester type.
-
-## What the local demos do and do not prove
-
-[Read this before believing the stronger claims.](docs/concepts/what-this-proves.md)
-
-The first-touch demos run the logical vendor, ForgeOps and customer sides on one
-machine. They prove bounded operations, distinct authority, real target effects
-and real refusals. A laptop cannot prove a physical network boundary, an
-unreachable target or evaluator-owned edge independence; those require the next
-evaluation level.
-
-## Bring your own operation
-
-Start from the small worked example, build one bounded operation of your own and
-send it through the same Action, placement and customer-side policy path:
-
-```bash
-./try-forgeops --with ./my-capability
-```
-
-The [bring-your-own-operation walkthrough](demo/BRING-YOUR-OWN.md) has the
-manifest contract, the two HTTP endpoints a runtime serves, and how to check
-that the customer-side edge really executed your code. Start from
-[`examples/inventory-check/`](examples/inventory-check/).
-
-## Have a real operation like this?
-
-Try ForgeOps anonymously first. If the demo resembles an operation you need
-inside a customer environment, tell us about the operation and how you handle it
-today.
-
-**[Tell us about the operation](https://ykdynamics.com/en/forgeops)**
-
-The evaluator form asks what runs customer-side, what operation is needed, the
-current workaround and who should retain final authority. It is not required to
-download or run ForgeOps.
-
-## The broader direction
-
-ForgeOps starts with a narrow problem: performing bounded operations inside
-customer environments without handing the requester standing access.
-
-The underlying primitive is broader:
-
-**separate the ability to request an operation from the authority required to perform it.**
-
-That pattern can apply wherever execution crosses a trust boundary:
-
-- software vendors operating what they deployed inside customer environments
-- central platforms operating workloads in restricted or sovereign environments
-- automation requesting changes that remain subject to local policy or human approval
-- AI agents selecting and requesting tools without inheriting the authority behind them
-- edge and IoT environments where a trusted local gateway performs bounded operations against devices or appliances
-- industrial or operational systems where execution remains subject to local policy and safety controls
-
-The target does not have to run ForgeOps itself. A trusted execution point can
-sit beside it and use a local API, protocol, credential or capability to perform
-the approved operation.
-
-```text
-requester
-    |
-    |  bounded operation
-    v
-ForgeOps
-    |
-    |  identity + target + policy + approval
-    v
-trusted execution point
-    |
-    |  local authority
-    v
-software / service / gateway / appliance / device
-```
-
-The longer-term direction is not to turn ForgeOps into a fleet platform, an IoT
-platform or an AI framework. It is to make the same authority boundary useful
-across more kinds of targets and environments — a **governed execution plane for
-bounded operations across trust boundaries**.
-
-Different systems can supply the intelligence around that execution. A fleet
-platform may detect drift. An AI may diagnose a fault. An operator may request a
-restart. ForgeOps remains concerned with the question that follows:
-
-**Should this exact operation, against this exact target, be allowed to happen — and where should the authority to perform it live?**
-
-See [the current use-case collection](docs/use-cases/) for the concrete cases the
-project documents today.
-
-## What ForgeOps is not
-
-Not a remote-support tool, an SSH or VPN replacement with a nicer UI, a workflow
-engine, an approval app, or an AI-agent framework. Those categories put trust in
-different places.
-
-If ForgeOps still reads like one of them after the demos, that is useful
-feedback — see [CONTACT.md](CONTACT.md).
-
-## Status
-
-ForgeOps is early. The downloadable demos are real and run on your machine; the
-product behind them is being evaluated with a small number of people rather than
-sold as a self-service hosted service.
-
-The binaries are not code-signed. Steps beyond first touch — for example running
-against an edge you operate or shaping a production operation — currently happen
-with us rather than through a public hosted control plane.
-
-## Evaluation terms
+ForgeOps is early. The demos are real and run on your machine; the product
+behind them is being evaluated with a small number of people, not sold as a
+self-service hosted service.
 
 This repository is public for **evaluation and testing**, not as an open-source
 release. Copyright © 2026 YK Dynamics. All rights reserved. See
-[NOTICE.md](NOTICE.md) for the evaluation notice and contact us before reuse,
-redistribution or commercial use beyond evaluation.
+[NOTICE.md](NOTICE.md).
 
-## Talk to us
-
-[I have an operation like this](CONTACT.md) — four questions, and permission to
-tell us it does not fit.
+**Have an operation like this?** [Tell us about it](CONTACT.md) — four questions,
+and permission to tell us it does not fit.
