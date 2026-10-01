@@ -325,7 +325,8 @@ from Kubernetes. The customer side is described as declarative resources
 (`apiVersion: forgeops.io/v1`, `kind`, `metadata`, `spec`, `status`), the
 control plane reconciles them, and the edge agent plays the part a kubelet
 plays on a node. What gets scheduled is not a container but one named
-operation, and the edge decides whether it runs.
+operation, and the edge decides whether it runs. The full mapping, and what is
+deliberately different: [what ForgeOps borrows from Kubernetes](../docs/concepts/kubernetes.md).
 
 ```bash
 ./bin/forgectl get agents -o wide         # the customer-side edge: phase, policy revision, operations it hosts
