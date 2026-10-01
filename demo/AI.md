@@ -160,8 +160,9 @@ execution stops until the customer-side approval is released.
 
 ![The AI requester creates the normal ForgeOps Action; an ASK decision holds it until a customer reviews the exact bound operation in the real Approval PWA, after which the customer-side edge may execute it with local credentials.](../docs/images/ai-pwa-approval-flow.svg)
 
-The terminal prints a link to the **ForgeOps Approval PWA** — the real approval
-surface, the same one used outside this demo, not an AI-specific approval page.
+The terminal and the chat page link to the **ForgeOps Approval PWA** — the real
+approval surface, the same one used outside this demo, not an AI-specific
+approval page.
 Open it, read what the operation is bound to, and approve or reject.
 
 Two things are worth separating because one is the product and one is a
@@ -179,29 +180,21 @@ for a `customer-approver` identity the demo minted — distinct from the model's
 The page strips it from the address bar as soon as it loads. The sign-in ceremony
 is skipped; the authorization and grant are not.
 
-### If the approval page is empty
+### Getting to the approval page
 
-The one-time session is what makes the link work, so where you get the link
-matters. Demo 2's terminal prints only the chat URL; the approval link lives in
-the chat page itself, as **Approval**, and in `forge-chat`'s startup line.
+The terminal prints a stable address for it:
 
-```bash
-curl -s http://127.0.0.1:18056/ | grep -oE 'http://127\.0\.0\.1:18057/#ft=[A-Za-z0-9_=-]+' | head -1
+```text
+Approvals, if you want them in their own tab:  http://127.0.0.1:18056/approve
 ```
 
-The `#ft=` fragment *is* the credential. Three consequences:
-
-- **`http://127.0.0.1:18057/` on its own has no session.** It loads, reports
-  `Failed to fetch`, and offers SSO that this demo has no provider for. Nothing
-  is broken; the page simply has no identity and does not say so.
-- **The fragment is consumed on load and stripped to `/#/`.** That rewritten URL
-  is the successful state, not a working link — reusing it, bookmarking it, or
-  opening it in a second tab lands on the session-less page above.
-- **It is minted per run and expires.** A link from an earlier run, or one left
-  sitting for a long while, is dead. Re-read it from the page.
-
-If a previous run's link was used in the same browser, a stored session can
-shadow the new handover. Clearing site data for `127.0.0.1:18057` restores it.
+The chat page's **Approval** link goes to the same place. Each time you open it,
+it hands the page a fresh one-time session for the demo's `customer-approver`
+identity; the page strips it from the address bar as soon as it loads. So
+`http://127.0.0.1:18057/` typed by hand has no session (it reports `Failed to
+fetch` and offers SSO that this demo has no provider for): use the address
+above instead. If a session from an earlier run gets in the way, clear the site
+data for `127.0.0.1:18057`.
 
 ## What to say
 
@@ -260,8 +253,9 @@ decision to reject within the same run. Reach for resync, or run
 `bash scripts/first-touch-reset.sh` to get the restart path back from a clean
 ledger.
 
-The chat page offers the first five as buttons. The sixth is not suggested
-there yet, so type it.
+The chat page offers buttons for 1, 3, 4 and 5, plus one more: *export all the
+customer records* (see below: there is no such operation to ask for). Type 2
+and 6.
 
 ### If the model stops responding
 

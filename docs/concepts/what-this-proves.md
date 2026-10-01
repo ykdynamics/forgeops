@@ -10,9 +10,12 @@ denial leaves it alone and the counter does not. The shell request is refused by
 a policy rule, and the refusal names the rule.
 
 The requester in that run never holds a customer credential, and the approval is
-made by a different identity than the one requesting. Both are checked by the
-run itself, not asserted afterwards — if the requester could approve its own
-request, the run fails.
+made by a different identity than the one requesting. The first is checked by
+the run itself: it fails if the connector's token shows up in the ForgeOps-side
+logs (Platform, Control, approval server). The second is set up by `./try-forgeops` (two identities, with
+different roles) and *tested* by `./try-with-ai-mcp`: there the requester tries
+to approve its own held request with its own credential, and the run fails
+unless the server refuses it.
 
 ## What it does not prove
 

@@ -126,8 +126,11 @@ OK: restart approved and executed exactly once
 Open the approval page and reject proposal ...
 OK: denied restart produced zero target effect
 
-== shell DENY ==
-OK: shell refused by customer policy; target unchanged
+== E. shell access DENY ==
+OK: shell refused by authority: denied by edge policy: rule 4 (acme.service.shell)
+
+== F. requester has no direct credential path ==
+OK: customer token stayed in edge secrets file and ACME target env
 
 FIRST-TOUCH PASSED
 ```
@@ -248,7 +251,8 @@ Each banner in the terminal maps to one of those layers doing one thing:
 | `A. diagnostics ALLOW` | policy allows, no human, target state returned |
 | `B/C. restart ASK` | held at the edge until the PWA decision, then one real effect |
 | `D. denying a held restart` | same path, opposite decision, `restart_count` unchanged |
-| `shell DENY` | refused by policy; never reaches the target |
+| `E. shell access DENY` | refused by policy; never reaches the target |
+| `F. requester has no direct credential path` | checks the connector's token stayed on the customer side |
 
 The fabric and identity phases are the ones worth not skipping. The policy that
 stops the restart is applied in the fourth phase, from a file, and the identity
@@ -294,12 +298,18 @@ effect without being given general access to the environment.
 
 ## Inspect it further
 
+The run stops everything when it passes. To look around, keep it up, then point
+`forgectl` at that run's session from a second terminal in the kit directory:
+
 ```bash
-forgectl pending          # held calls
-forgectl approvals        # proposal ledger
-forgectl audit --tail 20  # request / decision / execution record
-forgectl edges            # edge status
-forgectl doctor           # boundary-oriented diagnostics
+FIRST_TOUCH_STAY=1 ./try-forgeops          # stays up after FIRST-TOUCH PASSED; Ctrl-C stops it
+
+# second terminal, in the kit directory:
+set -a; . "$(ls -td /tmp/forgeops-first-touch-kit.* | head -1)/session.env"; set +a
+./bin/forgectl audit --tail 20   # every decision the edge made: allow, held, approved, rejected, denied
+./bin/forgectl pending           # calls waiting for a human right now
+./bin/forgectl edges             # the customer-side edge and its state
+./bin/forgectl doctor            # boundary-oriented diagnostics
 ```
 
 For the diagram-first explanation, see the [visual walkthrough](VISUAL-GUIDE.md).
@@ -361,7 +371,7 @@ Once the authority model is clear, run **Demo 2 — AI + MCP**:
 
 ## If it does not start
 
-Four failures account for nearly every unsuccessful first run.
+Three failures account for nearly every unsuccessful first run.
 
 **`platform exited before it became usable (pid …)`** — two different causes,
 one message.
@@ -375,11 +385,8 @@ file bin/api        # must say your platform, e.g. "ELF 64-bit ... x86-64" on Li
 `Mach-O` on Linux (or the reverse) means the wrong bundle was downloaded — the
 command above picks it automatically, so re-run the download block.
 
-If the bundle is right, **run it again.** Bundles built before 14 September 2026
-check whether Postgres is ready over a Unix socket, which reports success a
-fraction of a second before the database accepts TCP connections. It fails
-roughly one run in four and succeeds on a retry. Later bundles wait for the
-right thing.
+If the bundle is right, run it again after `bash scripts/first-touch-reset.sh`,
+and if it still fails, send us the terminal output (see [CONTACT.md](../CONTACT.md)).
 
 **`cannot start: port :NNNN is already listening`** — something from a previous
 run survived, or another program holds the port:
@@ -387,11 +394,6 @@ run survived, or another program holds the port:
 ```bash
 bash scripts/first-touch-reset.sh
 ```
-
-**`cd: not a directory: ._forgeops-first-touch-…`** — the bundle was packaged on
-macOS with a sidecar file per entry, and `._…` sorts first. The extract command
-in the download block above skips them; bundles built after 13 September 2026 do
-not contain them.
 
 **`FIRST-TOUCH FAILED: denied restart did not reach a terminal refusal`** — the
 run asks for two browser decisions and they want different answers. Phase B/C

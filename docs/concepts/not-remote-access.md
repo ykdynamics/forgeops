@@ -28,8 +28,11 @@ is a shell with a longer name. The demo includes a shell request specifically so
 you can watch it be refused.
 
 **Approval that isn't separate.** If the requester can approve, the hold is
-theatre. Ask the model in the demo to approve its own held request and watch it
-be refused — by the server, not by the model's manners.
+theatre. In `./try-with-ai` the model has no approval tool at all — approval
+belongs to a different identity. `./try-with-ai-mcp`, a scripted MCP requester
+in the same kit, goes further: it tries to approve its own held restart with its
+own credential, and the run fails unless the server refuses (its evidence file
+records `refused (HTTP 403), action stayed held, zero target effect`).
 
 **A credential that travels.** If the requester ever holds the customer's token,
 the boundary is decorative.
