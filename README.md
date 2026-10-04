@@ -89,6 +89,10 @@ an operation of your own through it? [Bring your own operation](demo/BRING-YOUR-
   and how this kind of claim gets faked.
 - **What the demos prove, and what they don't:** [read before believing the
   stronger claims](docs/concepts/what-this-proves.md).
+- **Across real boundaries:** two customers, an on-premises box and a cloud
+  account, approvals on a phone with a passkey, a vendor's AI that can only ask.
+  [The hosted setup, shown on request →](demo/README.md#shown-on-request-the-hosted-two-site-setup)
+  and [how a person decides →](docs/concepts/a-person-decides.md)
 - **Where it fits:** [software vendors, governed automation, AI agents,
   sovereign edge](docs/use-cases/), and [where this could go](docs/direction.md).
 - **Where the design comes from:** Kubernetes, in large part. Declarative
