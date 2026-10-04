@@ -3,7 +3,7 @@
 A held operation waits for a person on the customer's side. This page is about
 that moment: how the person is reached, what they see, and what it takes for
 their "yes" to count. Everything here was shown on our hosted two-site setup in
-October 2026 (see [the hosted demos](../../demo/README.md#shown-on-request-the-hosted-two-site-setup));
+October 2026 (see [across real boundaries](../real-boundaries.md));
 it is not in the download.
 
 ## What the approver does
@@ -71,4 +71,4 @@ The direction, not a claim: **the approver's phone co-signs each approval with
 the passkey, and the edge requires both signatures**. A hosted ForgeOps could
 then not approve on its own, not even compromised or compelled. Today's passkey
 step is the groundwork; the edge does not check a phone's signature yet. See
-[where this could go](../direction.md).
+[who holds the keys](../real-boundaries.md#who-holds-the-keys).
