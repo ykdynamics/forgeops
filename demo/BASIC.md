@@ -395,9 +395,9 @@ A read (`mutation: false`, or no effect block) defaults to `allow` and runs
 without a human, exactly as diagnostics does.
 
 [The worked example](../examples/) has a manifest and an implementation to copy.
-The SDK it builds against is a source bundle available on request rather than a
-published module — see [CONTACT.md](../CONTACT.md) — but it is a convenience,
-not the contract: the harness requires an executable serving two HTTP
+The SDK it builds against is the public Go module
+[`github.com/ykdynamics/forgeops-sdk`](https://github.com/ykdynamics/forgeops-sdk)
+— but it is a convenience, not the contract: the harness requires an executable serving two HTTP
 endpoints, so an operation can be written in anything.
 
 **[The full walkthrough →](BRING-YOUR-OWN.md)** — the manifest contract, both

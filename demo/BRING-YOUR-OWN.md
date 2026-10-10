@@ -117,8 +117,9 @@ treats 5xx as transient.
 
 Any language that can serve those two endpoints can implement a capability. The
 Go SDK is a convenience that handles the envelopes, the deadline and the
-refusal classes for you; it is a source bundle available on request rather than
-a published module — see [CONTACT.md](../CONTACT.md).
+refusal classes for you. It is a public Go module,
+[`github.com/ykdynamics/forgeops-sdk`](https://github.com/ykdynamics/forgeops-sdk)
+(Apache-2.0, developer preview), and `go build` fetches it like any other.
 
 ## What you need, and where it lives
 
@@ -129,7 +130,7 @@ from not knowing that.
 |---|---|---|
 | the **kit** | `try-forgeops` and `scripts/` | the tarball you downloaded and unpacked |
 | this **repo** | `examples/inventory-check/` to copy | `git clone https://github.com/ykdynamics/forgeops` |
-| the **SDK** | the Go package the example imports | a source bundle on request — [CONTACT.md](../CONTACT.md) |
+| the **SDK** | the Go package the example imports | nowhere by hand: the example's `go.mod` requires [`github.com/ykdynamics/forgeops-sdk`](https://github.com/ykdynamics/forgeops-sdk), and `go build` fetches it |
 
 You also need **Go 1.23 or later** to compile your runtime. The kit ships
 prebuilt binaries and needs no toolchain; this path does, because you are
@@ -146,25 +147,14 @@ and the run happens in another. Set these to match your machine:
 ```bash
 KIT=~/forgeops-first-touch-<stamp>-<platform>    # where you unpacked the kit
 REPO=~/forgeops                                  # this repository
-SDK=~/forgeops-capability-sdk-<version>          # the unpacked SDK bundle
 ```
 
-Copy the worked example out and compile it:
+Copy the worked example out and compile it. It carries its own `go.mod`, which
+requires the SDK:
 
 ```bash
 cp -R "$REPO/examples/inventory-check" ~/my-capability
 cd ~/my-capability
-
-cat > go.mod <<MOD
-module example.com/my-capability
-
-go 1.23
-
-require github.com/ykdynamics/forgeops-capabilities v0.0.0
-
-replace github.com/ykdynamics/forgeops-capabilities => $SDK
-MOD
-
 go build -o my-capability .
 ```
 
@@ -185,11 +175,12 @@ bash scripts/first-touch-reset.sh
 ./try-forgeops --with ~/my-capability
 ```
 
-Your operation arrives as phase Z, after the built-in ones:
+Your operation arrives as phase Z, after the built-in ones (the copied example
+is `inventory.check`; your own key appears here once you change it):
 
 ```text
-== Z. inventory.refresh — an operation you wrote, through the same path ==
-OK: inventory.refresh succeeded through Platform, Control, the edge policy gate and your runtime
+== Z. inventory.check — an operation you wrote, through the same path ==
+OK: inventory.check succeeded through Platform, Control, the edge policy gate and your runtime
 ```
 
 **Phase Z comes after A–E, so those have to pass first.** Two of them stop for

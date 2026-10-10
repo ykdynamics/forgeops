@@ -32,29 +32,21 @@ a capability that accepts arbitrary work is a remote shell with a longer name.
 
 ## Build it
 
-The capability SDK is packaged separately rather than published as a Go module
-while the external contract is still being evaluated. If you have the SDK kit,
-unpack it beside this example and use a local `replace`:
+The example builds against the capability SDK, the public Go module
+[`github.com/ykdynamics/forgeops-sdk`](https://github.com/ykdynamics/forgeops-sdk)
+(Apache-2.0, developer preview). Its `go.mod` already requires it, so copying
+the directory and building is all there is:
 
 ```bash
-tar -xzf forgeops-capability-sdk-*.tar.gz
 cp -R examples/inventory-check ./my-capability
 cd my-capability
-
-cat > go.mod <<'MOD'
-module example.com/my-capability
-
-go 1.23
-
-require github.com/ykdynamics/forgeops-capabilities v0.0.0
-replace github.com/ykdynamics/forgeops-capabilities => ../forgeops-capability-sdk-<version>
-MOD
-
 go build -o inventory-check .
 ```
 
-If you do not have the SDK kit yet, use [CONTACT.md](../CONTACT.md). The SDK is a
-small source bundle, not access to the private ForgeOps repositories.
+You need Go 1.23 or later; the `toolchain` line in `go.mod` pins the exact
+compiler the SDK is qualified with, and the go command fetches it if needed.
+The SDK repository also has `forgeops-cap`, a CLI that scaffolds, validates
+and packages a capability in its canonical `capability.v1` form.
 
 ## Run your operation in the demo you already have
 
