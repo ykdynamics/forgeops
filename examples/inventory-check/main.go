@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ykdynamics/forgeops-capabilities/sdk"
+	"github.com/ykdynamics/forgeops-sdk/sdk"
 )
 
 type input struct {
