@@ -43,23 +43,17 @@ and the operation reads `DONE · VERIFIED`.
 ![An AI diagnoses a fictional connector, requests one bounded operation through ForgeOps, and customer authority still decides whether anything executes.](../docs/images/ai-diagnose-request.svg)
 
 The checked-in image explains the flow. The running demo gives you the actual
-browser surfaces. This is what they look like, recorded from this download
-(build `a6df3933c540`) on one laptop:
+browser surfaces. This is what they look like, recorded on our own hardware:
+the chat on a laptop, and the customer's side on a Raspberry Pi whose 3.5"
+screen says what it allowed, held, verified and refused:
 
-![A recording of ./try-with-ai: the model reads the connector, asks for a restart that the customer side holds, a person approves it in the Approval PWA, the customer side reports the restart verified, the model checks the result, and a shell request is denied by policy.](../docs/images/recording-ai-demo-a6df3933c540.webp)
+![ForgeOps on our hardware with a real AI model: the model reads the connector, asks for a restart that the customer's box holds, a person approves it in the Approval PWA, the box reports the restart verified, the model checks the result, and a shell request is blocked by the box's policy.](../docs/images/recording-hardware-ai.webp)
 
-The recording is captioned and edited for pace: still waits are shortened and
-short steps held for reading, and it says so on screen. Your run will differ in
-the model's words, not in what the customer side allows.
-
-The same run on our own hardware, with the customer side on a separate box
-whose screen says what it allowed, held, verified and refused:
-
-![ForgeOps on our hardware with a real AI model: the chat on the vendor's laptop, and the customer's box on its own screen — allowed, approval needed, verified, request blocked.](../docs/images/recording-hardware-ai.webp)
-
-*Recorded on our own hardware (a laptop and a Raspberry Pi with its own screen),
-captioned and edited for pace. This download runs the same thing with every
-side on your laptop.*
+*Recorded on our own hardware (a laptop and a Raspberry Pi with its own screen).
+This download runs the same thing with every side on your laptop, without the
+box's screen.* The recording is captioned and edited for pace: still waits are
+shortened and short steps held for reading, and it says so on screen. Your run
+will differ in the model's words, not in what the customer side allows.
 
 ## What changes — and what does not
 
