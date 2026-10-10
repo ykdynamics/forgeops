@@ -65,18 +65,12 @@ troubleshooting; the binaries are not code-signed).
 ./try-with-ai
 ```
 
-![A recording of ./try-with-ai: the model asks, the customer side holds, a person approves in the Approval PWA, the customer side checks the restart worked, and a shell request is denied.](docs/images/recording-ai-demo-a6df3933c540.webp)
-
-*Recorded from the download (build `a6df3933c540`) on one laptop, edited for pace.*
-
-The same run on our own hardware, with the customer's box saying on its screen
-what it allowed, held, verified and refused:
-
 ![ForgeOps on our hardware with a real AI model: the chat on the vendor's laptop, and the customer's box on its own screen — allowed, approval needed, verified, request blocked.](docs/images/recording-hardware-ai.webp)
 
-*Recorded on our own hardware (a laptop and a Raspberry Pi with its own screen),
-captioned and edited for pace. `./try-with-ai` runs the same thing with every
-side on your laptop.*
+*Recorded on our own hardware: the chat on a laptop, and the customer's side on
+a Raspberry Pi whose 3.5" screen says what it allowed, held, verified and
+refused. Captioned and edited for pace. `./try-with-ai` runs the same thing
+with every side on your laptop.*
 
 A real model reads the connector, works out what is wrong and asks for the fix.
 It still cannot approve its own request, reach the connector or widen the

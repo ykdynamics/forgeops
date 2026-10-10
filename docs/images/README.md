@@ -56,12 +56,6 @@ recording-hardware-ai.webp             ./try-with-ai's run on our hardware, labe
                                        restart verified, shell denied (74 s, captioned,
                                        edited for pace, 1600 px, 4 frames a second)
 
-recording-ai-demo-a6df3933c540.webp    ./try-with-ai from build a6df3933c540, recorded
-                                       on one laptop: real model, approval in the
-                                       real Approval PWA, restart verified on the
-                                       customer side, shell denied (78 s, captioned,
-                                       edited for pace, 1200 px, 4 frames a second)
-
 ai-diagnose-request.svg                AI diagnoses and requests; customer authority
                                        still governs ALLOW / ASK / DENY
 
