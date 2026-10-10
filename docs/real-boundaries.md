@@ -11,12 +11,28 @@ hosted ForgeOps, two fictional customers on separate networks, a vendor on its
 own computer, approvers on their phones. Here is what that showed, and how to
 get a place to try it.
 
+## See it
+
+The vendor's AI agent (left) is told only that something is wrong with customer
+A's connector. It reads the connector's status, finds the workers hung, and asks
+for a restart. Customer A's box holds the request. The approver approves on
+their phone with Face ID (middle), and the box (right) runs the restart once,
+checks the connector recovered, and refuses a shell request outright.
+
+![ForgeOps across real boundaries: the vendor's AI asks in its terminal, the customer's approver approves on an iPhone with a passkey, and the customer's box on its own network shows approval needed, outcome verified and request blocked.](images/recording-hardware-hosted.webp)
+
+*Recorded on our own hardware and accounts: ForgeOps hosted on our server,
+customer A's box (a Raspberry Pi) on its own network, the approver's iPhone. The
+captions come from the box's own record. Edited for pace, and the approver's
+email address is blurred. This is not in the download, which runs the same ask,
+hold, approve, verify and refuse with every side on your laptop.*
+
 ## From watching to owning
 
 Each step proves more, and asks more of you.
 
-1. **Watch.** The [hardware recording](../README.md#see-it) on the front page.
-   A recording of the real-boundary runs below is coming.
+1. **Watch.** The [hardware recording](../README.md#see-it) on the front page,
+   and the [real-boundary run](#see-it) above.
 2. **Run it on your laptop.** [Demo 1 and Demo 2](../demo/README.md). No
    account. Start here.
 3. **Try the hosted platform.** Invite based, on request: your own sandbox
