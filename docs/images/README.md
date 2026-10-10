@@ -21,7 +21,10 @@ recording of any other setup (a second machine, features the kit doesn't ship)
 does not belong here, with one labelled exception: `recording-hardware-*.webp`
 shows ForgeOps on **our hardware** (a laptop and a Raspberry Pi edge with its
 own screen). Wherever it appears, its caption says it was recorded on our
-hardware and that the download runs the same thing on one laptop.
+hardware and that the download runs the same thing on one laptop. The hosted
+recording (`recording-hardware-hosted.webp`) also uses our server and a phone,
+which the download does not have: its caption says so, and what the download
+runs instead.
 
 ## What is here
 
@@ -48,6 +51,15 @@ recording-hardware-narrated.webp       the front page's "See it": our hardware (
                                        the log lines that prove each step) beside the
                                        box's 3.5" screen, read from the box itself
                                        (88 s, 1600 px, 4 frames a second)
+
+recording-hardware-hosted.webp         "Across real boundaries": ForgeOps hosted on our
+                                       server, customer A's box on its own network, the
+                                       approver's iPhone; labelled, not the download.
+                                       The vendor's AI (OpenClaw) in its terminal, the
+                                       phone's own screen recording, and the box's
+                                       screen read from the box; captions from the
+                                       box's audit record; email addresses blurred
+                                       (89 s, edited for pace, 1600 px, 4 frames a second)
 
 recording-hardware-ai.webp             ./try-with-ai's run on our hardware, labelled;
                                        not the download. The AI chat page beside the
