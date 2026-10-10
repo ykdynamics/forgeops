@@ -69,6 +69,15 @@ troubleshooting; the binaries are not code-signed).
 
 *Recorded from the download (build `a6df3933c540`) on one laptop, edited for pace.*
 
+The same run on our own hardware, with the customer's box saying on its screen
+what it allowed, held, verified and refused:
+
+![ForgeOps on our hardware with a real AI model: the chat on the vendor's laptop, and the customer's box on its own screen — allowed, approval needed, verified, request blocked.](docs/images/recording-hardware-ai.webp)
+
+*Recorded on our own hardware (a laptop and a Raspberry Pi with its own screen),
+captioned and edited for pace. `./try-with-ai` runs the same thing with every
+side on your laptop.*
+
 A real model reads the connector, works out what is wrong and asks for the fix.
 It still cannot approve its own request, reach the connector or widen the
 customer's policy. The model is remote by default, so this one needs internet;

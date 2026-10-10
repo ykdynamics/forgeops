@@ -46,8 +46,15 @@ recording-hardware-narrated.webp       the front page's "See it": our hardware (
                                        Raspberry Pi edge with its own screen), labelled;
                                        not the download. The run's page (flow view and
                                        the log lines that prove each step) beside the
-                                       box's screen and the kit (90 s, 1600 px,
-                                       4 frames a second)
+                                       box's 3.5" screen, read from the box itself
+                                       (88 s, 1600 px, 4 frames a second)
+
+recording-hardware-ai.webp             ./try-with-ai's run on our hardware, labelled;
+                                       not the download. The AI chat page beside the
+                                       box's 3.5" screen, read from the box itself:
+                                       real model, approval in the real Approval PWA,
+                                       restart verified, shell denied (74 s, captioned,
+                                       edited for pace, 1600 px, 4 frames a second)
 
 recording-ai-demo-a6df3933c540.webp    ./try-with-ai from build a6df3933c540, recorded
                                        on one laptop: real model, approval in the

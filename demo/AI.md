@@ -52,6 +52,15 @@ The recording is captioned and edited for pace: still waits are shortened and
 short steps held for reading, and it says so on screen. Your run will differ in
 the model's words, not in what the customer side allows.
 
+The same run on our own hardware, with the customer side on a separate box
+whose screen says what it allowed, held, verified and refused:
+
+![ForgeOps on our hardware with a real AI model: the chat on the vendor's laptop, and the customer's box on its own screen — allowed, approval needed, verified, request blocked.](../docs/images/recording-hardware-ai.webp)
+
+*Recorded on our own hardware (a laptop and a Raspberry Pi with its own screen),
+captioned and edited for pace. This download runs the same thing with every
+side on your laptop.*
+
 ## What changes — and what does not
 
 The caller changes. The authority model does not.
