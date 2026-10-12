@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+"""forgeops-request -- ask a customer's ForgeOps for an operation, as its requester.
+
+  forgeops-request list
+  forgeops-request request <capability-key> --target <target> --purpose "<why>" \
+      [--version <v>] [--input '<json>'] [--workspace <w>] [--wait <seconds>]
+  forgeops-request show <request-id>
+
+You can ask. The customer's ForgeOps decides whether it runs, where, after whose
+approval, and what of the result you receive; this tool shows its answers as
+given. It has no way to approve anything.
+
+  FORGEOPS_URL       the customer's ForgeOps (https)
+  FORGEOPS_KEY_FILE  the requester key the customer issued
+                     (default ~/.config/forgeops/requester.key); never printed
+"""
+import argparse
+import json
+import os
+import sys
+import time
+
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import forgeops_client as fc  # noqa: E402
+
+
+def show_json(value):
+    return json.dumps(value, sort_keys=True)
+
+
+def cmd_list(s, _args):
+    caps = s.requestable()
+    if not caps:
+        print("nothing is requestable with this key (the customer has installed, bound and deployed nothing for it)")
+        return
+    for c in caps:
+        print("%s %s  target %s  (%s, revision %s)" % (
+            c.get("capability_key"), c.get("version"), c.get("target"), c.get("environment"), c.get("capability_revision")))
+        if c.get("description"):
+            print("  %s" % c["description"])
+        if c.get("input_schema"):
+            print("  input   %s" % show_json(c["input_schema"]))
+        out = c.get("output") or {}
+        line = "  output  %s" % out.get("disclosure", "not stated")
+        if out.get("reason"):
+            line += ": %s" % out["reason"]
+        print(line)
+        if out.get("schema"):
+            print("          %s" % show_json(out["schema"]))
+
+
+def report(s, action_id):
+    a = s.action(action_id)
+    print("request  %s" % action_id)
+    print("status   %s" % a.get("status", "?"))
+    if a.get("capability_uid"):
+        print("asked    %s %s on %s" % (a["capability_uid"], a.get("capability_version") or
+                                          "revision %s" % a.get("capability_revision"), a.get("target")))
+    if a.get("status") in fc.TERMINAL and a.get("status") != "succeeded":
+        reason = (s.explain(action_id).get("action") or {}).get("failure_reason")
+        if reason:
+            print("reason   %s" % reason)
+    result = s.result(action_id)
+    if result is not None:
+        print("result   %s" % fc.disclosure_meaning(result))
+        if "output" in result:
+            print("output   %s" % show_json(result["output"]))
+
+
+def cmd_request(s, args):
+    try:
+        payload = json.loads(args.input)
+    except ValueError as e:
+        sys.exit("--input is not JSON: %s" % e)
+    a = s.request(args.capability, args.target, payload, args.purpose, version=args.version, workspace=args.workspace)
+    aid = a.get("action_id") or a.get("id")
+    print("asked for %s on %s: %s" % (args.capability, args.target, aid))
+
+    def on_status(status):
+        print("  %s  %s" % (time.strftime("%H:%M:%S"), status))
+        if status == "held":
+            print("           waiting for the customer's approver")
+
+    s.follow(aid, args.wait, on_status=on_status)
+    print()
+    report(s, aid)
+
+
+def main():
+    p = argparse.ArgumentParser(description="Ask a customer's ForgeOps for an operation, as its requester.")
+    p.add_argument("--url", default=os.environ.get("FORGEOPS_URL", ""))
+    p.add_argument("--key-file", default=os.environ.get("FORGEOPS_KEY_FILE", fc.DEFAULT_KEY_FILE))
+    sub = p.add_subparsers(dest="cmd", required=True)
+    sub.add_parser("list", help="what this key may request")
+    rq = sub.add_parser("request", help="ask for one capability on one target")
+    rq.add_argument("capability", help="capability key, e.g. demo.service.status")
+    rq.add_argument("--target", required=True)
+    rq.add_argument("--purpose", required=True, help="why; the customer's approver reads it")
+    rq.add_argument("--version", help="capability version (default: what the customer serves)")
+    rq.add_argument("--input", default="{}", help="the operation's input, as JSON")
+    rq.add_argument("--workspace", help="only for a key not scoped to one workspace")
+    rq.add_argument("--wait", type=int, default=600, help="seconds to follow the request")
+    sh = sub.add_parser("show", help="a request's status and result")
+    sh.add_argument("request_id")
+    args = p.parse_args()
+
+    try:
+        s = fc.Session(args.url, fc.read_key(args.key_file))
+        if args.cmd == "list":
+            cmd_list(s, args)
+        elif args.cmd == "request":
+            cmd_request(s, args)
+        else:
+            report(s, args.request_id)
+    except fc.ForgeOpsError as e:
+        sys.exit("forgeops-request: %s" % e)
+
+
+if __name__ == "__main__":
+    main()
