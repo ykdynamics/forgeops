@@ -36,7 +36,7 @@ TERMINAL = frozenset({"succeeded", "failed", "denied", "refused", "expired", "ca
 # How the customer's ForgeOps says what of a result it disclosed to this
 # requester. The words are the server's; MEANING only explains them.
 MEANING = {
-    "disclosed": "the customer approved disclosing this output to requesters",
+    "disclosed": "the customer's ForgeOps released this output under the customer's approval",
     "withheld": "the customer's ForgeOps withheld the output",
     "none": "the capability proposes no output for requesters",
 }

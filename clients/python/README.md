@@ -27,7 +27,8 @@ capability, whether the output it proposes for requesters may be disclosed. The
 clients show the server's answer as given:
 
 ```text
-disclosed  the output the customer approved, exactly as the server sent it
+disclosed  output the customer's ForgeOps released under the customer's approval,
+           exactly as the server sent it
 withheld   no output; the server's reason why
 none       the capability proposes no output for requesters
 ```

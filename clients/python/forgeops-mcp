@@ -65,7 +65,7 @@ def describe(s, action_id, a):
     if status == "held":
         out["meaning"] = "held for the customer's approver; it runs only if they approve. Check again with get_request."
     elif status == "succeeded":
-        out["meaning"] = "it ran on the customer's side"
+        out["meaning"] = "the customer's ForgeOps reports that it ran on the customer's side"
     elif status in fc.TERMINAL:
         out["meaning"] = "it did not complete"
         reason = (s.explain(action_id).get("action") or {}).get("failure_reason")
