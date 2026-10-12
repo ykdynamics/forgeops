@@ -5,3 +5,6 @@
 forgeops-first-touch-*/
 forgeops-first-touch-*.tar.gz
 forgeops-first-touch-*.tar.gz.sha256
+
+# Python bytecode from running the clients' tests.
+__pycache__/
