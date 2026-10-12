@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 YK Dynamics
 """forgeops-mcp -- an AI agent as a ForgeOps requester (MCP over stdio).
 
 It gives an agent what forgeops-request gives a person, and nothing more:
@@ -33,6 +35,9 @@ import forgeops_client as fc  # noqa: E402
 SERVER = {"name": "forgeops-requester", "version": "1"}
 PROTOCOLS = ("2025-06-18", "2025-03-26", "2024-11-05")
 FOLLOW_SECONDS = 25
+# Every tool call answers within this, network trouble included: an agent is
+# never left waiting on a hung connection.
+TOOL_SECONDS = 45
 
 
 def log(msg):
@@ -43,11 +48,13 @@ _session = None
 
 
 def session():
+    """The session, its time limit restarted for this tool call."""
     global _session
     if _session is None:
         url = os.environ.get("FORGEOPS_URL", "")
         key_file = os.environ.get("FORGEOPS_KEY_FILE", fc.DEFAULT_KEY_FILE)
-        _session = fc.Session(url, fc.read_key(key_file))
+        _session = fc.Session(url, fc.read_key(key_file), net_patience=10, timeout=10)
+    _session.time_limit(TOOL_SECONDS)
     return _session
 
 

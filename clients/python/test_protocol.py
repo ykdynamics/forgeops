@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 YK Dynamics
 """Protocol tests for forgeops_client, forgeops-request and forgeops-mcp,
 against a fake customer ForgeOps on 127.0.0.1.
 
@@ -18,6 +20,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
@@ -53,11 +56,19 @@ class FakePlatform:
         self.next_result = DISCLOSED
         self.next_status = "succeeded"
         self.refuse_create = None   # (status, body)
+        self.redirect = {}          # path -> Location: answer 302 there
+        self.slow = {}              # path -> seconds to stall before answering
+        self.drop_next_create = False  # create the Action, then drop the connection unanswered
+        self.by_key = {}            # idempotency key -> action id, as the real Platform keeps it
         self.lock = threading.Lock()
 
     def handle(self, method, path, headers, body):
         with self.lock:
             self.requests.append((method, path, dict(headers), body))
+        if path in self.redirect:
+            return "REDIRECT", self.redirect[path]
+        if path in self.slow:
+            time.sleep(self.slow[path])
         if (method, path) == ("POST", "/v1/auth/token"):
             if (body or {}).get("api_key") != KEY:
                 return 401, {"error": "invalid api key"}
@@ -72,7 +83,13 @@ class FakePlatform:
         if (method, path) == ("POST", base + "/actions"):
             if self.refuse_create:
                 return self.refuse_create
+            # A repeat of the same intended effect converges on the existing
+            # Action (the Platform answers 200 with it).
+            existing = self.by_key.get(body.get("idempotency_key"))
+            if existing:
+                return 200, self.actions[existing]
             aid = "act-%032x" % (len(self.actions) + 1)
+            self.by_key[body.get("idempotency_key")] = aid
             action = {"action_id": aid, "status": self.next_status, "capability_uid": body["capability_uid"],
                       "capability_version": body.get("capability_version") or "0.1.1", "capability_revision": 2,
                       "target": body["target"]}
@@ -82,6 +99,9 @@ class FakePlatform:
                 {"action_id": aid, "from_status": "requested", "to_status": "started", "message": "placed", "by": "control"},
                 {"action_id": aid, "from_status": "started", "to_status": self.next_status,
                  "message": json.dumps(msg), "by": "control-callback"}]
+            if self.drop_next_create:
+                self.drop_next_create = False
+                return "DROP", None
             return 201, action
         for aid, action in self.actions.items():
             if (method, path) == ("GET", "%s/actions/%s" % (base, aid)):
@@ -98,6 +118,15 @@ class Handler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length") or 0)
         body = json.loads(self.rfile.read(length)) if length else None
         status, out = self.server.fake.handle(self.command, self.path, self.headers, body)
+        if status == "DROP":  # the request was processed; the answer never arrives
+            self.close_connection = True
+            return
+        if status == "REDIRECT":
+            self.send_response(302)
+            self.send_header("Location", out)
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
         raw = json.dumps(out).encode()
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
@@ -161,6 +190,55 @@ class ProtocolTest(unittest.TestCase):
     def test_a_refused_key_says_so(self):
         with self.assertRaisesRegex(fc.ForgeOpsError, "refused the requester key"):
             fc.Session(self.url, "wrong-key", net_patience=0)
+
+    def other_server(self):
+        """A second server, standing for wherever a redirect points."""
+        other = FakePlatform()
+        httpd = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        httpd.fake = other
+        threading.Thread(target=httpd.serve_forever, daemon=True).start()
+        self.addCleanup(httpd.server_close)
+        self.addCleanup(httpd.shutdown)
+        return other, "http://127.0.0.1:%d" % httpd.server_address[1]
+
+    def test_a_redirect_never_carries_the_token_or_the_key_elsewhere(self):
+        other, other_url = self.other_server()
+        # After login, a read answers with a redirect to another server.
+        s = self.session()
+        self.fake.redirect["/v1/tenants/%s/requestable-capabilities" % TENANT] = other_url + "/steal"
+        with self.assertRaisesRegex(fc.ForgeOpsError, "redirect"):
+            s.requestable()
+        # And the token exchange itself, redirected: the key goes nowhere else.
+        self.fake.redirect["/v1/auth/token"] = other_url + "/v1/auth/token"
+        with self.assertRaisesRegex(fc.ForgeOpsError, "redirect"):
+            self.session()
+        self.assertEqual(other.requests, [], "a redirect target received a request")
+
+    def test_a_stalled_server_is_a_bounded_wait(self):
+        self.fake.slow["/v1/session"] = 3
+        started = time.monotonic()
+        with self.assertRaisesRegex(fc.ForgeOpsError, "cannot reach"):
+            fc.Session(self.url, KEY, net_patience=0, timeout=1)
+        self.assertLess(time.monotonic() - started, 2.5)
+        # A session time limit bounds a call even when retries would go on.
+        s = self.session()
+        s.net_patience = 60
+        s.time_limit(1.5)
+        self.fake.slow["/v1/tenants/%s/requestable-capabilities" % TENANT] = 3
+        started = time.monotonic()
+        with self.assertRaises(fc.ForgeOpsError):
+            s.requestable()
+        self.assertLess(time.monotonic() - started, 4)
+
+    def test_a_lost_answer_is_retried_into_the_same_request(self):
+        s = fc.Session(self.url, fc.read_key(self.key_file), net_patience=10, sleep=lambda _: None)
+        self.fake.drop_next_create = True
+        a = s.request("demo.service.status", "demo-service", {"service": "demo-service"}, "check")
+        posts = [b for m, p, _, b in self.fake.requests if m == "POST" and p.endswith("/actions")]
+        self.assertEqual(len(posts), 2, "the unanswered create is sent again")
+        self.assertEqual(posts[0]["idempotency_key"], posts[1]["idempotency_key"], "...as the same intended effect")
+        self.assertEqual(len(self.fake.actions), 1, "one effect, not two")
+        self.assertEqual(a["action_id"], next(iter(self.fake.actions)))
 
     # -- requests ----------------------------------------------------------
 
@@ -264,6 +342,41 @@ class ProtocolTest(unittest.TestCase):
         self.assertEqual(call["status"], "succeeded")
         self.assertEqual(call["result"], DISCLOSED, "the result reaches the agent exactly as the server sent it")
         self.assertIn("error", by_id[4], "there is no approve tool")
+
+    def test_forgeops_mcp_stdout_is_only_the_protocol(self):
+        """Every stdout line is one JSON-RPC response, whatever goes wrong:
+        bad JSON, a batch, an unknown method, a tool error, a refused key."""
+        env = dict(os.environ, FORGEOPS_URL=self.url, FORGEOPS_KEY_FILE=self.key_file)
+        lines = "\n".join([
+            "this is not json",
+            json.dumps([{"jsonrpc": "2.0", "id": 1, "method": "ping"}]),
+            json.dumps({"jsonrpc": "2.0", "id": 2, "method": "no/such"}),
+            json.dumps({"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {
+                "name": "request_capability", "arguments": {"capability_key": "demo.service.status"}}}),
+            json.dumps({"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {
+                "name": "get_request", "arguments": {"request_id": "not-an-id"}}}),
+            json.dumps({"jsonrpc": "2.0", "id": 5, "method": "ping"}),
+        ]) + "\n"
+        out = subprocess.run([sys.executable, os.path.join(HERE, "forgeops-mcp")], input=lines, env=env,
+                             capture_output=True, text=True, timeout=60)
+        replies = []
+        for line in out.stdout.splitlines():
+            msg = json.loads(line)  # every line parses
+            self.assertEqual(msg.get("jsonrpc"), "2.0")
+            self.assertTrue(("result" in msg) != ("error" in msg), "exactly one of result/error: %s" % line)
+            replies.append(msg)
+        self.assertEqual([r.get("id") for r in replies], [None, None, 2, 3, 4, 5])
+        self.assertTrue(replies[3]["result"]["isError"])
+        self.assertTrue(replies[4]["result"]["isError"])
+        # A refused key is a tool error on stdout's protocol, not a crash.
+        with open(self.key_file, "w") as f:
+            f.write("wrong-key")
+        out = subprocess.run([sys.executable, os.path.join(HERE, "forgeops-mcp")], env=env, capture_output=True, text=True,
+                             timeout=60, input=json.dumps({"jsonrpc": "2.0", "id": 9, "method": "tools/call",
+                                                           "params": {"name": "list_capabilities", "arguments": {}}}) + "\n")
+        reply = json.loads(out.stdout.strip())
+        self.assertTrue(reply["result"]["isError"])
+        self.assertIn("refused the requester key", reply["result"]["content"][0]["text"])
 
     def test_forgeops_mcp_reports_a_withheld_result_without_output(self):
         self.fake.next_result = WITHHELD

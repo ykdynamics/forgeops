@@ -88,6 +88,23 @@ Tools: `list_capabilities`, `request_capability`, `get_request`. There is no
 approve tool. A held request waits for the customer's approver, and the agent
 follows it with `get_request`.
 
+## Behaviour on the network
+
+- **Redirects are never followed.** A 3xx answer is an error that names where
+  it pointed. Neither the session token nor the key leaves the configured URL.
+- **Waits are bounded.** Each HTTP call has a timeout. Network errors are
+  retried for a while. An MCP tool call always answers within 45 seconds.
+- **Retries are safe.** A request carries one idempotency key, and the
+  customer's ForgeOps answers a repeat with the same request. A lost answer
+  therefore never becomes a second operation.
+
+## License
+
+The files in this directory (`clients/python/`) are licensed under the
+[Apache License 2.0](LICENSE), so you can embed or adapt them in your own
+tools. The rest of this repository is published under its
+[evaluation notice](../../NOTICE.md), which this does not change.
+
 ## Tests
 
 ```bash

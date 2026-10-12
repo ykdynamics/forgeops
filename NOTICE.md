@@ -11,6 +11,11 @@ materials as part of another commercial product or service.
 You are welcome to inspect the repository, download the published evaluator
 bundle, run the demos, and use the included examples for evaluating ForgeOps.
 
+**Exception:** the requester clients in [`clients/python/`](clients/python/)
+are licensed under the Apache License 2.0 (see
+[`clients/python/LICENSE`](clients/python/LICENSE)). This notice applies to
+everything else in the repository.
+
 For permission beyond evaluation, contact YK Dynamics:
 
 - https://ykdynamics.com/en/forgeops

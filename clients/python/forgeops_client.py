@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 YK Dynamics
 """forgeops_client -- the requester's side of ForgeOps, shared by forgeops-request
 and forgeops-mcp.
 
@@ -44,6 +46,18 @@ class ForgeOpsError(Exception):
     """A request the client could not make, or the server refused."""
 
 
+class _NoRedirects(urllib.request.HTTPRedirectHandler):
+    """Never follow a redirect. urllib would replay the Authorization header to
+    whatever URL a 3xx names, any host and any scheme; the session token, and on
+    the token exchange the key, go only to the URL the requester configured."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None  # urllib then raises the 3xx as an HTTPError
+
+
+_OPENER = urllib.request.build_opener(_NoRedirects)
+
+
 def read_key(path):
     """The requester key, from a file only: never an argument, never printed."""
     try:
@@ -81,6 +95,7 @@ class Session:
         self.url = check_url(url)
         self.net_patience, self.timeout, self.sleep = net_patience, timeout, sleep
         self.token = None
+        self.deadline = None  # monotonic time after which no call starts or waits
         status, body = self.call("POST", "/v1/auth/token", {"api_key": key})
         if status != 200 or not isinstance(body, dict) or not body.get("token"):
             raise ForgeOpsError("the customer's ForgeOps refused the requester key (%s): %s" % (status, error_text(body)))
@@ -93,24 +108,45 @@ class Session:
         if not self.tenant:
             raise ForgeOpsError("the session names no customer tenant")
 
+    def time_limit(self, seconds):
+        """Bound everything this session does from now: no call starts, waits or
+        retries past it."""
+        self.deadline = time.monotonic() + seconds
+
+    def _remaining(self):
+        if self.deadline is None:
+            return None
+        left = self.deadline - time.monotonic()
+        if left <= 0:
+            raise ForgeOpsError("out of time waiting for %s" % self.url)
+        return left
+
     def call(self, method, path, body=None):
-        """(status, decoded JSON). Network errors are retried for a while; a
-        retried request is safe, since a request carries its idempotency key."""
+        """(status, decoded JSON). Network errors and timeouts are retried for a
+        while; a retried request is safe, since a request carries its
+        idempotency key and the server answers a repeat with the same Action."""
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
         if self.token:
             headers["Authorization"] = "Bearer " + self.token
         data = json.dumps(body).encode() if body is not None else None
-        deadline = time.monotonic() + self.net_patience
+        patience = time.monotonic() + self.net_patience
         while True:
+            left = self._remaining()
+            timeout = self.timeout if left is None else max(0.1, min(self.timeout, left))
             req = urllib.request.Request(self.url + path, method=method, data=data, headers=headers)
             try:
-                with urllib.request.urlopen(req, timeout=self.timeout) as r:
+                with _OPENER.open(req, timeout=timeout) as r:
                     return r.status, _decode(r.read())
             except urllib.error.HTTPError as e:
+                if 300 <= e.code < 400:
+                    raise ForgeOpsError("%s answered %s with a redirect to %r; redirects are not followed, so "
+                                        "neither the key nor the session token leaves %s" %
+                                        (self.url, e.code, e.headers.get("Location", ""), self.url))
                 return e.code, _decode(e.read())
             except (urllib.error.URLError, OSError) as e:
-                if time.monotonic() >= deadline:
+                if time.monotonic() >= patience:
                     raise ForgeOpsError("cannot reach %s (%s)" % (self.url, getattr(e, "reason", e)))
+                self._remaining()
                 self.sleep(2)
 
     def _get(self, path, what):
@@ -166,6 +202,8 @@ class Session:
     def follow(self, action_id, seconds, on_status=None, stop_when_held=False):
         """Poll until the request ends, is held (if asked), or time runs out."""
         deadline, last, a = time.monotonic() + max(0, seconds), None, {}
+        if self.deadline is not None:
+            deadline = min(deadline, self.deadline - 3)  # leave time to report
         while True:
             a = self.action(action_id)
             status = a.get("status")
