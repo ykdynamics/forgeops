@@ -27,9 +27,12 @@ Standard library only (Python 3.9+).
 """
 
 import datetime
+import http.client
 import json
 import os
 import re
+import socket
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -88,7 +91,54 @@ class _NoRedirects(urllib.request.HTTPRedirectHandler):
         return None  # urllib then raises the 3xx as an HTTPError
 
 
-_OPENER = urllib.request.build_opener(_NoRedirects)
+# The connections an exchange opens, so a deadline can cut one off whatever
+# phase it is in -- connecting, sending, reading headers or reading the body.
+_exchange = threading.local()
+
+
+def _tracked(connection_class):
+    def make(host, **kw):
+        conn = connection_class(host, **kw)
+        opened = getattr(_exchange, "connections", None)
+        if opened is not None:
+            opened.append(conn)
+        return conn
+    return make
+
+
+class _TrackedHTTP(urllib.request.HTTPHandler):
+    def http_open(self, req):
+        return self.do_open(_tracked(http.client.HTTPConnection), req)
+
+
+class _TrackedHTTPS(urllib.request.HTTPSHandler):
+    def https_open(self, req):
+        kw = {"context": self._context}
+        if hasattr(self, "_check_hostname"):  # Python 3.9 to 3.11
+            kw["check_hostname"] = self._check_hostname
+        return self.do_open(_tracked(http.client.HTTPSConnection), req, **kw)
+
+
+_OPENER = urllib.request.build_opener(_NoRedirects, _TrackedHTTP, _TrackedHTTPS)
+
+# Everything that means "the exchange did not complete", whatever the layer.
+_NETWORK_ERRORS = (urllib.error.URLError, OSError, http.client.HTTPException)
+
+
+def _cut(connections):
+    """Shut every connection down: a blocked read returns at once. shutdown,
+    not just close -- an open response still holds the socket."""
+    for conn in connections:
+        sock = getattr(conn, "sock", None)
+        if sock is not None:
+            try:
+                sock.shutdown(socket.SHUT_RDWR)
+            except OSError:
+                pass
+        try:
+            conn.close()
+        except Exception:
+            pass
 
 
 def read_key(path):
@@ -204,8 +254,8 @@ class Session:
 
     def _send(self, method, path, body=None):
         """One HTTP exchange, retried through network errors for net_patience,
-        and never past the deadline: connecting, waiting and reading the
-        response all count against it."""
+        and never past the deadline: connecting, sending, the response headers
+        and the body all count against it."""
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
         if self.token:
             headers["Authorization"] = "Bearer " + self.token
@@ -216,18 +266,55 @@ class Session:
             timeout = self.timeout if left is None else max(0.05, min(self.timeout, left))
             req = urllib.request.Request(self.url + path, method=method, data=data, headers=headers)
             try:
-                with _OPENER.open(req, timeout=timeout) as r:
-                    return r.status, _decode(self._read(r))
-            except urllib.error.HTTPError as e:
-                if 300 <= e.code < 400:
-                    raise ForgeOpsError("%s answered %s with a redirect to %r; redirects are not followed, so "
-                                        "neither the key nor the session token leaves %s" %
-                                        (self.url, e.code, e.headers.get("Location", ""), self.url))
-                return e.code, _decode(self._read(e))
-            except (urllib.error.URLError, OSError) as e:
+                status, location, raw = self._exchange(req, timeout)
+            except OutOfTime:
+                raise
+            except _NETWORK_ERRORS as e:
                 if time.monotonic() >= patience:
                     raise ForgeOpsError("cannot reach %s (%s)" % (self.url, getattr(e, "reason", e)))
                 self._pause(2)
+                continue
+            if 300 <= status < 400:
+                raise ForgeOpsError("%s answered %s with a redirect to %r; redirects are not followed, so "
+                                    "neither the key nor the session token leaves %s" %
+                                    (self.url, status, location, self.url))
+            return status, _decode(raw)
+
+    def _exchange(self, req, timeout):
+        """(status, Location header, raw body) for one request. With a
+        deadline, the exchange runs beside the caller, and when the deadline
+        passes its connections are shut down -- a server sending headers or a
+        body slowly, within each socket timeout, cannot hold it any longer."""
+        opened, box = [], {}
+
+        def work():
+            _exchange.connections = opened
+            try:
+                try:
+                    with _OPENER.open(req, timeout=timeout) as r:
+                        box["out"] = (r.status, "", self._read(r))
+                except urllib.error.HTTPError as e:
+                    # The error's body is read under the same rules as any
+                    # body: a failure here is a network failure, not a crash.
+                    box["out"] = (e.code, e.headers.get("Location", "") if e.headers else "", self._read(e))
+            except BaseException as e:  # handed to the caller as is
+                box["err"] = e
+            finally:
+                _exchange.connections = None
+
+        if self.deadline is None:
+            work()
+        else:
+            worker = threading.Thread(target=work, daemon=True)
+            worker.start()
+            worker.join(max(0.0, self.deadline - time.monotonic()))
+            if worker.is_alive():
+                _cut(opened)
+                worker.join(1)
+                raise OutOfTime("out of time waiting for %s" % self.url)
+        if "err" in box:
+            raise box["err"]
+        return box["out"]
 
     def _read(self, response):
         """The whole body, a chunk at a time, re-checking the deadline before
@@ -248,6 +335,8 @@ class Session:
         status, body = self.call("GET", path)
         if status != 200:
             raise ForgeOpsError("%s (%s): %s" % (what, status, error_text(body)))
+        if not isinstance(body, dict) or ("error" in body and len(body) == 1):
+            raise ForgeOpsError("%s: the server's answer is not the expected JSON object" % what)
         return body
 
     def requestable(self):
@@ -275,10 +364,9 @@ class Session:
             "target": target,
             "input": input if input is not None else {},
             "request_purpose": purpose,
-            # Compatibility only: the current Action contract still carries a
-            # policy-revision field. It is not authority -- the customer's
-            # ForgeOps decides the request under its own policy -- and it goes
-            # away once the server no longer reads it.
+            # A fixed value: the current Action contract requires the field.
+            # Nothing here depends on it, and what authority it carries is the
+            # server's to decide -- a comment on the client cannot settle that.
             "policy_revision": 1,
             "idempotency_key": key,
             "max_attempts": 1,
@@ -289,11 +377,19 @@ class Session:
             status, action = self.call("POST", "/v1/tenants/%s/actions" % self.tenant, body)
         except ForgeOpsError as e:
             raise UnknownOutcome(key, e)
-        if status not in (200, 201):
-            raise ForgeOpsError("the customer's ForgeOps did not accept the request (%s): %s" % (status, error_text(action)))
-        if isinstance(action, dict):
+        except Exception as e:  # anything else the exchange raised: still unknown, never lost
+            raise UnknownOutcome(key, "%s: %s" % (type(e).__name__, e))
+        if 200 <= status < 300:
+            # Accepted -- but only an answer naming the request confirms it.
+            if not isinstance(action, dict) or not (action.get("action_id") or action.get("id")):
+                raise UnknownOutcome(key, "the server answered %s without a request id" % status)
             action.setdefault("idempotency_key", key)
-        return action
+            return action
+        if status >= 500 or status == 408:
+            # A gateway or server failure says nothing about whether the
+            # operation was accepted upstream.
+            raise UnknownOutcome(key, "the server answered %s: %s" % (status, error_text(action)))
+        raise ForgeOpsError("the customer's ForgeOps did not accept the request (%s): %s" % (status, error_text(action)))
 
     def find(self, idempotency_key):
         """The request created under an idempotency key, or None if there is none."""

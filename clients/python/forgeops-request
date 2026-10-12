@@ -25,6 +25,7 @@ request if it exists: it never becomes a second operation.
 import argparse
 import json
 import os
+import shlex
 import sys
 import time
 
@@ -84,9 +85,8 @@ def cmd_request(s, args):
         a = s.request(args.capability, args.target, payload, args.purpose, version=args.version,
                       workspace=args.workspace, idempotency_key=args.idempotency_key)
     except fc.UnknownOutcome as e:
-        sys.exit("forgeops-request: %s\n  to find it, or create it exactly once:\n"
-                 "  forgeops-request request %s --target %s --purpose %s --idempotency-key %s" % (
-                     e, args.capability, args.target, json.dumps(args.purpose), e.idempotency_key))
+        sys.exit("forgeops-request: %s\n  to find it, or create it exactly once -- the same request, the same "
+                 "ForgeOps, the same key:\n  %s" % (e, retry_command(args, e.idempotency_key)))
     aid = a.get("action_id") or a.get("id")
     print("asked for %s on %s: %s" % (args.capability, args.target, aid))
 
@@ -101,9 +101,29 @@ def cmd_request(s, args):
         s.follow(aid, args.wait, on_status=on_status)
         print()
         report(s, aid)
-    except fc.ForgeOpsError as e:
+    except Exception as e:  # any failure, of any kind: the request still exists
+        detail = str(e) if isinstance(e, fc.ForgeOpsError) else "unexpected answer: %s" % type(e).__name__
         sys.exit("forgeops-request: request %s exists, but its status could not be read (%s).\n"
-                 "  follow it with: forgeops-request show %s" % (aid, e, aid))
+                 "  follow it with: %s" % (aid, detail, shlex.join(connection_args(args) + ["show", aid])))
+
+
+def connection_args(args):
+    """The options that name the same ForgeOps and the same key file."""
+    return [os.path.basename(sys.argv[0]) or "forgeops-request", "--url", args.url, "--key-file", args.key_file]
+
+
+def retry_command(args, idempotency_key):
+    """The original request, every option of it, with its idempotency key: the
+    command that returns that request if it exists and creates it once if not.
+    shlex-quoted, so a purpose like '$(...)' stays text."""
+    argv = connection_args(args) + ["request", args.capability, "--target", args.target,
+                                    "--purpose", args.purpose, "--input", args.input]
+    if args.version:
+        argv += ["--version", args.version]
+    if args.workspace:
+        argv += ["--workspace", args.workspace]
+    argv += ["--wait", str(args.wait), "--idempotency-key", idempotency_key]
+    return shlex.join(argv)
 
 
 def main():

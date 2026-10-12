@@ -72,14 +72,18 @@ output   {"healthy": true}
 A request names the capability and, optionally, its version. The customer's
 ForgeOps binds the exact revision it serves; the client never guesses one.
 
-If the network fails after a request was sent, the tool cannot tell whether it
-was created. It says so and prints the request's idempotency key, with the
-command to run next:
+If a request was sent but its creation cannot be confirmed, the tool says so
+and prints the request's idempotency key, with the command to run next. That
+can happen when the network fails, when a gateway answers 5xx, or when the answer
+names no request. The command repeats the original request in full: every
+option, the same ForgeOps, the same key file, and the key. It is shell-quoted,
+so a purpose such as `$(…)` stays text.
 
 ```bash
-./forgeops-request request demo.service.status --target demo-service \
-    --purpose "queue stuck since 09:00" --idempotency-key request-4f2a…
-./forgeops-request show --idempotency-key request-4f2a…
+forgeops-request --url https://forgeops.customer.example --key-file ~/.config/forgeops/requester.key \
+    request demo.service.status --target demo-service --purpose 'queue stuck since 09:00' \
+    --input '{"service":"demo-service"}' --wait 600 --idempotency-key request-4f2a…
+forgeops-request show --idempotency-key request-4f2a…
 ```
 
 The first returns the same request if it was created, and creates it once if it
@@ -115,8 +119,10 @@ key returns the same request.
   it pointed. Neither the session token nor the key leaves the configured URL.
 - **Waits are bounded.** Each HTTP call has a timeout, and network errors are
   retried for a while. An MCP tool call answers within 45 seconds in all
-  (`FORGEOPS_TOOL_SECONDS`): signing in, retries, polling and reading a slow
-  response all count against that limit.
+  (`FORGEOPS_TOOL_SECONDS`). Signing in, retries and polling count against that
+  limit, and so does every part of an answer: its status line, headers and body,
+  however slowly each arrives. When the limit is reached, the connection is
+  closed.
 - **One request is one operation, as long as its key is reused.** Every request
   carries an idempotency key, and the customer's ForgeOps answers a repeat of
   the same key with the same request. Retries inside one call reuse the key on
@@ -124,14 +130,29 @@ key returns the same request.
   that key. Asking again with it (`--idempotency-key`, or `idempotency_key` in
   `request_capability`) never creates a second operation; asking again
   *without* it can. Once a request id has been returned, it is the request to
-  follow, even if reading its status failed.
+  follow, even if reading its status failed, and even if the answer came in a
+  form the client did not expect.
 - **Sessions renew themselves.** The session token is renewed shortly before it
   expires, and once if the server rejects it. A long-running MCP server needs
   no restart.
-- **`policy_revision` is sent for compatibility only.** The current request
-  contract still carries the field. It is not authority: the customer's
-  ForgeOps decides every request under its own policy. The clients stop
-  sending it once the server no longer reads it.
+- **`policy_revision` is a fixed value.** The current request contract
+  requires the field, so the clients send `1`; nothing on the client side
+  depends on it. Whether the field carries any authority is decided by the
+  customer's ForgeOps, not by the clients. These clients make no claim about
+  it.
+
+## Known limits
+
+- **A held request can expire before anyone approves it.** For example, held
+  requests do not survive a restart of the customer's agent. An expired request
+  never runs. The tools show its status and the reason the server gives. To try
+  again, make a new request without the old idempotency key, which would only
+  return the expired request. The customer's approver then decides the new
+  request afresh.
+- **The output may be withheld because of the customer's agent.** A customer's
+  agent that predates execution reporting does not report which implementation
+  ran. The customer's ForgeOps then withholds the output and says why, even
+  where the binding would otherwise disclose it.
 
 ## License
 
@@ -151,4 +172,7 @@ these rules:
 - the key goes to the token exchange only;
 - requests carry no guessed revision;
 - disclosed, withheld and undecided results are shown exactly as sent;
-- the only writes are the token exchange and creating a request.
+- the only writes are the token exchange and creating a request;
+- an unconfirmed creation always hands back its key, and a known request
+  always hands back its id;
+- a whole call, slow headers and slow bodies included, stays within its limit.

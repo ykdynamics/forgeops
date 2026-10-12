@@ -132,11 +132,13 @@ def request_capability(args):
     # its id is returned: the agent follows it, and never asks again.
     try:
         return describe(s, aid, s.follow(aid, FOLLOW_SECONDS, stop_when_held=True))
-    except fc.ForgeOpsError as e:
+    except Exception as e:  # any failure, of any kind: the request still exists
+        if not isinstance(e, fc.ForgeOpsError):
+            log("following %s failed: %r" % (aid, e))
         return {"request_id": aid, "status": "unknown", "idempotency_key": a.get("idempotency_key"),
                 "meaning": "the request was created; its status could not be read just now. "
                            "Follow it with get_request -- do not request it again.",
-                "error": str(e)}
+                "error": str(e) if isinstance(e, fc.ForgeOpsError) else "unexpected answer while following it"}
 
 
 def get_request(args):

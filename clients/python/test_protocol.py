@@ -16,6 +16,7 @@ What they hold the clients to:
 """
 import json
 import os
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -55,6 +56,9 @@ class FakePlatform:
         self.next_result = DISCLOSED
         self.next_status = "succeeded"
         self.refuse_create = None   # (status, body)
+        self.create_answer = None   # create the Action, then answer this instead: (status, body) or ("RAW", bytes)
+        self.slow_headers = {}      # path -> seconds to spend sending the response headers
+        self.odd_reads = False      # transitions arrive in a shape no client expects
         self.redirect = {}          # path -> Location: answer 302 there
         self.slow = {}              # path -> seconds to stall before answering
         self.trickle = {}           # path -> seconds to spend sending the body, a byte at a time
@@ -121,6 +125,8 @@ class FakePlatform:
             if self.drop_creates:
                 self.drop_creates -= 1
                 return "DROP", None
+            if self.create_answer:
+                return self.create_answer
             return 201, action
         if self.unreadable and method == "GET" and "/actions/act-" in path:
             return "DROP", None
@@ -128,6 +134,8 @@ class FakePlatform:
             if (method, path) == ("GET", "%s/actions/%s" % (base, aid)):
                 return 200, action
             if (method, path) == ("GET", "%s/actions/%s/transitions" % (base, aid)):
+                if self.odd_reads:
+                    return 200, {"action_id": aid, "transitions": "not a list"}
                 return 200, {"action_id": aid, "transitions": self.transitions[aid]}
             if (method, path) == ("GET", "%s/actions/%s/explain" % (base, aid)):
                 return 200, {"action": dict(action, failure_reason="the capability reported a failure")}
@@ -141,6 +149,27 @@ class Handler(BaseHTTPRequestHandler):
         status, out = self.server.fake.handle(self.command, self.path, self.headers, body)
         if status == "DROP":  # the request was processed; the answer never arrives
             self.close_connection = True
+            return
+        if status == "RAW":  # an answer that is not JSON
+            self.send_response(201)
+            self.send_header("Content-Length", str(len(out)))
+            self.end_headers()
+            self.wfile.write(out)
+            return
+        spread = self.server.fake.slow_headers.get(self.path)
+        if spread:  # headers that keep arriving, each well within any socket timeout
+            self.close_connection = True
+            try:
+                self.wfile.write(b"HTTP/1.1 200 OK\r\n")
+                self.wfile.flush()
+                deadline = time.monotonic() + spread
+                while time.monotonic() < deadline:
+                    self.wfile.write(b"X-Slow: 1\r\n")
+                    self.wfile.flush()
+                    time.sleep(0.1)
+                self.wfile.write(b"Content-Length: 2\r\n\r\n{}")
+            except OSError:
+                pass
             return
         if status == "REDIRECT":
             self.send_response(302)
@@ -512,6 +541,96 @@ class ProtocolTest(unittest.TestCase):
         with self.assertRaises(fc.ForgeOpsError):
             s.requestable()
         self.assertLess(time.monotonic() - started, 2.5)
+
+    def test_every_unconfirmed_create_keeps_its_key(self):
+        """Creation is confirmed only by an answer naming the request. A
+        gateway error, an answer without an id, or one that is not JSON all
+        leave the outcome unknown -- with the key to come back with."""
+        s = fc.Session(self.url, fc.read_key(self.key_file), net_patience=0)
+        for answer in [(502, {"error": "bad gateway"}), (504, {"error": "gateway timeout"}),
+                       (201, {"status": "requested"}), ("RAW", b"<html>proxy</html>")]:
+            with self.subTest(answer=answer[0]):
+                self.fake.create_answer = answer
+                with self.assertRaises(fc.UnknownOutcome) as caught:
+                    s.request("demo.service.status", "demo-service", {"service": "demo-service"}, "check")
+                key = caught.exception.idempotency_key
+                self.fake.create_answer = None
+                again = s.request("demo.service.status", "demo-service", {"service": "demo-service"}, "check",
+                                  idempotency_key=key)
+                self.assertEqual(again["action_id"], self.fake.by_key[key], "the key finds the request the server made")
+        self.assertEqual(len(self.fake.actions), 4, "four attempts, four requests: never a duplicate")
+        # A refusal is known: not created, and nothing to recover.
+        self.fake.refuse_create = (422, {"error": "not_requestable"})
+        with self.assertRaises(fc.ForgeOpsError) as caught:
+            s.request("demo.service.status", "x", {}, "check")
+        self.assertNotIsInstance(caught.exception, fc.UnknownOutcome)
+
+    def test_a_slow_error_body_is_a_handled_failure(self):
+        """A timeout while reading an HTTP error's body is a network failure
+        like any other -- for a create, an unknown outcome with its key."""
+        s = self.session()
+        self.fake.refuse_create = (422, {"error": "not_requestable: " + "x" * 200})
+        self.fake.trickle["/v1/tenants/%s/actions" % TENANT] = 6
+        s.time_limit(1.5)
+        started = time.monotonic()
+        with self.assertRaises(fc.UnknownOutcome) as caught:
+            s.request("demo.service.status", "demo-service", {}, "check")
+        self.assertTrue(caught.exception.idempotency_key)
+        self.assertLess(time.monotonic() - started, 2.5)
+        # A read with no overall deadline (the CLI's): the error's body stalls
+        # past the socket timeout -- a ForgeOpsError, not a raw TimeoutError.
+        s = fc.Session(self.url, fc.read_key(self.key_file), net_patience=0, timeout=0.5)
+        missing = "act-%032x" % 999
+        self.fake.trickle["/v1/tenants/%s/actions/%s" % (TENANT, missing)] = 30
+        with self.assertRaises(fc.ForgeOpsError):
+            s.action(missing)
+
+    def test_headers_that_trickle_in_cannot_outrun_the_deadline(self):
+        s = self.session()
+        s.net_patience = 60
+        self.fake.slow_headers["/v1/tenants/%s/requestable-capabilities" % TENANT] = 6
+        s.time_limit(1.5)
+        started = time.monotonic()
+        with self.assertRaises(fc.OutOfTime):
+            s.requestable()
+        self.assertLess(time.monotonic() - started, 2.5, "slow headers held the call past its deadline")
+
+    def test_forgeops_mcp_keeps_the_request_id_through_an_unexpected_answer(self):
+        send = self.mcp_process()
+        self.fake.odd_reads = True  # created; the status then arrives in a shape nobody expects
+        result, is_error = self.tool(send, 1, "request_capability", capability_key="demo.service.status",
+                                     target="demo-service", purpose="check")
+        self.assertFalse(is_error, result)
+        self.assertEqual(result["request_id"], next(iter(self.fake.actions)))
+        self.assertIn("do not request it again", result["meaning"])
+
+    def test_forgeops_request_recovery_command_is_the_same_request(self):
+        self.fake.create_answer = (502, {"error": "bad gateway"})  # sent; never confirmed
+        purpose = "queue stuck $(touch /tmp/never) `id`"
+        env = {k: v for k, v in os.environ.items() if not k.startswith("FORGEOPS_")}  # options only
+        out = subprocess.run([sys.executable, os.path.join(HERE, "forgeops-request"), "--url", self.url,
+                              "--key-file", self.key_file, "request", "demo.service.status", "--target", "demo-service",
+                              "--purpose", purpose, "--input", '{"service": "demo-service"}', "--version", "0.1.1",
+                              "--workspace", "eval", "--wait", "5"],
+                             env=env, capture_output=True, text=True, timeout=120)
+        self.assertNotEqual(out.returncode, 0)
+        command = out.stderr.strip().splitlines()[-1].strip()
+        argv = shlex.split(command)  # one shell word per argument, the purpose as plain text
+        self.assertEqual(argv[argv.index("--purpose") + 1], purpose)
+        self.assertEqual(argv[argv.index("--input") + 1], '{"service": "demo-service"}')
+        self.assertEqual(argv[argv.index("--version") + 1], "0.1.1")
+        self.assertEqual(argv[argv.index("--workspace") + 1], "eval")
+        self.assertEqual(argv[argv.index("--url") + 1], self.url)
+        self.assertEqual(argv[argv.index("--key-file") + 1], self.key_file)
+        key = argv[argv.index("--idempotency-key") + 1]
+        self.assertIn(key, self.fake.by_key, "the printed key is the one the request was sent with")
+        # Running it, once the gateway is back, returns the same request.
+        self.fake.create_answer = None
+        again = subprocess.run([sys.executable, os.path.join(HERE, "forgeops-request")] + argv[1:], env=env,
+                               capture_output=True, text=True, timeout=120)
+        self.assertEqual(again.returncode, 0, again.stderr)
+        self.assertIn(self.fake.by_key[key], again.stdout)
+        self.assertEqual(len(self.fake.actions), 1)
 
     def test_forgeops_mcp_survives_malformed_messages(self):
         send = self.mcp_process()
