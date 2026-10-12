@@ -29,7 +29,6 @@ sys.path.insert(0, HERE)
 import forgeops_client as fc  # noqa: E402
 
 KEY = "fo_requester_key_never_shown"
-TOKEN = "session-token-1"
 TENANT = "tenant-eval"
 
 CAPABILITIES = [{
@@ -58,9 +57,18 @@ class FakePlatform:
         self.refuse_create = None   # (status, body)
         self.redirect = {}          # path -> Location: answer 302 there
         self.slow = {}              # path -> seconds to stall before answering
-        self.drop_next_create = False  # create the Action, then drop the connection unanswered
+        self.trickle = {}           # path -> seconds to spend sending the body, a byte at a time
+        self.drop_creates = 0       # create the Action, then drop this many answers unanswered
+        self.unreadable = False     # every read of an existing Action: connection dropped
+        self.empty = False          # nothing is requestable
         self.by_key = {}            # idempotency key -> action id, as the real Platform keeps it
+        self.tokens = set()         # session tokens currently valid
         self.lock = threading.Lock()
+
+    def expire_tokens(self):
+        """Every token issued so far stops working, as an expiry would."""
+        with self.lock:
+            self.tokens.clear()
 
     def handle(self, method, path, headers, body):
         with self.lock:
@@ -72,14 +80,22 @@ class FakePlatform:
         if (method, path) == ("POST", "/v1/auth/token"):
             if (body or {}).get("api_key") != KEY:
                 return 401, {"error": "invalid api key"}
-            return 200, {"token": TOKEN, "tenant_id": TENANT, "expires_at": "2026-10-12T12:00:00Z"}
-        if headers.get("Authorization") != "Bearer " + TOKEN:
+            with self.lock:
+                token = "session-token-%d" % (len(self.tokens) + sum(1 for r in self.requests if r[1] == "/v1/auth/token"))
+                self.tokens.add(token)
+            expires = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() + 3600))
+            return 200, {"token": token, "tenant_id": TENANT, "expires_at": expires}
+        auth = headers.get("Authorization") or ""
+        if not auth.startswith("Bearer ") or auth[len("Bearer "):] not in self.tokens:
             return 401, {"error": "unauthenticated"}
         if (method, path) == ("GET", "/v1/session"):
             return 200, {"subject": "key-1", "tenant_id": TENANT, "workspace_id": "eval", "roles": ["member"]}
         base = "/v1/tenants/%s" % TENANT
         if (method, path) == ("GET", base + "/requestable-capabilities"):
-            return 200, {"capabilities": CAPABILITIES, "note": "listing is not authority"}
+            return 200, {"capabilities": [] if self.empty else CAPABILITIES, "note": "listing is not authority"}
+        if method == "GET" and path.startswith(base + "/actions/by-idempotency?key="):
+            aid = self.by_key.get(path.split("key=", 1)[1])
+            return (200, self.actions[aid]) if aid else (404, {"error": "no action for that idempotency key"})
         if (method, path) == ("POST", base + "/actions"):
             if self.refuse_create:
                 return self.refuse_create
@@ -87,6 +103,9 @@ class FakePlatform:
             # Action (the Platform answers 200 with it).
             existing = self.by_key.get(body.get("idempotency_key"))
             if existing:
+                if self.drop_creates:  # the outage goes on: the repeat's answer is lost too
+                    self.drop_creates -= 1
+                    return "DROP", None
                 return 200, self.actions[existing]
             aid = "act-%032x" % (len(self.actions) + 1)
             self.by_key[body.get("idempotency_key")] = aid
@@ -99,10 +118,12 @@ class FakePlatform:
                 {"action_id": aid, "from_status": "requested", "to_status": "started", "message": "placed", "by": "control"},
                 {"action_id": aid, "from_status": "started", "to_status": self.next_status,
                  "message": json.dumps(msg), "by": "control-callback"}]
-            if self.drop_next_create:
-                self.drop_next_create = False
+            if self.drop_creates:
+                self.drop_creates -= 1
                 return "DROP", None
             return 201, action
+        if self.unreadable and method == "GET" and "/actions/act-" in path:
+            return "DROP", None
         for aid, action in self.actions.items():
             if (method, path) == ("GET", "%s/actions/%s" % (base, aid)):
                 return 200, action
@@ -132,7 +153,17 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(raw)))
         self.end_headers()
-        self.wfile.write(raw)
+        spread = self.server.fake.trickle.get(self.path)
+        if not spread:
+            self.wfile.write(raw)
+            return
+        for i in range(len(raw)):  # a body that arrives, but slowly
+            try:
+                self.wfile.write(raw[i:i + 1])
+                self.wfile.flush()
+            except OSError:
+                return
+            time.sleep(spread / len(raw))
 
     do_GET = do_POST = do_PUT = do_DELETE = _serve
 
@@ -180,7 +211,8 @@ class ProtocolTest(unittest.TestCase):
             if path == "/v1/auth/token":
                 continue
             self.assertNotIn(KEY, path + json.dumps(headers) + json.dumps(body))
-            self.assertEqual(headers.get("Authorization"), "Bearer " + TOKEN)
+            self.assertTrue((headers.get("Authorization") or "").startswith("Bearer session-token-"),
+                            "an authenticated call carries the session token, never the key")
 
     def test_a_key_is_never_sent_over_plain_http_to_another_host(self):
         with self.assertRaises(fc.ForgeOpsError):
@@ -232,7 +264,7 @@ class ProtocolTest(unittest.TestCase):
 
     def test_a_lost_answer_is_retried_into_the_same_request(self):
         s = fc.Session(self.url, fc.read_key(self.key_file), net_patience=10, sleep=lambda _: None)
-        self.fake.drop_next_create = True
+        self.fake.drop_creates = 1
         a = s.request("demo.service.status", "demo-service", {"service": "demo-service"}, "check")
         posts = [b for m, p, _, b in self.fake.requests if m == "POST" and p.endswith("/actions")]
         self.assertEqual(len(posts), 2, "the unanswered create is sent again")
@@ -377,6 +409,128 @@ class ProtocolTest(unittest.TestCase):
         reply = json.loads(out.stdout.strip())
         self.assertTrue(reply["result"]["isError"])
         self.assertIn("refused the requester key", reply["result"]["content"][0]["text"])
+
+    # -- one request, one operation ------------------------------------------
+
+    def test_an_unconfirmed_create_hands_back_its_key_and_never_doubles(self):
+        s = fc.Session(self.url, fc.read_key(self.key_file), net_patience=0, sleep=lambda _: None)
+        self.fake.drop_creates = 1  # created on the server; the answer never arrives
+        with self.assertRaises(fc.UnknownOutcome) as caught:
+            s.request("demo.service.status", "demo-service", {"service": "demo-service"}, "check")
+        key = caught.exception.idempotency_key
+        self.assertIn(key, str(caught.exception), "the error names the key to come back with")
+        self.assertEqual(len(self.fake.actions), 1)
+        # Asking again with that key is the same request, not a second operation.
+        again = s.request("demo.service.status", "demo-service", {"service": "demo-service"}, "check", idempotency_key=key)
+        self.assertEqual(again["action_id"], next(iter(self.fake.actions)))
+        self.assertEqual(len(self.fake.actions), 1)
+        self.assertEqual(s.find(key)["action_id"], again["action_id"])
+        self.assertIsNone(s.find("request-never-used-0000"))
+        out = self.run_tool("forgeops-request", "show", "--idempotency-key", key)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertIn("request  " + again["action_id"], out.stdout)
+
+    def test_forgeops_request_says_plainly_when_nothing_is_requestable(self):
+        self.fake.empty = True
+        out = self.run_tool("forgeops-request", "list")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertEqual(out.stdout.strip(), "No capabilities are currently requestable with this key.")
+
+    # -- the MCP server, as one long-lived process -------------------------------
+
+    def mcp_process(self, **env):
+        p = subprocess.Popen([sys.executable, os.path.join(HERE, "forgeops-mcp")], stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                             env=dict(os.environ, FORGEOPS_URL=self.url, FORGEOPS_KEY_FILE=self.key_file, **env))
+        self.addCleanup(lambda: (p.kill(), p.wait(), p.stdout.close(), p.stderr.close(), p.stdin.close()))
+
+        def send(msg):
+            p.stdin.write((msg if isinstance(msg, str) else json.dumps(msg)) + "\n")
+            p.stdin.flush()
+            reply = json.loads(p.stdout.readline())
+            self.assertNotIn(KEY, json.dumps(reply))
+            return reply
+        return send
+
+    @staticmethod
+    def tool(send, mid, name, **arguments):
+        reply = send({"jsonrpc": "2.0", "id": mid, "method": "tools/call", "params": {"name": name, "arguments": arguments}})
+        return json.loads(reply["result"]["content"][0]["text"]), reply["result"]["isError"]
+
+    def test_forgeops_mcp_hands_back_the_key_of_an_unconfirmed_create(self):
+        send = self.mcp_process(FORGEOPS_TOOL_SECONDS="3")
+        self.fake.drop_creates = 1000  # created, and no answer ever arrives
+        args = dict(capability_key="demo.service.status", target="demo-service",
+                    input={"service": "demo-service"}, purpose="check")
+        first, is_error = self.tool(send, 1, "request_capability", **args)
+        self.assertTrue(is_error)
+        self.assertEqual(first["outcome"], "unknown")
+        self.assertIn("Do not submit a new request", first["next"])
+        self.fake.drop_creates = 0
+        second, is_error = self.tool(send, 2, "request_capability", idempotency_key=first["idempotency_key"], **args)
+        self.assertFalse(is_error, second)
+        self.assertEqual(second["request_id"], next(iter(self.fake.actions)))
+        self.assertEqual(len(self.fake.actions), 1, "asking again with the key must not create a second operation")
+
+    def test_forgeops_mcp_returns_the_request_id_when_following_it_fails(self):
+        send = self.mcp_process(FORGEOPS_TOOL_SECONDS="4")
+        self.fake.unreadable = True  # created; every read of it then fails
+        result, is_error = self.tool(send, 1, "request_capability", capability_key="demo.service.status",
+                                     target="demo-service", purpose="check")
+        self.assertFalse(is_error, "a created request is not an error to retry")
+        self.assertEqual(result["request_id"], next(iter(self.fake.actions)))
+        self.assertEqual(result["status"], "unknown")
+        self.assertIn("do not request it again", result["meaning"])
+
+    def test_forgeops_mcp_renews_an_expired_token_in_the_same_process(self):
+        send = self.mcp_process()
+        caps, is_error = self.tool(send, 1, "list_capabilities")
+        self.assertFalse(is_error, caps)
+        self.fake.expire_tokens()  # the session token expires between two calls
+        caps, is_error = self.tool(send, 2, "list_capabilities")
+        self.assertFalse(is_error, caps)
+        self.assertEqual(caps["capabilities"], CAPABILITIES)
+        exchanges = [r for r in self.fake.requests if r[1] == "/v1/auth/token"]
+        self.assertEqual(len(exchanges), 2, "one sign-in, one renewal")
+
+    def test_forgeops_mcp_bounds_a_whole_call_including_sign_in(self):
+        self.fake.slow["/v1/auth/token"] = 6  # signing in alone would take longer than the limit
+        send = self.mcp_process(FORGEOPS_TOOL_SECONDS="2")
+        started = time.monotonic()
+        result, is_error = self.tool(send, 1, "list_capabilities")
+        self.assertTrue(is_error, result)
+        self.assertLess(time.monotonic() - started, 3.5, "the tool call outran its limit while signing in")
+        reply = send({"jsonrpc": "2.0", "id": 2, "method": "ping"})
+        self.assertEqual(reply["result"], {})
+
+    def test_a_body_that_trickles_in_cannot_outrun_the_deadline(self):
+        s = self.session()
+        s.net_patience = 60
+        self.fake.trickle["/v1/tenants/%s/requestable-capabilities" % TENANT] = 6
+        s.time_limit(1.5)
+        started = time.monotonic()
+        with self.assertRaises(fc.ForgeOpsError):
+            s.requestable()
+        self.assertLess(time.monotonic() - started, 2.5)
+
+    def test_forgeops_mcp_survives_malformed_messages(self):
+        send = self.mcp_process()
+        for mid, msg in enumerate([
+            {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": [1]},
+            {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": [1]}},
+            {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": {"a": 1}}},
+            {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "get_request", "arguments": [1]}},
+            {"jsonrpc": "2.0", "id": 5, "method": "tools/call", "params": {"name": "get_request",
+                                                                           "arguments": {"request_id": 7}}},
+            {"jsonrpc": "2.0", "id": 6, "method": 5},
+            {"jsonrpc": "2.0", "id": {"not": "an id"}, "method": "ping"},
+            {"jsonrpc": "2.0", "id": 8, "method": "initialize", "params": {"protocolVersion": ["x"]}},
+        ], start=1):
+            reply = send(msg)
+            self.assertEqual(reply.get("jsonrpc"), "2.0")
+            self.assertTrue(("result" in reply) != ("error" in reply), reply)
+        # Still alive, still answering.
+        self.assertEqual(send({"jsonrpc": "2.0", "id": 99, "method": "ping"})["result"], {})
 
     def test_forgeops_mcp_reports_a_withheld_result_without_output(self):
         self.fake.next_result = WITHHELD

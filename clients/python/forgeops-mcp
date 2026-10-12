@@ -14,10 +14,17 @@ approval belongs to the customer's approver. Results are returned exactly as
 the customer's ForgeOps gives them, including its decision on what of the
 output this requester may see.
 
-  FORGEOPS_URL       the customer's ForgeOps (https)
-  FORGEOPS_KEY_FILE  the requester key the customer issued
-                     (default ~/.config/forgeops/requester.key); read here,
-                     never printed, never in the agent's configuration
+One request is one operation. Once request_capability has returned a
+request_id, the agent follows that request with get_request -- it never asks
+again. If a request was sent but its creation could not be confirmed, the tool
+returns an idempotency_key; calling request_capability again with it returns the
+same request if it exists, never a second operation.
+
+  FORGEOPS_URL           the customer's ForgeOps (https)
+  FORGEOPS_KEY_FILE      the requester key the customer issued
+                         (default ~/.config/forgeops/requester.key); read here,
+                         never printed, never in the agent's configuration
+  FORGEOPS_TOOL_SECONDS  how long one tool call may take in all (default 45)
 
   claude mcp add forgeops -- /path/to/forgeops-mcp
   {"mcpServers": {"forgeops": {"command": "/path/to/forgeops-mcp"}}}
@@ -35,9 +42,15 @@ import forgeops_client as fc  # noqa: E402
 SERVER = {"name": "forgeops-requester", "version": "1"}
 PROTOCOLS = ("2025-06-18", "2025-03-26", "2024-11-05")
 FOLLOW_SECONDS = 25
-# Every tool call answers within this, network trouble included: an agent is
-# never left waiting on a hung connection.
-TOOL_SECONDS = 45
+
+
+def tool_seconds():
+    """Every tool call answers within this, authentication, retries, polling
+    and reading included: an agent is never left waiting on a hung connection."""
+    try:
+        return max(1.0, float(os.environ.get("FORGEOPS_TOOL_SECONDS", "45")))
+    except ValueError:
+        return 45.0
 
 
 def log(msg):
@@ -48,13 +61,16 @@ _session = None
 
 
 def session():
-    """The session, its time limit restarted for this tool call."""
+    """The session, with this tool call's time limit -- set before anything
+    else happens, so authenticating counts against it too. The session renews
+    its own token when it expires or is rejected."""
     global _session
     if _session is None:
         url = os.environ.get("FORGEOPS_URL", "")
         key_file = os.environ.get("FORGEOPS_KEY_FILE", fc.DEFAULT_KEY_FILE)
-        _session = fc.Session(url, fc.read_key(key_file), net_patience=10, timeout=10)
-    _session.time_limit(TOOL_SECONDS)
+        _session = fc.Session(url, fc.read_key(key_file), net_patience=10, timeout=10, deadline=tool_seconds())
+    else:
+        _session.time_limit(tool_seconds())
     return _session
 
 
@@ -81,31 +97,57 @@ def describe(s, action_id, a):
     return out
 
 
+def text(args, name, required=True):
+    value = args.get(name)
+    if value is None and not required:
+        return ""
+    if not isinstance(value, str) or (required and not value.strip()):
+        raise fc.ForgeOpsError("%s must be a non-empty string" % name)
+    return value.strip()
+
+
 def list_capabilities(_args):
     return {"capabilities": session().requestable(),
             "note": "Listing is not authority: the customer's ForgeOps decides every request when it is made."}
 
 
 def request_capability(args):
-    key = (args.get("capability_key") or "").strip()
-    target = (args.get("target") or "").strip()
-    purpose = (args.get("purpose") or "").strip()
-    if not key or not target:
-        raise fc.ForgeOpsError("capability_key and target are required (see list_capabilities)")
-    if not purpose:
-        raise fc.ForgeOpsError("purpose is required: say why; the customer's approver reads it")
+    key, target = text(args, "capability_key"), text(args, "target")
+    purpose = text(args, "purpose")
+    version = text(args, "version", required=False) or None
+    idem = text(args, "idempotency_key", required=False) or None
+    payload = args.get("input") if args.get("input") is not None else {}
+    if not isinstance(payload, dict):
+        raise fc.ForgeOpsError("input must be an object (see the capability's input_schema)")
     s = session()
-    a = s.request(key, target, args.get("input") or {}, purpose[:300], version=args.get("version") or None)
+    try:
+        a = s.request(key, target, payload, purpose[:300], version=version, idempotency_key=idem)
+    except fc.UnknownOutcome as e:
+        return {"outcome": "unknown", "idempotency_key": e.idempotency_key, "error": str(e),
+                "next": "Do not submit a new request. Call request_capability again with the same arguments "
+                        "and idempotency_key %s: it returns this request if it exists, and creates it once if "
+                        "it does not." % e.idempotency_key}
     aid = a.get("action_id") or a.get("id")
-    return describe(s, aid, s.follow(aid, FOLLOW_SECONDS, stop_when_held=True))
+    # The request exists from here on. Whatever happens while following it,
+    # its id is returned: the agent follows it, and never asks again.
+    try:
+        return describe(s, aid, s.follow(aid, FOLLOW_SECONDS, stop_when_held=True))
+    except fc.ForgeOpsError as e:
+        return {"request_id": aid, "status": "unknown", "idempotency_key": a.get("idempotency_key"),
+                "meaning": "the request was created; its status could not be read just now. "
+                           "Follow it with get_request -- do not request it again.",
+                "error": str(e)}
 
 
 def get_request(args):
-    aid = (args.get("request_id") or "").strip()
+    aid = text(args, "request_id")
     if not re.fullmatch(r"act-[0-9a-f]{8,64}", aid):
         raise fc.ForgeOpsError("request_id looks like act-<hex>, as request_capability returned it")
+    wait = args.get("wait_seconds", 0)
+    if isinstance(wait, bool) or not isinstance(wait, (int, float)):
+        raise fc.ForgeOpsError("wait_seconds must be a number")
+    wait = min(max(int(wait), 0), 60)
     s = session()
-    wait = min(max(int(args.get("wait_seconds") or 0), 0), 60)
     return describe(s, aid, s.follow(aid, wait, stop_when_held=False) if wait else s.action(aid))
 
 
@@ -117,13 +159,18 @@ TOOLS = [
      "fn": list_capabilities},
     {"name": "request_capability",
      "description": "Ask the customer's ForgeOps for one capability on one target. Its policy decides: it runs, "
-                    "is held for the customer's human approver, or is refused. You cannot approve it.",
+                    "is held for the customer's human approver, or is refused. You cannot approve it. "
+                    "Once this has returned a request_id, follow that request with get_request; never ask again. "
+                    "If it returns outcome 'unknown' with an idempotency_key, call it again with that key.",
      "inputSchema": {"type": "object", "required": ["capability_key", "target", "purpose"], "additionalProperties": False,
                      "properties": {"capability_key": {"type": "string"},
                                     "target": {"type": "string"},
                                     "version": {"type": "string", "description": "default: what the customer serves"},
                                     "input": {"type": "object", "description": "the operation's input (its input_schema)"},
-                                    "purpose": {"type": "string", "description": "why; shown to the customer's approver"}}},
+                                    "purpose": {"type": "string", "description": "why; shown to the customer's approver"},
+                                    "idempotency_key": {"type": "string",
+                                                        "description": "only when repeating a request whose outcome "
+                                                                       "was unknown: the key that call returned"}}},
      "fn": request_capability},
     {"name": "get_request",
      "description": "Status and result of a request made with request_capability.",
@@ -136,38 +183,65 @@ TOOLS = [
 BY_NAME = {t["name"]: t for t in TOOLS}
 
 
+def error(mid, code, message):
+    return {"jsonrpc": "2.0", "id": mid, "error": {"code": code, "message": message}}
+
+
 def handle(msg):
-    """One JSON-RPC message in; the response, or None for a notification."""
-    mid, method, params = msg.get("id"), msg.get("method"), msg.get("params") or {}
+    """One JSON-RPC message in; the response, or None for a notification.
+    Every malformed shape is answered as an error; nothing in a message can
+    end the server."""
+    if not isinstance(msg, dict):
+        return error(None, -32600, "a request is a JSON object (batches are not supported)")
+    mid = msg.get("id")
+    if not (mid is None or isinstance(mid, (str, int)) and not isinstance(mid, bool)):
+        return error(None, -32600, "id must be a string or an integer")
+    method = msg.get("method")
     if mid is None:
-        return None
+        return None  # a notification: no reply, whatever it says
+    if not isinstance(method, str):
+        return error(mid, -32600, "method must be a string")
+    params = msg.get("params", {})
+    if params is None:
+        params = {}
+    if not isinstance(params, dict):
+        return error(mid, -32602, "params must be an object")
 
     def ok(result):
         return {"jsonrpc": "2.0", "id": mid, "result": result}
 
     if method == "initialize":
         asked = params.get("protocolVersion")
-        return ok({"protocolVersion": asked if asked in PROTOCOLS else PROTOCOLS[0],
+        return ok({"protocolVersion": asked if isinstance(asked, str) and asked in PROTOCOLS else PROTOCOLS[0],
                    "capabilities": {"tools": {}}, "serverInfo": SERVER,
                    "instructions": "Request operations from a customer's ForgeOps. You can ask; the customer's "
-                                   "ForgeOps decides, and only the customer's approver can approve."})
+                                   "ForgeOps decides, and only the customer's approver can approve. One request is "
+                                   "one operation: follow a request_id with get_request, never ask again."})
     if method == "ping":
         return ok({})
     if method == "tools/list":
         return ok({"tools": [{k: v for k, v in t.items() if k != "fn"} for t in TOOLS]})
     if method == "tools/call":
-        tool = BY_NAME.get(params.get("name"))
-        if not tool:
-            return {"jsonrpc": "2.0", "id": mid, "error": {"code": -32602, "message": "unknown tool %r" % params.get("name")}}
+        name = params.get("name")
+        if not isinstance(name, str) or name not in BY_NAME:
+            return error(mid, -32602, "unknown tool %s" % json.dumps(name)[:80])
+        arguments = params.get("arguments", {})
+        if arguments is None:
+            arguments = {}
+        if not isinstance(arguments, dict):
+            return error(mid, -32602, "arguments must be an object")
+        tool = BY_NAME[name]
         try:
-            result, is_error = tool["fn"](params.get("arguments") or {}), False
+            result, is_error = tool["fn"](arguments), False
+            if isinstance(result, dict) and result.get("outcome") == "unknown":
+                is_error = True
         except fc.ForgeOpsError as e:
             result, is_error = {"error": str(e)}, True
         except Exception as e:  # report, never die: the agent keeps its session
-            log("tool %s failed: %r" % (tool["name"], e))
+            log("tool %s failed: %r" % (name, e))
             result, is_error = {"error": "internal error in forgeops-mcp: %s" % type(e).__name__}, True
         return ok({"content": [{"type": "text", "text": json.dumps(result, indent=1)}], "isError": is_error})
-    return {"jsonrpc": "2.0", "id": mid, "error": {"code": -32601, "message": "method not found: %s" % method}}
+    return error(mid, -32601, "method not found: %s" % method[:80])
 
 
 def main():
@@ -179,10 +253,14 @@ def main():
         try:
             msg = json.loads(line)
         except ValueError:
-            out = {"jsonrpc": "2.0", "id": None, "error": {"code": -32700, "message": "parse error"}}
+            out = error(None, -32700, "parse error")
         else:
-            out = handle(msg) if isinstance(msg, dict) else {
-                "jsonrpc": "2.0", "id": None, "error": {"code": -32600, "message": "batches are not supported"}}
+            try:
+                out = handle(msg)
+            except Exception as e:  # the last guard: a reply, never a dead server
+                log("message failed: %r" % (e,))
+                out = error(msg.get("id") if isinstance(msg, dict) and isinstance(msg.get("id"), (str, int)) else None,
+                            -32603, "internal error")
         if out is not None:
             sys.stdout.write(json.dumps(out) + "\n")
             sys.stdout.flush()

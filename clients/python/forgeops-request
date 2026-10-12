@@ -5,12 +5,18 @@
 
   forgeops-request list
   forgeops-request request <capability-key> --target <target> --purpose "<why>" \
-      [--version <v>] [--input '<json>'] [--workspace <w>] [--wait <seconds>]
+      [--version <v>] [--input '<json>'] [--workspace <w>] [--wait <seconds>] \
+      [--idempotency-key <key>]
   forgeops-request show <request-id>
+  forgeops-request show --idempotency-key <key>
 
 You can ask. The customer's ForgeOps decides whether it runs, where, after whose
 approval, and what of the result you receive; this tool shows its answers as
 given. It has no way to approve anything.
+
+If a request was sent but its creation could not be confirmed, this tool prints
+its idempotency key. Asking again with --idempotency-key <key> returns that same
+request if it exists: it never becomes a second operation.
 
   FORGEOPS_URL       the customer's ForgeOps (https)
   FORGEOPS_KEY_FILE  the requester key the customer issued
@@ -33,7 +39,7 @@ def show_json(value):
 def cmd_list(s, _args):
     caps = s.requestable()
     if not caps:
-        print("nothing is requestable with this key (the customer has installed, bound and deployed nothing for it)")
+        print("No capabilities are currently requestable with this key.")
         return
     for c in caps:
         print("%s %s  target %s  (%s, revision %s)" % (
@@ -74,7 +80,13 @@ def cmd_request(s, args):
         payload = json.loads(args.input)
     except ValueError as e:
         sys.exit("--input is not JSON: %s" % e)
-    a = s.request(args.capability, args.target, payload, args.purpose, version=args.version, workspace=args.workspace)
+    try:
+        a = s.request(args.capability, args.target, payload, args.purpose, version=args.version,
+                      workspace=args.workspace, idempotency_key=args.idempotency_key)
+    except fc.UnknownOutcome as e:
+        sys.exit("forgeops-request: %s\n  to find it, or create it exactly once:\n"
+                 "  forgeops-request request %s --target %s --purpose %s --idempotency-key %s" % (
+                     e, args.capability, args.target, json.dumps(args.purpose), e.idempotency_key))
     aid = a.get("action_id") or a.get("id")
     print("asked for %s on %s: %s" % (args.capability, args.target, aid))
 
@@ -83,9 +95,15 @@ def cmd_request(s, args):
         if status == "held":
             print("           waiting for the customer's approver")
 
-    s.follow(aid, args.wait, on_status=on_status)
-    print()
-    report(s, aid)
+    # The request exists from here on: whatever happens while following it,
+    # its id is what to come back to -- never a new request.
+    try:
+        s.follow(aid, args.wait, on_status=on_status)
+        print()
+        report(s, aid)
+    except fc.ForgeOpsError as e:
+        sys.exit("forgeops-request: request %s exists, but its status could not be read (%s).\n"
+                 "  follow it with: forgeops-request show %s" % (aid, e, aid))
 
 
 def main():
@@ -102,8 +120,10 @@ def main():
     rq.add_argument("--input", default="{}", help="the operation's input, as JSON")
     rq.add_argument("--workspace", help="only for a key not scoped to one workspace")
     rq.add_argument("--wait", type=int, default=600, help="seconds to follow the request")
+    rq.add_argument("--idempotency-key", help="the key an earlier, unconfirmed attempt printed")
     sh = sub.add_parser("show", help="a request's status and result")
-    sh.add_argument("request_id")
+    sh.add_argument("request_id", nargs="?")
+    sh.add_argument("--idempotency-key", help="find the request created under this key")
     args = p.parse_args()
 
     try:
@@ -112,8 +132,16 @@ def main():
             cmd_list(s, args)
         elif args.cmd == "request":
             cmd_request(s, args)
-        else:
+        elif args.idempotency_key:
+            a = s.find(args.idempotency_key)
+            if a is None:
+                print("No request was created under idempotency key %s." % args.idempotency_key)
+                return
+            report(s, a.get("action_id") or a.get("id"))
+        elif args.request_id:
             report(s, args.request_id)
+        else:
+            sys.exit("forgeops-request: show needs a request id or --idempotency-key")
     except fc.ForgeOpsError as e:
         sys.exit("forgeops-request: %s" % e)
 

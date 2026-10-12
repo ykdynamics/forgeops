@@ -65,12 +65,26 @@ demo.service.status 0.1.1  target demo-service  (customer-site, revision 2)
 
 request  act-3c1e…
 status   succeeded
-result   disclosed (the customer approved disclosing this output to requesters)
+result   disclosed (the customer's ForgeOps released this output under the customer's approval)
 output   {"healthy": true}
 ```
 
 A request names the capability and, optionally, its version. The customer's
 ForgeOps binds the exact revision it serves; the client never guesses one.
+
+If the network fails after a request was sent, the tool cannot tell whether it
+was created. It says so and prints the request's idempotency key, with the
+command to run next:
+
+```bash
+./forgeops-request request demo.service.status --target demo-service \
+    --purpose "queue stuck since 09:00" --idempotency-key request-4f2a…
+./forgeops-request show --idempotency-key request-4f2a…
+```
+
+The first returns the same request if it was created, and creates it once if it
+was not. The second only looks it up. Once a request id has been printed, follow
+that request with `show`; do not ask again.
 
 ## forgeops-mcp
 
@@ -89,15 +103,35 @@ Tools: `list_capabilities`, `request_capability`, `get_request`. There is no
 approve tool. A held request waits for the customer's approver, and the agent
 follows it with `get_request`.
 
+`request_capability` always returns the `request_id` once a request exists,
+even when reading its status then fails, and the tool tells the agent to follow
+it rather than ask again. When creation itself could not be confirmed, it
+returns `outcome: unknown` with an `idempotency_key`; calling it again with that
+key returns the same request.
+
 ## Behaviour on the network
 
 - **Redirects are never followed.** A 3xx answer is an error that names where
   it pointed. Neither the session token nor the key leaves the configured URL.
-- **Waits are bounded.** Each HTTP call has a timeout. Network errors are
-  retried for a while. An MCP tool call always answers within 45 seconds.
-- **Retries are safe.** A request carries one idempotency key, and the
-  customer's ForgeOps answers a repeat with the same request. A lost answer
-  therefore never becomes a second operation.
+- **Waits are bounded.** Each HTTP call has a timeout, and network errors are
+  retried for a while. An MCP tool call answers within 45 seconds in all
+  (`FORGEOPS_TOOL_SECONDS`): signing in, retries, polling and reading a slow
+  response all count against that limit.
+- **One request is one operation, as long as its key is reused.** Every request
+  carries an idempotency key, and the customer's ForgeOps answers a repeat of
+  the same key with the same request. Retries inside one call reuse the key on
+  their own. When a call cannot confirm that a request was created, it returns
+  that key. Asking again with it (`--idempotency-key`, or `idempotency_key` in
+  `request_capability`) never creates a second operation; asking again
+  *without* it can. Once a request id has been returned, it is the request to
+  follow, even if reading its status failed.
+- **Sessions renew themselves.** The session token is renewed shortly before it
+  expires, and once if the server rejects it. A long-running MCP server needs
+  no restart.
+- **`policy_revision` is sent for compatibility only.** The current request
+  contract still carries the field. It is not authority: the customer's
+  ForgeOps decides every request under its own policy. The clients stop
+  sending it once the server no longer reads it.
 
 ## License
 

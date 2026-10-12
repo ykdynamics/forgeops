@@ -17,11 +17,19 @@ answers exactly as the server gives them: it does not check authority, and it
 never filters, hides or reshapes a result. When the server withholds an output,
 there is no output here to show.
 
+One request is one operation. Every request carries an idempotency key, and the
+customer's ForgeOps answers a repeat of the same key with the same request. When
+the client cannot tell whether a request was created (the network failed after
+it was sent), it says so and hands back that key: asking again with the same key
+returns the request if it exists, and never creates a second operation.
+
 Standard library only (Python 3.9+).
 """
 
+import datetime
 import json
 import os
+import re
 import time
 import urllib.error
 import urllib.parse
@@ -41,9 +49,34 @@ MEANING = {
     "none": "the capability proposes no output for requesters",
 }
 
+# A response larger than this is not one a requester client should be reading.
+MAX_RESPONSE_BYTES = 1 << 20
+
+# Renew the session token this long before the server says it expires.
+TOKEN_MARGIN_SECONDS = 30
+
+IDEMPOTENCY_KEY = re.compile(r"[A-Za-z0-9._:-]{8,128}")
+
 
 class ForgeOpsError(Exception):
     """A request the client could not make, or the server refused."""
+
+
+class OutOfTime(ForgeOpsError):
+    """The session's time limit ran out."""
+
+
+class UnknownOutcome(ForgeOpsError):
+    """A request was sent, and whether the server created it is not known.
+
+    Asking again with the same idempotency_key returns the request if it was
+    created, and creates it once if it was not: never a second operation."""
+
+    def __init__(self, idempotency_key, cause):
+        self.idempotency_key = idempotency_key
+        super().__init__(
+            "the request may or may not have been created (%s). Do not submit a new one: ask again with "
+            "idempotency key %s, which returns the same request if it exists" % (cause, idempotency_key))
 
 
 class _NoRedirects(urllib.request.HTTPRedirectHandler):
@@ -82,26 +115,57 @@ def check_url(url):
     raise ForgeOpsError("refusing to send a requester key to %r: use https" % url)
 
 
+def new_idempotency_key():
+    return "request-" + uuid.uuid4().hex
+
+
+def check_idempotency_key(key):
+    if not isinstance(key, str) or not IDEMPOTENCY_KEY.fullmatch(key):
+        raise ForgeOpsError("an idempotency key is 8-128 letters, digits or ._:- (as this client returned it)")
+    return key
+
+
 def error_text(body):
     if isinstance(body, dict) and body.get("error"):
         return str(body["error"])
     return json.dumps(body)[:300] if body else "no detail"
 
 
-class Session:
-    """One requester key, one customer's ForgeOps."""
+def _expiry(value):
+    """The server's RFC 3339 expiry as a POSIX time, or None."""
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        return datetime.datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+    except ValueError:
+        return None
 
-    def __init__(self, url, key, net_patience=60, timeout=30, sleep=time.sleep):
+
+class Session:
+    """One requester key, one customer's ForgeOps.
+
+    deadline (seconds) bounds everything the session does from construction on,
+    authentication included; time_limit() restarts it. Without one, each call
+    is bounded only by its own timeouts and net_patience."""
+
+    def __init__(self, url, key, net_patience=60, timeout=30, sleep=time.sleep, deadline=None):
         self.url = check_url(url)
         self.net_patience, self.timeout, self.sleep = net_patience, timeout, sleep
+        self.deadline = None if deadline is None else time.monotonic() + deadline
+        self._key = key
+        self.token, self.token_expires = None, None
+        self.tenant, self.workspace = "", ""
+        self._authenticate()
+
+    def _authenticate(self):
+        """Exchange the key for a session token, and read the session."""
         self.token = None
-        self.deadline = None  # monotonic time after which no call starts or waits
-        status, body = self.call("POST", "/v1/auth/token", {"api_key": key})
+        status, body = self._send("POST", "/v1/auth/token", {"api_key": self._key})
         if status != 200 or not isinstance(body, dict) or not body.get("token"):
             raise ForgeOpsError("the customer's ForgeOps refused the requester key (%s): %s" % (status, error_text(body)))
-        self.token = body["token"]
-        status, me = self.call("GET", "/v1/session")
-        if status != 200:
+        self.token, self.token_expires = body["token"], _expiry(body.get("expires_at"))
+        status, me = self._send("GET", "/v1/session")
+        if status != 200 or not isinstance(me, dict):
             raise ForgeOpsError("could not read this key's session (%s): %s" % (status, error_text(me)))
         self.tenant = me.get("tenant_id") or body.get("tenant_id") or ""
         self.workspace = me.get("workspace_id") or ""
@@ -109,8 +173,7 @@ class Session:
             raise ForgeOpsError("the session names no customer tenant")
 
     def time_limit(self, seconds):
-        """Bound everything this session does from now: no call starts, waits or
-        retries past it."""
+        """Bound everything this session does from now on."""
         self.deadline = time.monotonic() + seconds
 
     def _remaining(self):
@@ -118,13 +181,31 @@ class Session:
             return None
         left = self.deadline - time.monotonic()
         if left <= 0:
-            raise ForgeOpsError("out of time waiting for %s" % self.url)
+            raise OutOfTime("out of time waiting for %s" % self.url)
         return left
 
+    def _pause(self, seconds):
+        """Sleep, but never past the deadline."""
+        left = self._remaining()
+        self.sleep(seconds if left is None else min(seconds, left))
+
     def call(self, method, path, body=None):
-        """(status, decoded JSON). Network errors and timeouts are retried for a
-        while; a retried request is safe, since a request carries its
-        idempotency key and the server answers a repeat with the same Action."""
+        """(status, decoded JSON) for an authenticated call. The token is
+        renewed shortly before it expires, and once if the server rejects it
+        (401); the same request -- the same body, so the same idempotency key --
+        is then sent again."""
+        if self.token_expires is not None and time.time() > self.token_expires - TOKEN_MARGIN_SECONDS:
+            self._authenticate()
+        status, out = self._send(method, path, body)
+        if status == 401:
+            self._authenticate()
+            status, out = self._send(method, path, body)
+        return status, out
+
+    def _send(self, method, path, body=None):
+        """One HTTP exchange, retried through network errors for net_patience,
+        and never past the deadline: connecting, waiting and reading the
+        response all count against it."""
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
         if self.token:
             headers["Authorization"] = "Bearer " + self.token
@@ -132,22 +213,36 @@ class Session:
         patience = time.monotonic() + self.net_patience
         while True:
             left = self._remaining()
-            timeout = self.timeout if left is None else max(0.1, min(self.timeout, left))
+            timeout = self.timeout if left is None else max(0.05, min(self.timeout, left))
             req = urllib.request.Request(self.url + path, method=method, data=data, headers=headers)
             try:
                 with _OPENER.open(req, timeout=timeout) as r:
-                    return r.status, _decode(r.read())
+                    return r.status, _decode(self._read(r))
             except urllib.error.HTTPError as e:
                 if 300 <= e.code < 400:
                     raise ForgeOpsError("%s answered %s with a redirect to %r; redirects are not followed, so "
                                         "neither the key nor the session token leaves %s" %
                                         (self.url, e.code, e.headers.get("Location", ""), self.url))
-                return e.code, _decode(e.read())
+                return e.code, _decode(self._read(e))
             except (urllib.error.URLError, OSError) as e:
                 if time.monotonic() >= patience:
                     raise ForgeOpsError("cannot reach %s (%s)" % (self.url, getattr(e, "reason", e)))
-                self._remaining()
-                self.sleep(2)
+                self._pause(2)
+
+    def _read(self, response):
+        """The whole body, a chunk at a time, re-checking the deadline before
+        each read: a body trickling in slowly cannot outrun it."""
+        chunks, size = [], 0
+        while True:
+            left = self._remaining()
+            _set_read_timeout(response, self.timeout if left is None else max(0.05, min(self.timeout, left)))
+            chunk = response.read1(65536) if hasattr(response, "read1") else response.read(65536)
+            if not chunk:
+                return b"".join(chunks)
+            size += len(chunk)
+            if size > MAX_RESPONSE_BYTES:
+                raise ForgeOpsError("the response from %s is larger than %d bytes" % (self.url, MAX_RESPONSE_BYTES))
+            chunks.append(chunk)
 
     def _get(self, path, what):
         status, body = self.call("GET", path)
@@ -161,31 +256,55 @@ class Session:
         body = self._get("/v1/tenants/%s/requestable-capabilities" % self.tenant, "could not list capabilities")
         return body.get("capabilities") or []
 
-    def request(self, capability_key, target, input=None, purpose="", version=None, workspace=None):
-        """Ask for one capability on one target. The server binds the exact
-        revision (from the version, or what the customer's binding serves); the
-        client never guesses one."""
+    def request(self, capability_key, target, input=None, purpose="", version=None, workspace=None,
+                idempotency_key=None):
+        """Ask for one capability on one target, and return the request.
+
+        The server binds the exact revision (from the version, or what the
+        customer's binding serves); the client never guesses one. Pass the
+        idempotency_key an earlier attempt returned to ask again without
+        risking a second operation. Raises UnknownOutcome when the request was
+        sent and its creation could not be confirmed."""
         workspace = workspace or self.workspace
         if not workspace:
             raise ForgeOpsError("this key is not scoped to a workspace: pass the workspace")
+        key = check_idempotency_key(idempotency_key) if idempotency_key else new_idempotency_key()
         body = {
             "workspace_id": workspace,
             "capability_uid": capability_key,
             "target": target,
             "input": input if input is not None else {},
             "request_purpose": purpose,
-            # The Action contract's policy-revision field. It is carried into the
-            # decision as stated; the customer's policy decides the request.
+            # Compatibility only: the current Action contract still carries a
+            # policy-revision field. It is not authority -- the customer's
+            # ForgeOps decides the request under its own policy -- and it goes
+            # away once the server no longer reads it.
             "policy_revision": 1,
-            "idempotency_key": "request-" + uuid.uuid4().hex,
+            "idempotency_key": key,
             "max_attempts": 1,
         }
         if version:
             body["capability_version"] = version
-        status, action = self.call("POST", "/v1/tenants/%s/actions" % self.tenant, body)
+        try:
+            status, action = self.call("POST", "/v1/tenants/%s/actions" % self.tenant, body)
+        except ForgeOpsError as e:
+            raise UnknownOutcome(key, e)
         if status not in (200, 201):
             raise ForgeOpsError("the customer's ForgeOps did not accept the request (%s): %s" % (status, error_text(action)))
+        if isinstance(action, dict):
+            action.setdefault("idempotency_key", key)
         return action
+
+    def find(self, idempotency_key):
+        """The request created under an idempotency key, or None if there is none."""
+        key = check_idempotency_key(idempotency_key)
+        status, body = self.call("GET", "/v1/tenants/%s/actions/by-idempotency?key=%s" %
+                                 (self.tenant, urllib.parse.quote(key, safe="")))
+        if status == 404:
+            return None
+        if status != 200:
+            raise ForgeOpsError("could not look up idempotency key %s (%s): %s" % (key, status, error_text(body)))
+        return body
 
     def action(self, action_id):
         return self._get("/v1/tenants/%s/actions/%s" % (self.tenant, action_id), "no request %s" % action_id)
@@ -199,20 +318,35 @@ class Session:
         body = self._get("/v1/tenants/%s/actions/%s/transitions" % (self.tenant, action_id), "no request %s" % action_id)
         return latest_result(body.get("transitions") or [])
 
-    def follow(self, action_id, seconds, on_status=None, stop_when_held=False):
-        """Poll until the request ends, is held (if asked), or time runs out."""
-        deadline, last, a = time.monotonic() + max(0, seconds), None, {}
+    def follow(self, action_id, seconds, on_status=None, stop_when_held=False, reserve=3):
+        """Poll until the request ends, is held (if asked), or time runs out.
+        With a deadline, `reserve` seconds of it are left for reporting."""
+        until = time.monotonic() + max(0, seconds)
         if self.deadline is not None:
-            deadline = min(deadline, self.deadline - 3)  # leave time to report
+            until = min(until, self.deadline - reserve)
+        last, a = None, {}
         while True:
             a = self.action(action_id)
             status = a.get("status")
             if status != last and on_status:
                 on_status(status)
             last = status
-            if status in TERMINAL or (stop_when_held and status == "held") or time.monotonic() >= deadline:
+            wait = until - time.monotonic()
+            if status in TERMINAL or (stop_when_held and status == "held") or wait <= 0:
                 return a
-            self.sleep(2)
+            self._pause(min(2, wait))
+
+
+def _set_read_timeout(response, seconds):
+    """Bound the next socket read. HTTPResponse keeps its socket behind
+    fp.raw._sock (CPython 3.9 to 3.13); without it, the connect-time timeout
+    applies to each read and the deadline is still checked between chunks."""
+    sock = getattr(getattr(getattr(response, "fp", None), "raw", None), "_sock", None)
+    if sock is not None:
+        try:
+            sock.settimeout(seconds)
+        except OSError:
+            pass
 
 
 def _decode(raw):
