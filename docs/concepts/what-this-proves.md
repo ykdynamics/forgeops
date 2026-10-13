@@ -2,6 +2,11 @@
 
 Read this before believing anything the demo showed you.
 
+This page describes the first-touch bundle used by Demo 1 and Demo 2. The
+separate [Demo 3 AI repair candidate](../../demo/AI-REPAIR.md) has its own
+package, qualification record, claims and limitations; in particular, it does
+bind its three packaged capability implementations to checked digests.
+
 ## What it proves
 
 Everything in the local run is real. The connector is a service on your machine
