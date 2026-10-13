@@ -1,21 +1,23 @@
 # ForgeOps demos
 
-One demo, then the same demo with an AI asking.
+Three local demonstrations show the authority model from different angles.
 
 Start with **Demo 1**: it shows the whole idea, with you as the customer's
 approver. **Demo 2** is the follow-on: the same customer side, with a real model
-in the vendor's seat.
+in the vendor's seat. **Demo 3** is a separate, deeper candidate: the AI runs
+inside an isolated requester and repairs a fictional application without
+receiving its customer-local credential.
 
-| | **Demo 1 — Core authority** | **Demo 2 — AI + MCP** |
-|---|---|---|
-| Purpose | Understand ForgeOps itself | See what changes when the requester is AI |
-| Requester | fixed first-touch scenario | real model using MCP tools |
-| Flow | diagnostics `ALLOW` → restart `ASK` → shell `DENY` | diagnose → reason → request → approval/refusal → verify |
-| Customer authority | policy + separate approval | the same policy + separate approval |
-| Runs | locally | locally; model context goes to the configured model endpoint |
-| Account | none | none on the default hosted-model path |
-| Start | `./try-forgeops` | `./try-with-ai` |
-| Walkthrough | **[Run Demo 1 →](BASIC.md)** | **[Run Demo 2 →](AI.md)** |
+| | **Demo 1 — Core authority** | **Demo 2 — AI + MCP** | **Demo 3 — AI repair** |
+|---|---|---|---|
+| Purpose | Understand ForgeOps itself | See what changes when the requester is AI | Test document disclosure, secret refusal and customer-held repair |
+| Requester | fixed first-touch scenario | real model using MCP tools | real model in an isolated Dev Container |
+| Flow | diagnostics `ALLOW` → restart `ASK` → shell `DENY` | diagnose → reason → request → approval/refusal → verify | safe reads `ALLOW` → internal config `ASK` → secret `DENY` → repair `ASK` |
+| Customer authority | policy + separate approval | the same policy + separate approval | policy, separate approval and customer-local dummy credential |
+| Runs | locally | locally; model context goes to the configured model endpoint | locally on Apple silicon; model context goes to the configured model endpoint |
+| Account | none | no ForgeOps account | no ForgeOps account; normal AI client access required |
+| Start | `./try-forgeops` | `./try-with-ai` | `AI_DEMO_DISCLOSE_INTERNAL_CONFIG=1 ./start` |
+| Walkthrough | **[Run Demo 1 →](BASIC.md)** | **[Run Demo 2 →](AI.md)** | **[Run Demo 3 →](AI-REPAIR.md)** |
 
 ## Demo 1 — Core authority
 
@@ -55,11 +57,29 @@ same thing with every side on your laptop:
 
 **[Run the AI + MCP walkthrough →](AI.md)**
 
+## Demo 3 — AI repair without the secret
+
+**Let an AI repair a fictional application while the customer keeps the only
+credential that can perform the repair.**
+
+This separate evaluation candidate adds a VS Code Dev Container for the
+requester, explicit document disclosure, a fixed secret request that policy
+refuses, and a customer status page that provides visible before-and-after
+evidence. Reject the first bounded repair and nothing changes. Approve a fresh
+request and the application connects; the assistant receives only the declared
+safe result.
+
+The current candidate supports Apple silicon macOS only and has passed the full
+builder qualification. An evaluator unfamiliar with its implementation has not
+yet completed the walkthrough, so that limitation travels with the download.
+
+**[Download and run the AI repair candidate →](AI-REPAIR.md)**
+
 ## What will open in your browser
 
-Both demos use the real ForgeOps Approval PWA when an Action needs a customer
-decision. The exact requester, purpose, operation and target are shown before
-anything is released.
+All three demos use the real ForgeOps Approval PWA when an Action needs a
+customer decision. The exact requester, purpose, operation and target are shown
+before anything is released.
 
 ![Schematic preview of the customer approval information shown by the browser surface.](../docs/images/customer-approval.svg)
 
@@ -73,7 +93,7 @@ reports.
 
 ## Before you start
 
-Both demos use the same first-touch bundle.
+Demo 1 and Demo 2 use the same first-touch bundle.
 
 ```text
 Docker           running
@@ -96,5 +116,11 @@ core claim without involving model behaviour.
 Run **Demo 2** next if you want to see the same authority model with a requester
 that can inspect symptoms, reason and choose tools dynamically.
 
+Run **Demo 3** if you want to inspect the AI process boundary and see a
+customer-held credential used by a narrowly approved capability without being
+returned to the requester.
+
 The demos are deliberately separate because AI is a requester type, not a second
-execution path and not the definition of ForgeOps.
+execution path and not the definition of ForgeOps. Demo 3 also has a separate
+bundle because its supported host, isolation boundary and qualification matrix
+are different.

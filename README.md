@@ -23,7 +23,8 @@ for pace. The download below runs the same thing, "did it work?" check included,
 with every side on your laptop.*
 
 **Run it yourself:** [Demo 1 — you approve](#demo-1--core-authority) ·
-[Demo 2 — an AI asks](#demo-2--ai--mcp). One download, no account.
+[Demo 2 — an AI asks](#demo-2--ai--mcp) ·
+[Demo 3 — AI repair without the secret](#demo-3--ai-repair-without-the-secret).
 
 ```text
 read diagnostics        ALLOW   runs immediately
@@ -31,7 +32,12 @@ restart the connector   ASK     waits for a person on the customer's side
 open a shell            DENY    refused, and nothing happens
 ```
 
-## Try it on your laptop: one download, two demos
+## Try it on your laptop
+
+Demo 1 and Demo 2 share the first-touch download below. Demo 3 uses a separate,
+Apple-silicon evaluation candidate because it adds an isolated requester,
+customer-held document and credential boundaries, and a fictional application
+that visibly changes after an approved repair.
 
 Everything runs on your machine, no account. You need macOS or Linux, Docker
 running, `curl`, `python3`, `lsof` and `bash`.
@@ -77,6 +83,20 @@ It still cannot approve its own request, reach the connector or widen the
 customer's policy. The model is remote by default, so this one needs internet;
 approval, credentials and execution stay on your laptop.
 **[Demo 2 walkthrough →](demo/AI.md)**
+
+### Demo 3 — AI repair without the secret
+
+**An AI diagnoses and repairs a fictional application without receiving its
+customer-local credential.** This is a separate download for an Apple silicon
+Mac with Docker Desktop and VS Code Dev Containers.
+
+The assistant may read a safe setup guide and status, must ask before receiving
+synthetic internal configuration, cannot read `secrets.env`, and must ask before
+the bounded repair runs. Reject the first repair and see zero effect; approve a
+fresh request and watch the customer view change from **Disconnected** to
+**Connected**. The requester receives only the approved safe result.
+
+**[Download the candidate and run Demo 3 →](demo/AI-REPAIR.md)**
 
 Prefer pictures first? [Visual walkthrough](demo/VISUAL-GUIDE.md). Want to send
 an operation of your own through it? [Bring your own operation](demo/BRING-YOUR-OWN.md).
@@ -140,8 +160,9 @@ devices: knowing what is deployed, fixing what is unsafe, proving what happened.
 
 ## Status and terms
 
-The demos are real and run on your machine. There is no hosted service or
-account behind them.
+The demos are real and run on your machine. There is no hosted ForgeOps service
+or ForgeOps account behind them. Demo 2 and Demo 3 use a remote model by
+default, so their AI client still needs its normal model access.
 
 This repository is public for **evaluation and testing**, not as an open-source
 release. Copyright © 2026 YK Dynamics. All rights reserved. See
