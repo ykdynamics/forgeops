@@ -14,7 +14,7 @@ receiving its customer-local credential.
 | Requester | fixed first-touch scenario | real model using MCP tools | real model in an isolated Dev Container |
 | Flow | diagnostics `ALLOW` → restart `ASK` → shell `DENY` | diagnose → reason → request → approval/refusal → verify | safe reads `ALLOW` → internal config `ASK` → secret `DENY` → repair `ASK` |
 | Customer authority | policy + separate approval | the same policy + separate approval | policy, separate approval and customer-local dummy credential |
-| Runs | locally | locally; model context goes to the configured model endpoint | locally on Apple silicon; model context goes to the configured model endpoint |
+| Runs | locally | locally; model context goes to the configured model endpoint | locally on Apple silicon macOS or Linux; model context goes to the configured model endpoint |
 | Account | none | no ForgeOps account | no ForgeOps account; normal AI client access required |
 | Start | `./try-forgeops` | `./try-with-ai` | `AI_DEMO_DISCLOSE_INTERNAL_CONFIG=1 ./start` |
 | Walkthrough | **[Run Demo 1 →](BASIC.md)** | **[Run Demo 2 →](AI.md)** | **[Run Demo 3 →](AI-REPAIR.md)** |
@@ -69,9 +69,11 @@ evidence. Reject the first bounded repair and nothing changes. Approve a fresh
 request and the application connects; the assistant receives only the declared
 safe result.
 
-The current candidate supports Apple silicon macOS only and has passed the full
-builder qualification. An evaluator unfamiliar with its implementation has not
-yet completed the walkthrough, so that limitation travels with the download.
+The candidates support Apple silicon macOS, Linux x86-64 and Linux ARM64 and
+have passed the full builder qualification. An evaluator unfamiliar with the
+implementation has not yet completed the walkthrough, and the Linux desktop
+journey has not yet been run on a standalone workstation, so those limitations
+travel with the downloads.
 
 **[Download and run the AI repair candidate →](AI-REPAIR.md)**
 

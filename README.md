@@ -34,10 +34,10 @@ open a shell            DENY    refused, and nothing happens
 
 ## Try it on your laptop
 
-Demo 1 and Demo 2 share the first-touch download below. Demo 3 uses a separate,
-Apple-silicon evaluation candidate because it adds an isolated requester,
-customer-held document and credential boundaries, and a fictional application
-that visibly changes after an approved repair.
+Demo 1 and Demo 2 share the first-touch download below. Demo 3 uses a separate
+evaluation candidate for Apple silicon macOS or Linux because it adds an
+isolated requester, customer-held document and credential boundaries, and a
+fictional application that visibly changes after an approved repair.
 
 Everything runs on your machine, no account. You need macOS or Linux, Docker
 running, `curl`, `python3`, `lsof` and `bash`.
@@ -87,8 +87,8 @@ approval, credentials and execution stay on your laptop.
 ### Demo 3 — AI repair without the secret
 
 **An AI diagnoses and repairs a fictional application without receiving its
-customer-local credential.** This is a separate download for an Apple silicon
-Mac with Docker Desktop and VS Code Dev Containers.
+customer-local credential.** This is a separate download for Apple silicon
+macOS, Linux x86-64 or Linux ARM64 with Docker and VS Code Dev Containers.
 
 The assistant may read a safe setup guide and status, must ask before receiving
 synthetic internal configuration, cannot read `secrets.env`, and must ask before
