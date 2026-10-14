@@ -84,6 +84,10 @@ customer's policy. The model is remote by default, so this one needs internet;
 approval, credentials and execution stay on your laptop.
 **[Demo 2 walkthrough →](demo/AI.md)**
 
+For the first-touch bundle used by Demo 1 and Demo 2: [see the visual
+walkthrough](demo/VISUAL-GUIDE.md), or [send an operation of your
+own](demo/BRING-YOUR-OWN.md).
+
 ### Demo 3 — AI repair without the secret
 
 **An AI diagnoses and repairs a fictional application without receiving its
@@ -96,10 +100,9 @@ the bounded repair runs. Reject the first repair and see zero effect; approve a
 fresh request and watch the customer view change from **Disconnected** to
 **Connected**. The requester receives only the approved safe result.
 
-**[Download the candidate and run Demo 3 →](demo/AI-REPAIR.md)**
+![The real Demo 3 customer page after the approved repair: Connected, credential current, one repair, and the authorizing Action recorded.](docs/images/demo3/customer-connected.png)
 
-Prefer pictures first? [Visual walkthrough](demo/VISUAL-GUIDE.md). Want to send
-an operation of your own through it? [Bring your own operation](demo/BRING-YOUR-OWN.md).
+**[See the journey and run Demo 3 →](demo/AI-REPAIR.md)**
 
 ## Go deeper
 
