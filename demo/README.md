@@ -69,13 +69,19 @@ evidence. Reject the first bounded repair and nothing changes. Approve a fresh
 request and the application connects; the assistant receives only the declared
 safe result.
 
+The walkthrough uses the real customer and approval pages to show the initial
+Disconnected state, the exact bounded proposal, the no-effect rejection, and
+the final Connected state:
+
+![The real Demo 3 customer page after the approved repair: Connected, credential current, one repair, and the authorizing Action recorded.](../docs/images/demo3/customer-connected.png)
+
 The candidates support Apple silicon macOS, Linux x86-64 and Linux ARM64 and
 have passed the full builder qualification. An evaluator unfamiliar with the
 implementation has not yet completed the walkthrough, and the Linux desktop
 journey has not yet been run on a standalone workstation, so those limitations
 travel with the downloads.
 
-**[Download and run the AI repair candidate →](AI-REPAIR.md)**
+**[See the screens and run the AI repair candidate →](AI-REPAIR.md)**
 
 ## What will open in your browser
 
@@ -85,9 +91,10 @@ before anything is released.
 
 ![Schematic preview of the customer approval information shown by the browser surface.](../docs/images/customer-approval.svg)
 
-The image above is a schematic, not a screenshot. The demo opens the actual PWA
-locally, and the recordings on the [front page](../README.md) and in
-[Demo 2](AI.md) show the real page.
+The image above is a schematic for Demo 1 and Demo 2. Those demos open the
+actual PWA locally, and their recordings on the [front page](../README.md) and
+in [Demo 2](AI.md) show the real page. [Demo 3](AI-REPAIR.md) includes current
+screenshots from its own customer and approval pages.
 
 Demo 2 also opens a local chat page with the connector's live state beside the
 conversation so you can compare what the model says with what the target itself
