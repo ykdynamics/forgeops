@@ -73,6 +73,8 @@ The walkthrough uses the real customer and approval pages to show the initial
 Disconnected state, the exact bounded proposal, the no-effect rejection, and
 the final Connected state:
 
+![Captioned real Demo 3 evidence: disconnected, customer-held approvals, then connected after the fresh approved repair.](../docs/images/recording-demo3-ai-repair.webp)
+
 ![The real Demo 3 customer page after the approved repair: Connected, credential current, one repair, and the authorizing Action recorded.](../docs/images/demo3/customer-connected.png)
 
 The candidates support Apple silicon macOS, Linux x86-64 and Linux ARM64 and

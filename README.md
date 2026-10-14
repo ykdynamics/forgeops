@@ -100,6 +100,8 @@ the bounded repair runs. Reject the first repair and see zero effect; approve a
 fresh request and watch the customer view change from **Disconnected** to
 **Connected**. The requester receives only the approved safe result.
 
+![Captioned real Demo 3 evidence: disconnected customer state, customer-held approvals, then connected after the fresh approved repair.](docs/images/recording-demo3-ai-repair.webp)
+
 ![The real Demo 3 customer page after the approved repair: Connected, credential current, one repair, and the authorizing Action recorded.](docs/images/demo3/customer-connected.png)
 
 **[See the journey and run Demo 3 →](demo/AI-REPAIR.md)**
