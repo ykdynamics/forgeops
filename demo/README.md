@@ -75,8 +75,6 @@ the final Connected state:
 
 ![Captioned real Demo 3 evidence: disconnected, customer-held approvals, then connected after the fresh approved repair.](../docs/images/recording-demo3-ai-repair.webp)
 
-![The real Demo 3 customer page after the approved repair: Connected, credential current, one repair, and the authorizing Action recorded.](../docs/images/demo3/customer-connected.png)
-
 The candidates support Apple silicon macOS, Linux x86-64 and Linux ARM64 and
 have passed the full builder qualification. An evaluator unfamiliar with the
 implementation has not yet completed the walkthrough, and the Linux desktop
