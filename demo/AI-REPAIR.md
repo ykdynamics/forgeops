@@ -118,23 +118,25 @@ refused. Both controls matter in this demonstration.
 
 The candidates support Apple silicon macOS, Linux x86-64 and Linux ARM64. You
 need Docker Compose v2, VS Code with Dev Containers, about 1 GiB free disk, and
-normal access for the AI client. No ForgeOps account, private source checkout,
-developer registry credential or database edit is required.
+access to Codex through your own ChatGPT account. No ForgeOps account, private
+source checkout, developer registry credential or database edit is required.
+You do not paste an API key into the demo: after inspecting the live boundary,
+you sign in with a one-time code on OpenAI's page in your normal browser.
 
 ### Download the candidate for your host
 
 ```bash
-TAG=ai-demo-eval.1
+TAG=ai-demo-eval.2
 case "$(uname -s)/$(uname -m)" in
   Darwin/arm64)
-    KIT=forgeops-ai-demo-ai-demo-5-candidate-2-darwin-arm64.tar.gz
-    SHA256=b4d2b96d802bdc4543a144228bdf1e3c565d2b4f08cf4740551eaa1ddf7b8972 ;;
+    KIT=forgeops-ai-demo-eval-2-darwin-arm64.tar.gz
+    SHA256=7fc23f82daf414060c80a644c0533a33793f9c201f177d133d56662933af03e4 ;;
   Linux/x86_64)
-    KIT=forgeops-ai-demo-eval-1-linux-amd64.tar.gz
-    SHA256=82d18d0c8c04beb0d632d612a2e0fdc678d49c5ce9bd7b6a44d974ec0ee15ca2 ;;
+    KIT=forgeops-ai-demo-eval-2-linux-amd64.tar.gz
+    SHA256=e68cef9ebceda8784db2bcae08d618b2abda1182b08fedf3ece775776cce63c5 ;;
   Linux/aarch64|Linux/arm64)
-    KIT=forgeops-ai-demo-eval-1-linux-arm64.tar.gz
-    SHA256=30c5f3c293637c29a606a0859a115617557651fe7c83a637ff8557c4b7a8b20b ;;
+    KIT=forgeops-ai-demo-eval-2-linux-arm64.tar.gz
+    SHA256=8f78ce6774d30321a473f57c2fe9bd6a81920a32e18ffc16581945f99504ef8c ;;
   *) echo "No qualified archive for $(uname -s)/$(uname -m)" >&2; exit 1 ;;
 esac
 curl -LO "https://github.com/ykdynamics/forgeops/releases/download/$TAG/$KIT"
@@ -161,6 +163,7 @@ Ports 8010–8012, 8080, 8420–8424, 18055, 18057 and 55464 must be free.
 ./preflight
 AI_DEMO_DISCLOSE_INTERNAL_CONFIG=1 ./start
 ./health
+./trust-before-login
 ./open-customer-view
 ./open-approval
 ./open-requester
@@ -170,10 +173,29 @@ The environment flag records your decision to allow the approved synthetic
 internal configuration to reach the requester. It does not approve a document
 request; that still requires the separate decision shown above.
 
+`./trust-before-login` needs no AI credential. It verifies the published
+checksums and the running requester: read-only root, in-memory Codex home, two
+declared mounts, dropped Linux capabilities, no privilege escalation, one
+internal Docker network, no ForgeOps executable, no customer or administration
+route, and Internet access limited to `auth.openai.com:443` and
+`api.openai.com:443`. The Dockerfile, Compose file and two narrow gateway
+programs are included as readable text in the archive.
+
 In VS Code, reopen the supplied workspace in the Dev Container. Confirm
-`codex --version` matches `manifest.env`, authenticate the AI client there if
-needed, and use the main prompt. The included `WALKTHROUGH.md` supplies shorter
-prompts if the model needs steering.
+`codex --version` matches `manifest.env`, then run:
+
+```bash
+codex login --device-auth
+```
+
+Open the displayed OpenAI URL in the normal host browser and enter its one-time
+code there. Do not paste an API key into the demo. The container receives a
+temporary session credential after sign-in, so this is not a credential-free
+flow. Its Codex home is an in-memory filesystem; `codex logout` removes the
+local login and `./stop` destroys the container and that filesystem.
+
+Then use the main prompt. The included `WALKTHROUGH.md` supplies shorter prompts
+if the model needs steering.
 
 When finished:
 
@@ -194,9 +216,9 @@ secret-canary absence, reset and rerun.
 
 | Candidate | First allowed result | Verified repair |
 | --- | ---: | ---: |
-| macOS ARM64 | 19.5 s | 41.5 s |
-| Linux ARM64 | 16.3 s | 38.4 s |
-| Linux AMD64 | 21.8 s | 43.7 s |
+| macOS ARM64 | 20.6 s | 42.6 s |
+| Linux ARM64 | 15.4 s | 37.5 s |
+| Linux AMD64 | 23.6 s | 45.5 s |
 
 This is builder qualification. An evaluator unfamiliar with the implementation
 has not yet returned the included `OUTSIDER-REVIEW.md`, and the Linux desktop
