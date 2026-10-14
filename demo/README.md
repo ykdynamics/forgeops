@@ -15,7 +15,7 @@ receiving its customer-local credential.
 | Flow | diagnostics `ALLOW` → restart `ASK` → shell `DENY` | diagnose → reason → request → approval/refusal → verify | safe reads `ALLOW` → internal config `ASK` → secret `DENY` → repair `ASK` |
 | Customer authority | policy + separate approval | the same policy + separate approval | policy, separate approval and customer-local dummy credential |
 | Runs | locally | locally; model context goes to the configured model endpoint | locally on Apple silicon macOS or Linux; model context goes to the configured model endpoint |
-| Account | none | no ForgeOps account | no ForgeOps account; normal AI client access required |
+| Account | none | no ForgeOps account | no ForgeOps account; own ChatGPT access, using browser/device sign-in after the boundary check |
 | Start | `./try-forgeops` | `./try-with-ai` | `AI_DEMO_DISCLOSE_INTERNAL_CONFIG=1 ./start` |
 | Walkthrough | **[Run Demo 1 →](BASIC.md)** | **[Run Demo 2 →](AI.md)** | **[Run Demo 3 →](AI-REPAIR.md)** |
 

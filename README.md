@@ -165,7 +165,9 @@ devices: knowing what is deployed, fixing what is unsafe, proving what happened.
 
 The demos are real and run on your machine. There is no hosted ForgeOps service
 or ForgeOps account behind them. Demo 2 and Demo 3 use a remote model by
-default, so their AI client still needs its normal model access.
+default, so their AI client still needs its normal model access. Demo 3 asks
+you to inspect its live requester boundary first, then uses OpenAI
+browser/device sign-in; it does not ask you to paste an API key into the demo.
 
 This repository is public for **evaluation and testing**, not as an open-source
 release. Copyright © 2026 YK Dynamics. All rights reserved. See
