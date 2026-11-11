@@ -35,14 +35,17 @@ Each step proves more, and asks more of you.
    and the [real-boundary run](#see-it) above.
 2. **Run it on your laptop.** [Demo 1 and Demo 2](../demo/README.md). No
    account. Start here.
-3. **Try the hosted platform.** Invite based, on request: your own sandbox
-   customer, an approver account on your phone, a vendor seat (a command-line
-   client, or your own AI agent over MCP), and a simulated customer site that we
-   run for you. You feel the whole flow without installing anything on your side.
-   [Ask for a place](#ask-for-a-place).
-4. **Bring your own edge.** The customer side on your own computer or in your own
-   cloud account. Evaluation terms come first: who holds which key, and what data
-   may cross (synthetic only, until a data processing agreement is signed).
+3. **Try the hosted portal, with the customer side on your own machine.**
+   Invite based, on request: an account on the hosted portal, a small virtual
+   machine on your own computer as the customer's site, your own AI agent
+   (Codex) as the requester with a scoped key, and a passkey to approve. You
+   play every role, and the permissions stay separate.
+   [What your place looks like](#what-your-place-looks-like).
+4. **A real vendor and a real customer.** Separate organisations: the vendor
+   proposes an operation, possibly one it built itself, and the customer
+   consents, installs it and approves. Evaluation terms come first: who holds
+   which key, and what data may cross (synthetic only, until a data processing
+   agreement is signed).
 5. **Keys on your side.** The approval and policy keys with you, not with us:
    either ForgeOps run by you, or the hosted one with your phone co-signing every
    approval (a direction, below).
@@ -89,12 +92,63 @@ power to the customer's box. While it was off, new requests were refused rather
 than queued. When it came back, it reconnected by itself and reported the
 waiting restart as expired; it never ran.
 
+## What your place looks like
+
+You sign in to the hosted portal as the customer. A small virtual machine on
+your computer stands in for the customer's site: it runs a demo application, the
+ForgeOps edge, and two operations for that application, *check its health* and
+*restart it*. Nothing on the portal can reach into that machine; the edge calls
+out, receives requests and decides.
+
+1. **Choose the policy.** For each operation, pick what happens when someone
+   asks: allow, ask or deny, and whether the requester may see its result.
+2. **Issue a scoped key** to the requester, your AI agent, for one operation,
+   with an expiry.
+3. **Break the application, and let the AI find out.** It may check health on
+   its own; the restart it asks for waits for you.
+4. **Approve exactly that restart** with a passkey, then watch the AI confirm
+   the application recovered.
+5. **Revoke its keys.** Its next request is refused.
+
+<table>
+  <tr>
+    <td width="50%"><img src="images/hosted-portal/02-configure.png" alt="Portal screen configuring the restart operation: the policy for this exact package and target, and whether the requester may see the declared output"></td>
+    <td width="50%"><img src="images/hosted-portal/03-issue.png" alt="Portal screen issuing named, 60-minute access to the restart operation for one requester"></td>
+  </tr>
+  <tr>
+    <td><b>Choose the policy</b> for one exact package and target, and what the requester may see.</td>
+    <td><b>Issue a scoped key</b>: one named credential, one operation, with an expiry.</td>
+  </tr>
+  <tr>
+    <td><img src="images/hosted-portal/06-inbox.png" alt="Approval Inbox with a pending restart request and its Action ID"></td>
+    <td><img src="images/hosted-portal/08-approve.png" alt="Review screen showing the exact input, the result the requester may receive, a fresh passkey check and the Approve this exact operation button"></td>
+  </tr>
+  <tr>
+    <td><b>The request waits</b> in the Approval Inbox.</td>
+    <td><b>Approve exactly this</b>: the fixed input, the result the requester may receive, a fresh passkey.</td>
+  </tr>
+</table>
+
+*Example screens rendered from the portal with synthetic data. The blue strips
+and outlines come from our participant guide, which tells you what to do on
+each screen; they are not part of the portal.*
+
+This is new. You would be among the first people outside YK Dynamics to use it,
+so we set the machine up with you and stay on hand; what confuses you is what we
+most want to hear.
+
 ## Ask for a place
 
-The hosted platform is invite based, so we can set each place up with you.
+The hosted portal is invite based, so we can set each place up with you.
 [Get in touch](../CONTACT.md) and tell us a little about the operation you would
-want to perform inside someone else's environment. You will need a phone that
-supports passkeys (any recent iPhone or Android). Data stays synthetic.
+want to perform inside someone else's environment. Data stays synthetic.
+
+You will need:
+
+- an Apple silicon Mac that can run a small Ubuntu virtual machine (a Linux
+  laptop is in preparation);
+- access to Codex through your own ChatGPT account, for the AI requester;
+- a passkey: Touch ID on the Mac, or a recent iPhone or Android phone.
 
 ## Who holds the keys
 

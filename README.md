@@ -114,8 +114,9 @@ fresh request and watch the customer view change from **Disconnected** to
   stronger claims](docs/concepts/what-this-proves.md).
 - **Across real boundaries:** two customers, an on-premises box and a cloud
   account, approvals on a phone with a passkey, a vendor's AI that can only ask.
-  [Across real boundaries →](docs/real-boundaries.md), with an invite-based
-  place on the hosted platform, and [how a person decides →](docs/concepts/a-person-decides.md)
+  [Across real boundaries →](docs/real-boundaries.md), with
+  [an invite-based place on the hosted portal](docs/real-boundaries.md#what-your-place-looks-like),
+  and [how a person decides →](docs/concepts/a-person-decides.md)
 - **Where it fits:** [software vendors, governed automation, AI agents,
   sovereign edge](docs/use-cases/), and [where this could go](docs/direction.md).
 - **Where the design comes from:** Kubernetes, in large part. Declarative
