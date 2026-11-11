@@ -41,8 +41,10 @@ subject `ForgeOps — operation`.
 ## What happens then
 
 A person building ForgeOps reads the submission. If it looks like a fit, the
-next useful step is usually a short technical conversation or a real-edge
-evaluation. If it does not fit, we would rather say so directly and explain why.
+next useful step is usually a short technical conversation, then a place on the
+hosted portal with the customer side on your own machine
+([what that looks like](docs/real-boundaries.md#what-your-place-looks-like)).
+If it does not fit, we would rather say so directly and explain why.
 
 The form is not a mailing-list signup and submitting it does not create a
 ForgeOps account. The demo remains anonymous and ungated.
