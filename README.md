@@ -92,7 +92,8 @@ own](demo/BRING-YOUR-OWN.md).
 
 **An AI diagnoses and repairs a fictional application without receiving its
 customer-local credential.** This is a separate download for Apple silicon
-macOS, Linux x86-64 or Linux ARM64 with Docker and VS Code Dev Containers.
+macOS, Linux x86-64 or Linux ARM64 with Docker; the AI runs in a terminal
+inside an isolated requester container.
 
 The assistant may read a safe setup guide and status, must ask before receiving
 synthetic internal configuration, cannot read `secrets.env`, and must ask before

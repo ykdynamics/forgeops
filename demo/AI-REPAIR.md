@@ -16,7 +16,7 @@ The demo gives you three separate views:
 
 | View | Whose side it represents | What you do there |
 | --- | --- | --- |
-| VS Code Dev Container | AI requester | Ask the assistant to diagnose and repair the application. Its terminal and MCP client run inside the isolated container. |
+| Requester shell (`./open-requester`) | AI requester | Run Codex and ask it to diagnose and repair the application. The shell, Codex and its MCP client run inside the isolated requester container. |
 | Customer status page | customer application | Watch the real connector state. This page is read-only and has no repair or approval controls. |
 | ForgeOps approval page | customer approver | Inspect the exact operation and choose Approve or Reject. The assistant cannot reach this session. |
 
@@ -110,14 +110,14 @@ operation may run; the fresh status observation says whether it worked.
 | Docker socket, host home, runtime/admin endpoints | No |
 | safe repair result and receipt | Yes, after the approved capability runs |
 
-The Dev Container limits what the AI process can reach. ForgeOps separately
+The requester container limits what the AI process can reach. ForgeOps separately
 decides which declared operations run immediately, wait for a customer, or are
 refused. Both controls matter in this demonstration.
 
 ## Run it yourself
 
 The candidates support Apple silicon macOS, Linux x86-64 and Linux ARM64. You
-need Docker Compose v2, VS Code with Dev Containers, about 1 GiB free disk, and
+need Docker Compose v2, a terminal, about 1 GiB free disk, and
 access to Codex through your own ChatGPT account. No ForgeOps account, private
 source checkout, developer registry credential or database edit is required.
 You do not paste an API key into the demo: after inspecting the live boundary,
@@ -126,17 +126,17 @@ you sign in with a one-time code on OpenAI's page in your normal browser.
 ### Download the candidate for your host
 
 ```bash
-TAG=ai-demo-eval.2
+TAG=ai-demo-eval.3
 case "$(uname -s)/$(uname -m)" in
   Darwin/arm64)
-    KIT=forgeops-ai-demo-eval-2-darwin-arm64.tar.gz
-    SHA256=7fc23f82daf414060c80a644c0533a33793f9c201f177d133d56662933af03e4 ;;
+    KIT=forgeops-ai-demo-eval-3-darwin-arm64.tar.gz
+    SHA256=c89969ce7240f2133ca2639211fa62d24629f37aeb95175e283204de04369bb7 ;;
   Linux/x86_64)
-    KIT=forgeops-ai-demo-eval-2-linux-amd64.tar.gz
-    SHA256=e68cef9ebceda8784db2bcae08d618b2abda1182b08fedf3ece775776cce63c5 ;;
+    KIT=forgeops-ai-demo-eval-3-linux-amd64.tar.gz
+    SHA256=27a67e14cd690cd2ce5593c44a0ed5708c8840b4f5c8da24269f4d7468a7b2d7 ;;
   Linux/aarch64|Linux/arm64)
-    KIT=forgeops-ai-demo-eval-2-linux-arm64.tar.gz
-    SHA256=8f78ce6774d30321a473f57c2fe9bd6a81920a32e18ffc16581945f99504ef8c ;;
+    KIT=forgeops-ai-demo-eval-3-linux-arm64.tar.gz
+    SHA256=e3e70772e7a4b3ddf40fe2ded15bf5c315f04b1ff5aa3d2453a2682a3cfaa4c7 ;;
   *) echo "No qualified archive for $(uname -s)/$(uname -m)" >&2; exit 1 ;;
 esac
 curl -LO "https://github.com/ykdynamics/forgeops/releases/download/$TAG/$KIT"
@@ -163,11 +163,14 @@ Ports 8010–8012, 8080, 8420–8424, 18055, 18057 and 55464 must be free.
 ./preflight
 AI_DEMO_DISCLOSE_INTERNAL_CONFIG=1 ./start
 ./health
-./trust-before-login
-./open-customer-view
-./open-approval
-./open-requester
+./open-customer-view   # browser: read-only application status
+./open-approval        # browser: your private customer approval session
+./trust-before-login   # verify the requester before any AI sign-in
+./open-requester       # this terminal becomes a shell inside the requester
 ```
+
+Use `./open-approval` to reach the approval page. The bare
+`http://127.0.0.1:18057/` address carries no approver session.
 
 The environment flag records your decision to allow the approved synthetic
 internal configuration to reach the requester. It does not approve a document
@@ -177,12 +180,17 @@ request; that still requires the separate decision shown above.
 checksums and the running requester: read-only root, in-memory Codex home, two
 declared mounts, dropped Linux capabilities, no privilege escalation, one
 internal Docker network, no ForgeOps executable, no customer or administration
-route, and Internet access limited to `auth.openai.com:443` and
-`api.openai.com:443`. The Dockerfile, Compose file and two narrow gateway
+route, and Internet access limited to the HTTPS hosts Codex needs:
+`api.openai.com`, `auth.openai.com`, `chatgpt.com`, `ab.chatgpt.com` and the
+region-selected `sdmntpr*.oaiusercontent.com` inference hosts. The Dockerfile, Compose file and two narrow gateway
 programs are included as readable text in the archive.
 
-In VS Code, reopen the supplied workspace in the Dev Container. Confirm
-`codex --version` matches `manifest.env`, then run:
+`./open-requester` turns your terminal into a shell inside the requester
+container: the prompt becomes `node@…:/workspace$`, and `exit` returns to your
+computer with the demo still running. The requester is read-only with no
+general Internet route, so editors that install their own server into a
+container, such as VS Code Dev Containers, cannot attach to it; use this shell.
+Confirm `codex --version` matches `manifest.env`, then run:
 
 ```bash
 codex login --device-auth
@@ -194,8 +202,18 @@ temporary session credential after sign-in, so this is not a credential-free
 flow. Its Codex home is an in-memory filesystem; `codex logout` removes the
 local login and `./stop` destroys the container and that filesystem.
 
-Then use the main prompt. The included `WALKTHROUGH.md` supplies shorter prompts
-if the model needs steering.
+Then start the assistant in the same shell:
+
+```bash
+codex
+```
+
+and give it the main prompt. Codex reads the workspace's `AGENTS.md`, which
+explains the ForgeOps tools and Action results. If Codex asks you to confirm a
+tool call, that is Codex's own prompt; the customer's decision only happens on
+the approval page. A held request waits 30 minutes for that decision, then
+expires with no effect; ask the assistant for a fresh request. The included
+`WALKTHROUGH.md` supplies shorter prompts if the model needs steering.
 
 When finished:
 
@@ -216,12 +234,18 @@ secret-canary absence, reset and rerun.
 
 | Candidate | First allowed result | Verified repair |
 | --- | ---: | ---: |
-| macOS ARM64 | 20.6 s | 42.6 s |
-| Linux ARM64 | 15.4 s | 37.5 s |
-| Linux AMD64 | 23.6 s | 45.5 s |
+| macOS ARM64 | 23.5 s | 45.4 s |
+| Linux ARM64 | 17.2 s | 39.0 s |
+| Linux AMD64 | 23.4 s | 45.2 s |
 
-This is builder qualification. An evaluator unfamiliar with the implementation
-has not yet returned the included `OUTSIDER-REVIEW.md`, and the Linux desktop
+The Linux candidates ran in Ubuntu 24.04 against Docker Desktop on the builder
+Mac (AMD64 under emulation). The first Linux ARM64 run, with a cold image
+cache, took 74.8 s to the first allowed result and 96.9 s to the verified
+repair; the table shows the repeat run.
+
+This is builder qualification. On macOS the builder has also run the journey
+end to end with a real Codex session, through to the Connected state. An
+evaluator unfamiliar with the implementation has not yet returned the included `OUTSIDER-REVIEW.md`, and the Linux desktop
 journey has not yet been recorded on a standalone workstation. The demo uses a
 synthetic application and dummy credential on one evaluator-owned computer. It
 does not establish production readiness, arbitrary-AI safety, offline model

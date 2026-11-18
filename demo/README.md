@@ -11,7 +11,7 @@ receiving its customer-local credential.
 | | **Demo 1 — Core authority** | **Demo 2 — AI + MCP** | **Demo 3 — AI repair** |
 |---|---|---|---|
 | Purpose | Understand ForgeOps itself | See what changes when the requester is AI | Test document disclosure, secret refusal and customer-held repair |
-| Requester | fixed first-touch scenario | real model using MCP tools | real model in an isolated Dev Container |
+| Requester | fixed first-touch scenario | real model using MCP tools | real model in an isolated requester container |
 | Flow | diagnostics `ALLOW` → restart `ASK` → shell `DENY` | diagnose → reason → request → approval/refusal → verify | safe reads `ALLOW` → internal config `ASK` → secret `DENY` → repair `ASK` |
 | Customer authority | policy + separate approval | the same policy + separate approval | policy, separate approval and customer-local dummy credential |
 | Runs | locally | locally; model context goes to the configured model endpoint | locally on Apple silicon macOS or Linux; model context goes to the configured model endpoint |
@@ -62,8 +62,8 @@ same thing with every side on your laptop:
 **Let an AI repair a fictional application while the customer keeps the only
 credential that can perform the repair.**
 
-This separate evaluation candidate adds a VS Code Dev Container for the
-requester, explicit document disclosure, a fixed secret request that policy
+This separate evaluation candidate adds an isolated requester container, with
+Codex in a terminal shell, explicit document disclosure, a fixed secret request that policy
 refuses, and a customer status page that provides visible before-and-after
 evidence. Reject the first bounded repair and nothing changes. Approve a fresh
 request and the application connects; the assistant receives only the declared
