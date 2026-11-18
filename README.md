@@ -43,7 +43,7 @@ Everything runs on your machine, no account. You need macOS or Linux, Docker
 running, `curl`, `python3`, `lsof` and `bash`.
 
 ```bash
-BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/a6df3933c540
+BASE=https://eu2.contabostorage.com/d89295baa09047ca80427839e7799618:forgeops/first-touch/05f72c4e3756
 KIT="forgeops-first-touch-$(uname -s | tr 'A-Z' 'a-z')-$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz"
 curl -O "$BASE/$KIT" && curl -O "$BASE/$KIT.sha256"
 shasum -a 256 -c "$KIT.sha256" 2>/dev/null || sha256sum -c "$KIT.sha256"
